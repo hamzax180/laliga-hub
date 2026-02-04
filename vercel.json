@@ -1,5 +1,6 @@
 {
     "version": 2,
+    "cleanUrls": true,
     "builds": [
         {
             "src": "frontend/**",
@@ -10,19 +11,14 @@
             "use": "@vercel/node"
         }
     ],
-    "routes": [
+    "rewrites": [
         {
-            "src": "/api/(.*)",
-            "dest": "backend/server.js"
+            "source": "/api/(.*)",
+            "destination": "/backend/server.js"
         },
         {
-            "src": "/([^/.]+)$",
-            "dest": "frontend/$1.html",
-            "continue": true
-        },
-        {
-            "src": "/(.*)",
-            "dest": "frontend/$1"
+            "source": "/((?!api/).*)",
+            "destination": "/frontend/$1"
         }
     ]
 }
