@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: laliga
+  labels:
+    app.kubernetes.io/name: laliga
+    app.kubernetes.io/part-of: laliga-hub

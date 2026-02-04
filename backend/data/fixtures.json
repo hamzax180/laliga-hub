@@ -1,0 +1,272 @@
+[
+    {
+        "id": 1,
+        "matchday": 23,
+        "date": "2026-02-07",
+        "time": "21:00",
+        "homeTeam": "Real Madrid",
+        "awayTeam": "Valencia",
+        "stadium": "Santiago Bernabéu"
+    },
+    {
+        "id": 2,
+        "matchday": 23,
+        "date": "2026-02-07",
+        "time": "18:30",
+        "homeTeam": "Atletico Madrid",
+        "awayTeam": "Sevilla",
+        "stadium": "Metropolitano"
+    },
+    {
+        "id": 3,
+        "matchday": 23,
+        "date": "2026-02-08",
+        "time": "21:00",
+        "homeTeam": "Barcelona",
+        "awayTeam": "Athletic Bilbao",
+        "stadium": "Spotify Camp Nou"
+    },
+    {
+        "id": 4,
+        "matchday": 23,
+        "date": "2026-02-08",
+        "time": "16:15",
+        "homeTeam": "Villarreal",
+        "awayTeam": "Real Sociedad",
+        "stadium": "Estadio de la Cerámica"
+    },
+    {
+        "id": 5,
+        "matchday": 23,
+        "date": "2026-02-08",
+        "time": "18:30",
+        "homeTeam": "Real Betis",
+        "awayTeam": "Girona",
+        "stadium": "Benito Villamarín"
+    },
+    {
+        "id": 6,
+        "matchday": 23,
+        "date": "2026-02-09",
+        "time": "14:00",
+        "homeTeam": "Osasuna",
+        "awayTeam": "Mallorca",
+        "stadium": "El Sadar"
+    },
+    {
+        "id": 7,
+        "matchday": 23,
+        "date": "2026-02-09",
+        "time": "16:15",
+        "homeTeam": "Celta Vigo",
+        "awayTeam": "Rayo Vallecano",
+        "stadium": "Abanca-Balaídos"
+    },
+    {
+        "id": 8,
+        "matchday": 23,
+        "date": "2026-02-09",
+        "time": "18:30",
+        "homeTeam": "Las Palmas",
+        "awayTeam": "Getafe",
+        "stadium": "Gran Canaria"
+    },
+    {
+        "id": 9,
+        "matchday": 23,
+        "date": "2026-02-09",
+        "time": "21:00",
+        "homeTeam": "Leganes",
+        "awayTeam": "Alaves",
+        "stadium": "Butarque"
+    },
+    {
+        "id": 10,
+        "matchday": 23,
+        "date": "2026-02-10",
+        "time": "21:00",
+        "homeTeam": "Espanyol",
+        "awayTeam": "Valladolid",
+        "stadium": "RCDE Stadium"
+    },
+    {
+        "id": 11,
+        "matchday": 24,
+        "date": "2026-02-14",
+        "time": "21:00",
+        "homeTeam": "Valencia",
+        "awayTeam": "Barcelona",
+        "stadium": "Mestalla"
+    },
+    {
+        "id": 12,
+        "matchday": 24,
+        "date": "2026-02-14",
+        "time": "18:30",
+        "homeTeam": "Sevilla",
+        "awayTeam": "Real Madrid",
+        "stadium": "Ramón Sánchez-Pizjuán"
+    },
+    {
+        "id": 13,
+        "matchday": 24,
+        "date": "2026-02-15",
+        "time": "21:00",
+        "homeTeam": "Athletic Bilbao",
+        "awayTeam": "Atletico Madrid",
+        "stadium": "San Mamés"
+    },
+    {
+        "id": 14,
+        "matchday": 24,
+        "date": "2026-02-15",
+        "time": "16:15",
+        "homeTeam": "Girona",
+        "awayTeam": "Villarreal",
+        "stadium": "Montilivi"
+    },
+    {
+        "id": 15,
+        "matchday": 24,
+        "date": "2026-02-15",
+        "time": "18:30",
+        "homeTeam": "Real Sociedad",
+        "awayTeam": "Real Betis",
+        "stadium": "Reale Arena"
+    },
+    {
+        "id": 16,
+        "matchday": 24,
+        "date": "2026-02-16",
+        "time": "14:00",
+        "homeTeam": "Mallorca",
+        "awayTeam": "Celta Vigo",
+        "stadium": "Son Moix"
+    },
+    {
+        "id": 17,
+        "matchday": 24,
+        "date": "2026-02-16",
+        "time": "16:15",
+        "homeTeam": "Rayo Vallecano",
+        "awayTeam": "Osasuna",
+        "stadium": "Vallecas"
+    },
+    {
+        "id": 18,
+        "matchday": 24,
+        "date": "2026-02-16",
+        "time": "18:30",
+        "homeTeam": "Getafe",
+        "awayTeam": "Las Palmas",
+        "stadium": "Coliseum"
+    },
+    {
+        "id": 19,
+        "matchday": 24,
+        "date": "2026-02-16",
+        "time": "21:00",
+        "homeTeam": "Alaves",
+        "awayTeam": "Espanyol",
+        "stadium": "Mendizorroza"
+    },
+    {
+        "id": 20,
+        "matchday": 24,
+        "date": "2026-02-17",
+        "time": "21:00",
+        "homeTeam": "Valladolid",
+        "awayTeam": "Leganes",
+        "stadium": "José Zorrilla"
+    },
+    {
+        "id": 21,
+        "matchday": 25,
+        "date": "2026-02-21",
+        "time": "21:00",
+        "homeTeam": "Real Madrid",
+        "awayTeam": "Girona",
+        "stadium": "Santiago Bernabéu"
+    },
+    {
+        "id": 22,
+        "matchday": 25,
+        "date": "2026-02-21",
+        "time": "18:30",
+        "homeTeam": "Atletico Madrid",
+        "awayTeam": "Real Sociedad",
+        "stadium": "Metropolitano"
+    },
+    {
+        "id": 23,
+        "matchday": 25,
+        "date": "2026-02-22",
+        "time": "21:00",
+        "homeTeam": "Barcelona",
+        "awayTeam": "Villarreal",
+        "stadium": "Spotify Camp Nou"
+    },
+    {
+        "id": 24,
+        "matchday": 25,
+        "date": "2026-02-22",
+        "time": "16:15",
+        "homeTeam": "Athletic Bilbao",
+        "awayTeam": "Las Palmas",
+        "stadium": "San Mamés"
+    },
+    {
+        "id": 25,
+        "matchday": 25,
+        "date": "2026-02-22",
+        "time": "18:30",
+        "homeTeam": "Real Betis",
+        "awayTeam": "Mallorca",
+        "stadium": "Benito Villamarín"
+    },
+    {
+        "id": 26,
+        "matchday": 26,
+        "date": "2026-02-28",
+        "time": "21:00",
+        "homeTeam": "El Clasico: Barcelona",
+        "awayTeam": "Real Madrid",
+        "stadium": "Spotify Camp Nou"
+    },
+    {
+        "id": 27,
+        "matchday": 26,
+        "date": "2026-02-28",
+        "time": "16:15",
+        "homeTeam": "Sevilla",
+        "awayTeam": "Atletico Madrid",
+        "stadium": "Ramón Sánchez-Pizjuán"
+    },
+    {
+        "id": 28,
+        "matchday": 26,
+        "date": "2026-03-01",
+        "time": "18:30",
+        "homeTeam": "Valencia",
+        "awayTeam": "Athletic Bilbao",
+        "stadium": "Mestalla"
+    },
+    {
+        "id": 29,
+        "matchday": 26,
+        "date": "2026-03-01",
+        "time": "21:00",
+        "homeTeam": "Villarreal",
+        "awayTeam": "Real Betis",
+        "stadium": "Estadio de la Cerámica"
+    },
+    {
+        "id": 30,
+        "matchday": 26,
+        "date": "2026-03-02",
+        "time": "21:00",
+        "homeTeam": "Girona",
+        "awayTeam": "Osasuna",
+        "stadium": "Montilivi"
+    }
+]

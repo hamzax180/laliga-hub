@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="La Liga Fixtures - Upcoming matches and match calendar.">
+    <title>La Liga Hub | Fixtures</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">⚽</span>
+                <span class="logo-text">La Liga<span class="logo-accent">Hub</span></span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="standings.html">Standings</a></li>
+                <li><a href="fixtures.html" class="active">Fixtures</a></li>
+                <li><a href="scorers.html">Top Scorers</a></li>
+                <li><a href="transfers.html">Transfers</a></li>
+            </ul>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <span class="page-badge">📅 Match Calendar</span>
+                <h1 class="page-title">Upcoming Fixtures</h1>
+                <p class="page-subtitle">All upcoming La Liga matches organized by date</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fixtures Section -->
+    <section class="section">
+        <div class="container">
+            <!-- Team Filter -->
+            <div class="fixtures-filter">
+                <label for="teamFilter">Filter by team:</label>
+                <div class="custom-select" id="customTeamSelect">
+                    <div class="select-trigger">
+                        <span id="selectedTeamText">All Teams</span>
+                        <svg class="select-arrow" width="12" height="12" viewBox="0 0 12 12" fill="white">
+                            <path d="M6 9L1 4h10z" />
+                        </svg>
+                    </div>
+                    <div class="options-container" id="teamOptions">
+                        <div class="option selected" data-value="">All Teams</div>
+                        <!-- Options populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar View -->
+            <div class="calendar-container" id="calendarContainer">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <span>Loading fixtures...</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">⚽</span>
+                    <span class="logo-text">La Liga<span class="logo-accent">Hub</span></span>
+                </div>
+                <p class="footer-text">
+                    Your ultimate destination for La Liga football statistics and updates.
+                </p>
+                <div class="footer-links">
+                    <a href="standings.html">Standings</a>
+                    <a href="fixtures.html">Fixtures</a>
+                    <a href="scorers.html">Top Scorers</a>
+                    <a href="transfers.html">Transfers</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 La Liga Hub. All data is for demonstration purposes.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="fixtures-v2.js"></script>
+</body>
+
+</html>

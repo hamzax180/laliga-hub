@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="La Liga Hub - Your home for Spanish football. Latest news, standings, fixtures, and transfers.">
+    <title>La Liga Hub | Home</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">⚽</span>
+                <span class="logo-text">La Liga<span class="logo-accent">Hub</span></span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="standings.html">Standings</a></li>
+                <li><a href="fixtures.html">Fixtures</a></li>
+                <li><a href="scorers.html">Top Scorers</a></li>
+                <li><a href="transfers.html">Transfers</a></li>
+            </ul>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero hero-home">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <div class="hero-badge">🏆 2024/25 Season</div>
+            <h1 class="hero-title">
+                Welcome to
+                <span class="gradient-text">La Liga Hub</span>
+            </h1>
+            <p class="hero-subtitle">
+                Your ultimate destination for Spanish football. Get the latest standings,
+                fixtures, top scorers, transfers, and breaking news.
+            </p>
+            <div class="hero-buttons">
+                <a href="standings.html" class="btn btn-primary">
+                    <span>View Standings</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </a>
+                <a href="fixtures.html" class="btn btn-secondary">Upcoming Matches</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Grid -->
+    <section class="section dashboard-section">
+        <div class="container">
+            <!-- Latest News -->
+            <div class="dashboard-card news-card">
+                <div class="card-header">
+                    <h2 class="card-title">📰 Latest News</h2>
+                    <a href="#" class="card-link">View All →</a>
+                </div>
+                <div class="news-list" id="newsList">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Teams Preview -->
+            <div class="dashboard-card standings-card">
+                <div class="card-header">
+                    <h2 class="card-title">📊 League Leaders</h2>
+                    <a href="standings.html" class="card-link">Full Table →</a>
+                </div>
+                <div class="mini-standings" id="miniStandings">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Scorers Preview -->
+            <div class="dashboard-card scorers-card">
+                <div class="card-header">
+                    <h2 class="card-title">⚽ Top Scorers</h2>
+                    <a href="scorers.html" class="card-link">View All →</a>
+                </div>
+                <div class="mini-scorers" id="miniScorers">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Fixtures Preview -->
+            <div class="dashboard-card fixtures-card">
+                <div class="card-header">
+                    <h2 class="card-title">📅 Next Matches</h2>
+                    <a href="fixtures.html" class="card-link">Full Calendar →</a>
+                </div>
+                <div class="mini-fixtures" id="miniFixtures">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Transfers Preview -->
+            <div class="dashboard-card transfers-card">
+                <div class="card-header">
+                    <h2 class="card-title">🔄 Recent Transfers</h2>
+                    <a href="transfers.html" class="card-link">View All →</a>
+                </div>
+                <div class="mini-transfers" id="miniTransfers">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="dashboard-card stats-card">
+                <div class="card-header">
+                    <h2 class="card-title">📈 Season Stats</h2>
+                </div>
+                <div class="mini-stats" id="miniStats">
+                    <div class="stat-item">
+                        <span class="stat-value" id="statGoals">--</span>
+                        <span class="stat-label">Goals</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="statMatches">--</span>
+                        <span class="stat-label">Matches</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="statAvg">--</span>
+                        <span class="stat-label">Goals/Match</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">⚽</span>
+                    <span class="logo-text">La Liga<span class="logo-accent">Hub</span></span>
+                </div>
+                <p class="footer-text">
+                    Your ultimate destination for La Liga football statistics and updates.
+                </p>
+                <div class="footer-links">
+                    <a href="standings.html">Standings</a>
+                    <a href="fixtures.html">Fixtures</a>
+                    <a href="scorers.html">Top Scorers</a>
+                    <a href="transfers.html">Transfers</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 La Liga Hub. All data is for demonstration purposes.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="home.js"></script>
+</body>
+
+</html>

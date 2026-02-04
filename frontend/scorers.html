@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="La Liga Top Scorers - Golden Boot race and player statistics.">
+    <title>La Liga Hub | Top Scorers</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">⚽</span>
+                <span class="logo-text">La Liga<span class="logo-accent">Hub</span></span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="standings.html">Standings</a></li>
+                <li><a href="fixtures.html">Fixtures</a></li>
+                <li><a href="scorers.html" class="active">Top Scorers</a></li>
+                <li><a href="transfers.html">Transfers</a></li>
+            </ul>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <span class="page-badge">⚽ Golden Boot Race</span>
+                <h1 class="page-title">Top Scorers</h1>
+                <p class="page-subtitle">Leading goal scorers in La Liga this season</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scorers Grid -->
+    <section class="section scorers-section">
+        <div class="container">
+            <div class="scorers-grid" id="scorersGrid">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <span>Loading top scorers...</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">⚽</span>
+                    <span class="logo-text">La Liga<span class="logo-accent">Hub</span></span>
+                </div>
+                <p class="footer-text">
+                    Your ultimate destination for La Liga football statistics and updates.
+                </p>
+                <div class="footer-links">
+                    <a href="standings.html">Standings</a>
+                    <a href="fixtures.html">Fixtures</a>
+                    <a href="scorers.html">Top Scorers</a>
+                    <a href="transfers.html">Transfers</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 La Liga Hub. All data is for demonstration purposes.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="scorers-v2.js"></script>
+</body>
+
+</html>

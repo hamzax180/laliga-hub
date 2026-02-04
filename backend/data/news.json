@@ -1,0 +1,50 @@
+[
+    {
+        "id": 1,
+        "date": "2026-02-04",
+        "title": "Mbappé Scores Hat-trick in Madrid Derby",
+        "summary": "Kylian Mbappé scored a sensational hat-trick as Real Madrid defeated Atletico Madrid 4-1 in the Madrid derby at the Santiago Bernabéu.",
+        "category": "match",
+        "image": "⚽"
+    },
+    {
+        "id": 2,
+        "date": "2026-02-03",
+        "title": "Barcelona Extends Lead at Top",
+        "summary": "Barcelona secured a crucial 2-0 victory against Sevilla, extending their lead at the top of La Liga to 2 points.",
+        "category": "match",
+        "image": "🏆"
+    },
+    {
+        "id": 3,
+        "date": "2026-02-02",
+        "title": "Lewandowski Reaches 18 Goals",
+        "summary": "Robert Lewandowski continues his incredible form, becoming the first player to reach 18 league goals this season.",
+        "category": "player",
+        "image": "🎯"
+    },
+    {
+        "id": 4,
+        "date": "2026-02-01",
+        "title": "Athletic Bilbao Unbeaten in 10 Games",
+        "summary": "Athletic Bilbao extended their unbeaten run to 10 matches after a thrilling 2-2 draw with Villarreal.",
+        "category": "match",
+        "image": "🦁"
+    },
+    {
+        "id": 5,
+        "date": "2026-01-31",
+        "title": "Lamine Yamal Breaks Assist Record",
+        "summary": "17-year-old sensation Lamine Yamal has broken the record for most assists by a teenager in La Liga history.",
+        "category": "player",
+        "image": "⭐"
+    },
+    {
+        "id": 6,
+        "date": "2026-01-30",
+        "title": "El Clásico Date Confirmed",
+        "summary": "La Liga has confirmed that the highly anticipated El Clásico between Barcelona and Real Madrid will take place on February 28th.",
+        "category": "league",
+        "image": "📅"
+    }
+]

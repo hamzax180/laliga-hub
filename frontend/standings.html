@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="La Liga Standings - Complete league table with all 20 teams.">
+    <title>La Liga Hub | Standings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">⚽</span>
+                <span class="logo-text">La Liga<span class="logo-accent">Hub</span></span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="standings.html" class="active">Standings</a></li>
+                <li><a href="fixtures.html">Fixtures</a></li>
+                <li><a href="scorers.html">Top Scorers</a></li>
+                <li><a href="transfers.html">Transfers</a></li>
+            </ul>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <span class="page-badge">📊 League Table</span>
+                <h1 class="page-title">La Liga Standings</h1>
+                <p class="page-subtitle">Complete table with all 20 teams - updated after every matchday</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Standings Section -->
+    <section class="section">
+        <div class="container">
+            <div class="standings-container">
+                <div class="standings-header">
+                    <span class="col-pos">#</span>
+                    <span class="col-team">Team</span>
+                    <span class="col-stat">MP</span>
+                    <span class="col-stat">W</span>
+                    <span class="col-stat">D</span>
+                    <span class="col-stat">L</span>
+                    <span class="col-stat">GF</span>
+                    <span class="col-stat">GA</span>
+                    <span class="col-stat">GD</span>
+                    <span class="col-pts">PTS</span>
+                </div>
+                <div class="standings-body" id="standingsBody">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <span>Loading standings...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="standings-legend">
+                <div class="legend-item">
+                    <span class="legend-color champions"></span>
+                    <span>Champions League</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color europa"></span>
+                    <span>Europa League</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color relegation"></span>
+                    <span>Relegation Zone</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">⚽</span>
+                    <span class="logo-text">La Liga<span class="logo-accent">Hub</span></span>
+                </div>
+                <p class="footer-text">
+                    Your ultimate destination for La Liga football statistics and updates.
+                </p>
+                <div class="footer-links">
+                    <a href="standings.html">Standings</a>
+                    <a href="fixtures.html">Fixtures</a>
+                    <a href="scorers.html">Top Scorers</a>
+                    <a href="transfers.html">Transfers</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 La Liga Hub. All data is for demonstration purposes.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="standings.js"></script>
+</body>
+
+</html>

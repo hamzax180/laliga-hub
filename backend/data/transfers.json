@@ -1,0 +1,102 @@
+[
+    {
+        "id": 1,
+        "player": "Kylian Mbappé",
+        "fromTeam": "Paris Saint-Germain",
+        "toTeam": "Real Madrid",
+        "fee": "Free Transfer",
+        "date": "2025-07-01",
+        "type": "in",
+        "image": "🇫🇷"
+    },
+    {
+        "id": 2,
+        "player": "Dani Olmo",
+        "fromTeam": "RB Leipzig",
+        "toTeam": "Barcelona",
+        "fee": "€55M",
+        "date": "2025-08-10",
+        "type": "in",
+        "image": "🇪🇸"
+    },
+    {
+        "id": 3,
+        "player": "Nico Williams",
+        "fromTeam": "Athletic Bilbao",
+        "toTeam": "Athletic Bilbao",
+        "fee": "Contract Extension",
+        "date": "2025-09-15",
+        "type": "extension",
+        "image": "🦁"
+    },
+    {
+        "id": 4,
+        "player": "Alexander Sørloth",
+        "fromTeam": "Villarreal",
+        "toTeam": "Atletico Madrid",
+        "fee": "€32M",
+        "date": "2025-07-20",
+        "type": "in",
+        "image": "🇳🇴"
+    },
+    {
+        "id": 5,
+        "player": "João Félix",
+        "fromTeam": "Atletico Madrid",
+        "toTeam": "Chelsea",
+        "fee": "€45M",
+        "date": "2025-08-25",
+        "type": "out",
+        "image": "🇵🇹"
+    },
+    {
+        "id": 6,
+        "player": "Marc-André ter Stegen",
+        "fromTeam": "Barcelona",
+        "toTeam": "Barcelona",
+        "fee": "Contract Extension",
+        "date": "2025-06-01",
+        "type": "extension",
+        "image": "🇩🇪"
+    },
+    {
+        "id": 7,
+        "player": "Endrick",
+        "fromTeam": "Palmeiras",
+        "toTeam": "Real Madrid",
+        "fee": "€60M",
+        "date": "2025-07-15",
+        "type": "in",
+        "image": "🇧🇷"
+    },
+    {
+        "id": 8,
+        "player": "Rafa Marín",
+        "fromTeam": "Real Madrid Castilla",
+        "toTeam": "Napoli",
+        "fee": "€12M",
+        "date": "2025-08-01",
+        "type": "out",
+        "image": "🇪🇸"
+    },
+    {
+        "id": 9,
+        "player": "Pablo Torre",
+        "fromTeam": "Loan from Barcelona",
+        "toTeam": "Girona",
+        "fee": "Loan",
+        "date": "2025-08-30",
+        "type": "loan",
+        "image": "🇪🇸"
+    },
+    {
+        "id": 10,
+        "player": "Arda Güler",
+        "fromTeam": "Real Madrid",
+        "toTeam": "Real Madrid",
+        "fee": "Contract Extension",
+        "date": "2026-01-15",
+        "type": "extension",
+        "image": "🇹🇷"
+    }
+]
