@@ -23,7 +23,7 @@ graph TD
     User[User Browser] -->|HTTP:80| LB[LoadBalancer Service]
     LB -->|Selects| Pods["Frontend Pods (Nginx)"]
     
-    subgraph Kubernetes Cluster (Namespace: laliga)
+    subgraph "Kubernetes Cluster (Namespace: laliga)"
         Pods -->|Proxy /api| BackendSvc[Backend Service]
         BackendSvc -->|Selects| API["Backend Pods (Node.js)"]
     end
