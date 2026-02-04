@@ -1,14 +1,24 @@
 {
     "version": 2,
     "cleanUrls": true,
-    "rewrites": [
+    "builds": [
         {
-            "source": "/api/(.*)",
-            "destination": "/backend/server.js"
+            "src": "frontend/**",
+            "use": "@vercel/static"
         },
         {
-            "source": "/((?!api/).*)",
-            "destination": "/frontend/$1"
+            "src": "backend/server.js",
+            "use": "@vercel/node"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/api/(.*)",
+            "dest": "backend/server.js"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "frontend/$1"
         }
     ]
 }
