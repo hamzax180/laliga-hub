@@ -2,18 +2,42 @@
     "version": 2,
     "builds": [
         {
-            "src": "frontend/**",
-            "use": "@vercel/static"
-        },
-        {
             "src": "backend/server.js",
             "use": "@vercel/node"
+        },
+        {
+            "src": "frontend/**",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
         {
             "src": "/api/(.*)",
             "dest": "backend/server.js"
+        },
+        {
+            "src": "/",
+            "dest": "frontend/index.html"
+        },
+        {
+            "src": "/index",
+            "dest": "frontend/index.html"
+        },
+        {
+            "src": "/standings",
+            "dest": "frontend/standings.html"
+        },
+        {
+            "src": "/fixtures",
+            "dest": "frontend/fixtures.html"
+        },
+        {
+            "src": "/scorers",
+            "dest": "frontend/scorers.html"
+        },
+        {
+            "src": "/transfers",
+            "dest": "frontend/transfers.html"
         },
         {
             "src": "/(.*)",
