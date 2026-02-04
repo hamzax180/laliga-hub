@@ -15,6 +15,7 @@ A modern, visually stunning website showcasing La Liga's top teams and top score
 - **⚡ Reactive UI** - CSS Grid layouts and custom-styled dropdowns
 - **📱 Responsive** - Fully optimized for mobile, tablet, and desktop
 - **🐳 Cloud Ready** - Docker containerized and Kubernetes deployed
+- **🚀 Vercel** - Live deployment with Serverless Functions
 
 ## 🏗️ Architecture
 
@@ -65,7 +66,13 @@ docker-compose up --build
 # Frontend: http://localhost:8080
 ```
 
-### Option 2: Kubernetes (Production-Like)
+### Option 2: Live Deployment (Vercel)
+
+The easiest way to view the live site and API without local setup.
+
+👉 **[https://laliga-hub.vercel.app](https://laliga-hub.vercel.app)**
+
+### Option 3: Kubernetes (Production-Like)
 
 Deploy to a local cluster (Docker Desktop, Minikube).
 
