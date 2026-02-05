@@ -1965,8 +1965,8 @@ body {
     height: 100%;
     top: 0;
     left: 0;
-    background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
-    opacity: 0.1;
+    background: radial-gradient(circle at center, rgba(255, 45, 85, 0.15) 0%, transparent 70%);
+    z-index: 1;
 }
 
 .newsletter-header {
@@ -2024,11 +2024,27 @@ body {
 .newsletter-form input {
     flex: 1;
     border: none;
-    padding: 16px 32px;
-    font-size: 1.1rem;
+    padding: 18px 32px;
+    font-size: 1.15rem;
     border-radius: 100px;
     outline: none;
     color: var(--bg-dark);
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+/* Premium Autofill Styling */
+.newsletter-form input:-webkit-autofill,
+.newsletter-form input:-webkit-autofill:hover,
+.newsletter-form input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--bg-dark);
+    -webkit-box-shadow: 0 0 0px 1000px #ffffff inset;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.newsletter-form input::placeholder {
+    color: #999;
+    font-weight: 500;
 }
 
 .newsletter-form button {
@@ -2047,6 +2063,66 @@ body {
     background: var(--primary-dark);
     transform: scale(1.05) translateY(-2px);
     box-shadow: 0 10px 20px rgba(255, 45, 85, 0.4);
+}
+
+.form-wrapper {
+    position: relative;
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.suggestions-container {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 20px;
+    right: 20px;
+    background: rgba(18, 18, 26, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    z-index: 1000;
+    display: none;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    animation: slideDown 0.3s ease-out;
+}
+
+.suggestions-container.active {
+    display: block;
+}
+
+.suggestion-item {
+    padding: 12px 24px;
+    color: white;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.suggestion-item:hover {
+    background: rgba(255, 45, 85, 0.1);
+    color: var(--primary);
+    padding-left: 30px;
+}
+
+.suggestion-item i {
+    font-size: 0.9rem;
+    opacity: 0.6;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @media (max-width: 768px) {

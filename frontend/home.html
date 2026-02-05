@@ -178,10 +178,14 @@
                     <p class="newsletter-subtitle">Get the latest match analysis, transfer rumors, and exclusive content
                         delivered straight to your inbox.</p>
                 </div>
-                <form class="newsletter-form" id="newsletterForm" novalidate>
-                    <input type="email" id="subscriberEmail" placeholder="Enter your email address" required>
-                    <button type="submit" class="btn-subscribe">Subscribe Now</button>
-                </form>
+                <div class="form-wrapper">
+                    <form class="newsletter-form" id="newsletterForm" novalidate>
+                        <input type="email" id="subscriberEmail" placeholder="Enter your email address" required
+                            autocomplete="off" spellcheck="false">
+                        <button type="submit" class="btn-subscribe">Subscribe Now</button>
+                    </form>
+                    <div id="emailSuggestions" class="suggestions-container"></div>
+                </div>
                 <div id="subscriptionMessage" style="margin-top: 20px; font-weight: 600;"></div>
             </div>
         </div>
@@ -214,7 +218,8 @@
         </div>
     </footer>
 
-    <script src="audio.js"></script><script src="notifications.js"></script>
+    <script src="audio.js"></script>
+    <script src="notifications.js"></script>
     <script src="home.js"></script>
 </body>
 

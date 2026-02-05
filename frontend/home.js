@@ -308,12 +308,50 @@ async function fetchFilteredNews(category) {
  */
 function setupSubscription() {
     const form = document.getElementById('newsletterForm');
-    const message = document.getElementById('subscriptionMessage');
+    const emailInput = document.getElementById('subscriberEmail');
+    const suggestionsContainer = document.getElementById('emailSuggestions');
+    const domains = ['gmail.com', 'outlook.com', 'hotmail.com', 'icloud.com', 'yahoo.com'];
+
+    emailInput?.addEventListener('input', (e) => {
+        const value = e.target.value;
+        if (value.includes('@')) {
+            const [user, domainPart] = value.split('@');
+            const filtered = domains.filter(d => d.startsWith(domainPart));
+
+            if (filtered.length > 0 && domainPart.length > 0) {
+                suggestionsContainer.innerHTML = filtered.map(d => `
+                    <div class="suggestion-item" data-value="${user}@${d}">
+                        <span>${user}@<strong>${d}</strong></span>
+                    </div>
+                `).join('');
+                suggestionsContainer.classList.add('active');
+            } else {
+                suggestionsContainer.classList.remove('active');
+            }
+        } else {
+            suggestionsContainer.classList.remove('active');
+        }
+    });
+
+    suggestionsContainer?.addEventListener('click', (e) => {
+        const item = e.target.closest('.suggestion-item');
+        if (item) {
+            emailInput.value = item.dataset.value;
+            suggestionsContainer.classList.remove('active');
+            emailInput.focus();
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!form?.contains(e.target) && !suggestionsContainer?.contains(e.target)) {
+            suggestionsContainer?.classList.remove('active');
+        }
+    });
 
     form?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const emailInput = document.getElementById('subscriberEmail');
         const email = emailInput.value;
+        suggestionsContainer.classList.remove('active');
 
         // Basic validation
         if (!email || !email.includes('@')) {
