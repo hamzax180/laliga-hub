@@ -236,21 +236,22 @@ const fetchRSSNews = async () => {
 const fetchRSSTransfers = async () => {
     try {
         console.log('Fetching live transfers from Google News (La Liga Search)...');
-        // Google News RSS Search provides more "live" results than static feeds
-        const response = await axios.get('https://news.google.com/rss/search?q=La+Liga+transfer+signing+OR+deal+OR+move+OR+contract&hl=en-GB&gl=GB&ceid=GB:en', {
+        // Targeted query for La Liga transfers, signings and rumors
+        const response = await axios.get('https://news.google.com/rss/search?q=La+Liga+transfer+signing+OR+joins+OR+moves+to&hl=en-GB&gl=GB&ceid=GB:en', {
             timeout: 5000
         });
         const xml = response.data;
-        const items = xml.split('<item>').slice(1, 25);
+        const items = xml.split('<item>').slice(1, 40); // Fetch more to allow for filtering
 
         const transfers = items.map((item, index) => {
             const titleMatch = item.match(/<title>(.*?)<\/title>/s);
-            const title = titleMatch ? titleMatch[1].replace(' - Google News', '').trim() : 'Transfer Update';
+            if (!titleMatch) return null;
+            const fullTitle = titleMatch[1].replace(' - Google News', '').trim();
 
-            const lowerTitle = title.toLowerCase();
-            // Filter for actually relevant transfer keywords
-            const isRelevant = lowerTitle.includes('sign') || lowerTitle.includes('deal') || lowerTitle.includes('move') || lowerTitle.includes('transfer') || lowerTitle.includes('contract') || lowerTitle.includes('join') || lowerTitle.includes('bid');
-            if (!isRelevant) return null;
+            const lowerTitle = fullTitle.toLowerCase();
+
+            // Filter out roundups and generic news
+            if (lowerTitle.includes('deadline day') || lowerTitle.includes('transfer news') || lowerTitle.includes('live updates')) return null;
 
             const dateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
             const pubDate = dateMatch ? new Date(dateMatch[1]) : new Date();
@@ -258,40 +259,71 @@ const fetchRSSTransfers = async () => {
 
             // Extract source
             const sourceMatch = item.match(/<source[^>]*>(.*?)<\/source>/);
-            const source = sourceMatch ? sourceMatch[1] : 'Sport News';
+            const source = sourceMatch ? sourceMatch[1] : 'News';
 
-            let player = title;
-            let team = 'La Liga';
+            let player = fullTitle;
+            let fromTeam = source;
+            let toTeam = 'Update';
+            let type = 'in'; // Default
+            let fee = 'Live Update';
 
-            // Basic parsing for "Player signs for/joins Team"
-            if (lowerTitle.includes(' sign')) {
-                const parts = title.split(/sign/i);
+            // INTELLIGENT PARSING
+            // Pattern: Player joins Team
+            if (lowerTitle.includes(' joins ')) {
+                const parts = fullTitle.split(/ joins /i);
                 player = parts[0].trim();
-            } else if (lowerTitle.includes(' join')) {
-                const parts = title.split(/join/i);
+                toTeam = parts[1].split(' from ')[0].trim();
+                if (parts[1].toLowerCase().includes(' from ')) {
+                    fromTeam = parts[1].split(/ from /i)[1].trim();
+                }
+            }
+            // Pattern: Team sign(s) Player
+            else if (lowerTitle.includes(' sign ') || lowerTitle.includes(' signs ')) {
+                const parts = fullTitle.split(/ signs? /i);
+                toTeam = parts[0].trim();
+                player = parts[1].split(' from ')[0].trim();
+                if (parts[1].toLowerCase().includes(' from ')) {
+                    fromTeam = parts[1].split(/ from /i)[1].trim();
+                }
+            }
+            // Pattern: Player moves to Team
+            else if (lowerTitle.includes(' moves to ')) {
+                const parts = fullTitle.split(/ moves to /i);
                 player = parts[0].trim();
+                toTeam = parts[1].split(' from ')[0].trim();
+                type = 'out';
+            }
+            // Rumor detection
+            if (lowerTitle.includes('linked with') || lowerTitle.includes('interested in') || lowerTitle.includes('close to')) {
+                fee = 'Rumor';
+                type = 'loan'; // Use loan color for rumors
             }
 
+            // Cleanup player/team names from source if they got stuck
+            player = player.split(' - ')[0].trim();
+            toTeam = toTeam.split(' - ')[0].trim();
+            fromTeam = fromTeam.split(' - ')[0].trim();
+
             return {
-                id: `live-trans-${index}`,
-                player: player.split(' - ')[0].substring(0, 60),
-                fromTeam: source,
-                toTeam: 'Update',
+                id: `live-trans-${timestamp}-${index}`,
+                player: player.substring(0, 50),
+                fromTeam: fromTeam,
+                toTeam: toTeam,
                 date: pubDate.toISOString().split('T')[0],
-                fee: 'Live Update',
-                type: lowerTitle.includes('loan') ? 'loan' : 'in',
+                fee: fee,
+                type: type,
                 image: '⚽',
-                summary: title,
+                summary: fullTitle,
                 timestamp: timestamp
             };
         }).filter(t => t !== null);
 
-        // Sort by timestamp (newest first - DESCENDING)
-        const sorted = transfers.sort((a, b) => b.timestamp - a.timestamp);
+        // Sort by timestamp (newest first)
+        const sortedTransfers = transfers.sort((a, b) => b.timestamp - a.timestamp);
 
-        if (sorted.length > 0) {
-            console.log(`✅ Successfully fetched ${sorted.length} live transfers.`);
-            return sorted;
+        if (sortedTransfers.length > 0) {
+            console.log(`✅ Successfully fetched ${sortedTransfers.length} live transfers.`);
+            return sortedTransfers;
         }
     } catch (error) {
         console.error('Live Transfer Feed Failed:', error.message);
