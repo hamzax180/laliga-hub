@@ -37,6 +37,13 @@ async function fetchDashboard() {
 /**
  * Render latest news
  */
+/**
+ * Render latest news with Auto-Slide
+ */
+let newsInterval;
+let currentNewsIndex = 0;
+let newsData = [];
+
 function renderNews(news) {
     const container = document.getElementById('newsList');
     if (!news || news.length === 0) {
@@ -44,25 +51,53 @@ function renderNews(news) {
         return;
     }
 
-    container.innerHTML = news.map(item => {
-        const hasImageUrl = item.image && item.image.length > 3;
-        return `
-            <div class="news-item">
-                <div class="news-img-container">
-                    ${hasImageUrl
-                ? `<img src="${item.image}" alt="${item.title}" class="news-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1579952363873-27f3bde9be2e?auto=format&fit=crop&q=80&w=800';">`
-                : `<span class="news-icon-large">${item.image}</span>`
-            }
-                </div>
-                <div class="news-content">
-                    <span class="news-category cat-${item.category || 'league'}">${item.category || 'League'}</span>
-                    <h3 class="news-title">${item.title}</h3>
-                    <p class="news-summary">${item.summary}</p>
-                    <span class="news-date">${formatDate(item.date)}</span>
-                </div>
+    newsData = news;
+    startNewsCarousel();
+
+    // Pause on hover
+    container.addEventListener('mouseenter', stopNewsCarousel);
+    container.addEventListener('mouseleave', startNewsCarousel);
+}
+
+function startNewsCarousel() {
+    stopNewsCarousel(); // Clear existing
+    showNewsItem(currentNewsIndex); // Show immediate
+
+    newsInterval = setInterval(() => {
+        currentNewsIndex = (currentNewsIndex + 1) % newsData.length;
+        showNewsItem(currentNewsIndex);
+    }, 4000); // 4 seconds
+}
+
+function stopNewsCarousel() {
+    if (newsInterval) clearInterval(newsInterval);
+}
+
+function showNewsItem(index) {
+    const container = document.getElementById('newsList');
+    const item = newsData[index];
+    const hasImageUrl = item.image && item.image.length > 3;
+
+    // Fade out effect could be added here, but direct replace for responsiveness first
+    container.innerHTML = `
+        <div class="news-item fade-in">
+            <div class="news-img-container" style="height: 180px;"> <!-- Fixed height for stability -->
+                ${hasImageUrl
+            ? `<img src="${item.image}" alt="${item.title}" class="news-img" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1579952363873-27f3bde9be2e?auto=format&fit=crop&q=80&w=800';">`
+            : `<span class="news-icon-large">${item.image || '📰'}</span>`
+        }
             </div>
-        `;
-    }).join('');
+            <div class="news-content">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span class="news-category cat-${item.category || 'league'}">${item.category || 'League'}</span>
+                    <span class="news-pagination" style="font-size:0.75rem; color:var(--text-muted);">${index + 1} / ${newsData.length}</span>
+                </div>
+                <h3 class="news-title" style="margin-top:8px;">${item.title}</h3>
+                <p class="news-summary">${item.summary}</p>
+                <span class="news-date">${formatDate(item.date)}</span>
+            </div>
+        </div>
+    `;
 }
 
 /**
