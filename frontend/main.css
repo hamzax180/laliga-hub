@@ -82,6 +82,12 @@ body {
     padding: 0 24px;
 }
 
+@media (max-width: 480px) {
+    .container {
+        padding: 0 16px;
+    }
+}
+
 /* ============================================
    Navigation
    ============================================ */
@@ -116,6 +122,30 @@ body {
     box-shadow: var(--shadow-lg);
     transition: all var(--transition-normal);
     user-select: none;
+}
+
+@media (max-width: 768px) {
+    .sound-control {
+        bottom: 20px;
+        right: 20px;
+        padding: 8px 16px;
+        gap: 6px;
+    }
+
+    .sound-text {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .sound-text {
+        display: none;
+    }
+
+    .sound-control {
+        padding: 12px;
+        border-radius: 50%;
+    }
 }
 
 .sound-control:hover {
@@ -224,6 +254,12 @@ body {
     font-weight: 700;
 }
 
+@media (max-width: 400px) {
+    .logo {
+        font-size: 1.3rem;
+    }
+}
+
 .logo-icon {
     font-size: 1.8rem;
     animation: pulse 2s ease-in-out infinite;
@@ -315,6 +351,13 @@ body {
     padding: 120px 24px 60px;
     position: relative;
     overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding: 80px 20px 40px;
+        min-height: auto;
+    }
 }
 
 .hero-bg {
@@ -527,6 +570,17 @@ body {
     border-radius: var(--radius-xl);
     overflow: hidden;
     box-shadow: var(--shadow-lg);
+}
+
+@media (max-width: 600px) {
+    .standings-container {
+        overflow-x: auto;
+    }
+
+    .standings-header,
+    .team-row {
+        min-width: 450px;
+    }
 }
 
 .standings-header {
@@ -1520,16 +1574,30 @@ body {
 
 @media (max-width: 480px) {
     .hero-title {
-        font-size: 2rem;
+        font-size: 2.2rem;
+        line-height: 1.2;
     }
 
     .hero-subtitle {
         font-size: 1rem;
+        margin-bottom: 24px;
+    }
+
+    .hero-badge {
+        font-size: 0.8rem;
+        padding: 6px 16px;
     }
 
     .btn {
-        padding: 14px 24px;
-        font-size: 0.9rem;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        width: 100%;
+        max-width: 280px;
+        margin: 0 auto;
     }
 
     .team-logo {
@@ -1537,11 +1605,27 @@ body {
     }
 
     .scorer-stats {
-        gap: 12px;
+        gap: 8px;
+        padding: 12px;
     }
 
     .scorer-stat-value {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
+    }
+
+    .scorer-photo {
+        width: 60px;
+        height: 60px;
+    }
+
+    .news-item {
+        flex-direction: column !important;
+        gap: 16px !important;
+    }
+
+    .news-img-container {
+        width: 100% !important;
+        height: 180px !important;
     }
 }
 
@@ -1603,6 +1687,7 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
+    align-items: start;
 }
 
 @media (max-width: 1024px) {
@@ -1707,6 +1792,7 @@ body {
     line-height: 1.4;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -1736,6 +1822,18 @@ body {
     margin-bottom: 20px;
     padding-bottom: 16px;
     border-bottom: 1px solid var(--border-color);
+}
+
+@media (max-width: 480px) {
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .card-link {
+        margin-left: 0 !important;
+    }
 }
 
 .card-title {
@@ -1961,6 +2059,22 @@ body {
     border: 1px solid var(--border-color);
     margin-bottom: 20px;
     align-items: flex-start;
+}
+
+@media (max-width: 768px) {
+    .news-item {
+        flex-direction: column;
+        padding: 16px;
+    }
+
+    .news-img-container {
+        width: 100% !important;
+        height: 200px !important;
+    }
+
+    .news-title {
+        font-size: 1.1rem;
+    }
 }
 
 .news-item:hover {
@@ -2656,9 +2770,9 @@ body {
     flex: 1;
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    line-clamp: 3;
 }
 
 @media (max-width: 900px) {
