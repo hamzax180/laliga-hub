@@ -147,7 +147,7 @@ const categoryImages = {
 const getSmartImage = (title, category = 'league') => {
     const lowerTitle = title.toLowerCase();
     const matchedKey = Object.keys(starImages).find(key => lowerTitle.includes(key));
-    
+
     if (matchedKey) return starImages[matchedKey];
     return categoryImages[category] || categoryImages.league;
 };
@@ -297,8 +297,7 @@ app.get('/api/news', async (req, res) => {
         setCachedData('news', news);
         res.json(news);
     } catch (error) {
-        // Fallback to offline news if RSS fails completely
-        console.error("Failed to fetch RSS news, falling back to live news:", error);
+        console.error("Failed to fetch RSS news, falling back to mock news:", error);
         res.json(await fetchLiveNews());
     }
 });
@@ -398,7 +397,8 @@ app.get('/api/dashboard', async (req, res) => {
             if (scorersRes.status === 'fulfilled') scorersArr = mapScorers(scorersRes.value.data);
             if (fixturesRes.status === 'fulfilled') fixturesArr = mapFixtures(fixturesRes.value.data);
 
-            newsArr = await fetchLiveNews();
+            // Fetch live news from RSS
+            newsArr = await fetchRSSNews();
         }
 
         const dashboardData = {

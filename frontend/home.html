@@ -159,41 +159,33 @@
     <!-- Newsletter Section (Subscription API) -->
     <section class="section newsletter-section">
         <div class="container">
+            <!-- Latest News Quick View -->
+            <div class="dashboard-card news-card-wide" style="grid-column: 1 / -1; margin-bottom: 40px;">
+                <div class="card-header">
+                    <h2 class="card-title">📰 Latest Football News</h2>
+                    <a href="news" class="card-link">Read More →</a>
+                </div>
+                <div class="news-grid-horizontal" id="miniNews">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subscription Section -->
             <div class="newsletter-card">
                 <div class="newsletter-header">
-                    <h2 class="newsletter-title">Stay Updated ⚽</h2>
-                    <p class="newsletter-subtitle">Subscribe to get today's matches and breaking news directly in your
-                        inbox.</p>
+                    <h2 class="newsletter-title">Join the Club ⚽</h2>
+                    <p class="newsletter-subtitle">Get the latest match analysis, transfer rumors, and exclusive content
+                        delivered straight to your inbox.</p>
                 </div>
                 <form class="newsletter-form" id="newsletterForm">
                     <input type="email" id="subscriberEmail" placeholder="Enter your email address" required>
-                    <!-- Latest News Quick View -->
-                    <div class="dashboard-card news-card-wide" style="grid-column: 1 / -1; margin-top: 24px;">
-                        <div class="card-header">
-                            <h2 class="card-title">📰 Latest Football News</h2>
-                            <a href="news" class="card-link">Read More →</a>
-                        </div>
-                        <div class="news-grid-horizontal" id="miniNews">
-                            <div class="loading-spinner">
-                                <div class="spinner"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Subscription Section -->
-                    <div class="newsletter-card" style="grid-column: 1 / -1; margin-top: 40px;">
-                        <div class="newsletter-header">
-                            <h2 class="newsletter-title">Join the Club</h2>
-                            <p class="newsletter-subtitle">Get the latest match analysis, transfer rumors, and exclusive
-                                content delivered straight to your inbox.</p>
-                        </div>
-                        <form class="newsletter-form" id="newsletterForm">
-                            <input type="email" placeholder="Enter your email address" required>
-                            <button type="submit" class="btn-subscribe">Subscribe Now</button>
-                        </form>
-                        <div id="subscriptionMessage" style="margin-top: 20px; font-weight: 600;"></div>
-                    </div>
+                    <button type="submit" class="btn-subscribe">Subscribe Now</button>
+                </form>
+                <div id="subscriptionMessage" style="margin-top: 20px; font-weight: 600;"></div>
             </div>
+        </div>
     </section>
 
     <!-- Footer -->

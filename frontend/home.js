@@ -342,26 +342,34 @@ function setupSubscription() {
 async function init() {
     console.log('🚀 La Liga Hub Home initializing...');
 
-    const data = await fetchDashboard();
+    try {
+        const data = await fetchDashboard();
 
-    if (data) {
-        renderNews(data.latestNews);
-        renderMiniNews(data.latestNews); // Render bottom news grid
-        renderMiniStandings(data.topTeams);
-        renderMiniScorers(data.topScorers);
-        renderMiniFixtures(data.nextFixtures);
-        renderMiniTransfers(data.latestTransfers);
-        renderStats(data.stats);
+        if (data) {
+            renderNews(data.latestNews);
+            renderMiniNews(data.latestNews);
+            renderMiniStandings(data.topTeams);
+            renderMiniScorers(data.topScorers);
+            renderMiniFixtures(data.nextFixtures);
+            renderMiniTransfers(data.latestTransfers);
+            renderStats(data.stats);
 
-        // Load categories
-        fetch(`${API_BASE_URL}/news/categories`)
-            .then(res => res.json())
-            .then(categories => renderNewsFilters(categories));
+            // Load categories
+            fetch(`${API_BASE_URL}/news/categories`)
+                .then(res => res.json())
+                .then(categories => renderNewsFilters(categories))
+                .catch(err => console.warn('Categories failed to load', err));
 
-        setupSubscription();
+            setupSubscription();
+            console.log('✅ Home page loaded!');
+        } else {
+            throw new Error('No data received from dashboard API');
+        }
+    } catch (error) {
+        console.error('Initialization failed:', error);
+        // Clean up spinners if failed
+        document.querySelectorAll('.loading-spinner').forEach(s => s.innerHTML = '<p class="error-text" style="color: var(--primary);">Service temporarily unavailable. Please refresh.</p>');
     }
-
-    console.log('✅ Home page loaded!');
 }
 
 document.addEventListener('DOMContentLoaded', init);
