@@ -192,7 +192,7 @@ const fetchRSSNews = async () => {
 
             // Extract date
             const dateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
-            const date = dateMatch ? new Date(dateMatch[1]).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+            const date = dateMatch ? new Date(dateMatch[1]).toISOString() : new Date().toISOString();
 
             // Determine category
             const lowerTitle = title.toLowerCase();
@@ -220,7 +220,7 @@ const fetchRSSNews = async () => {
 
         if (newsItems.length > 0) {
             console.log(`Fetched ${newsItems.length} live news items`);
-            return newsItems;
+            return newsItems.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         }
     } catch (error) {
         console.error('RSS Fetch Failed:', error.message);
@@ -257,7 +257,7 @@ const fetchRSSTransfers = async () => {
             let summary = descMatch ? descMatch[1].replace(/<[^>]*>/g, '').trim() : '';
 
             const dateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
-            const date = dateMatch ? new Date(dateMatch[1]).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+            const date = dateMatch ? new Date(dateMatch[1]).toISOString() : new Date().toISOString();
 
             // Attempt to extract teams/player from title (Simplified)
             // Example: "Barcelona sign Olmo" -> Player: Olmo, To: Barcelona
@@ -291,7 +291,8 @@ const fetchRSSTransfers = async () => {
         }).filter(t => t !== null);
 
         if (transfers.length > 0) {
-            return transfers.sort((a, b) => new Date(b.date) - new Date(a.date));
+            // Sort by actual date and time (precision)
+            return transfers.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         }
     } catch (error) {
         console.error('Transfers RSS Fetch Failed:', error.message);
@@ -498,7 +499,7 @@ app.get('/api/dashboard', async (req, res) => {
             topScorers: scorersArr.slice(0, 3),
             nextFixtures: fixturesArr.slice(0, 3),
             latestNews: newsArr.slice(0, 3),
-            latestTransfers: mockTransfers.slice(0, 3),
+            latestTransfers: (await fetchRSSTransfers()).slice(0, 3),
             stats: { totalMatches: 220, totalGoals: 583, avgGoalsPerMatch: 2.65 }
         };
 
