@@ -83,30 +83,27 @@ const mapStandings = (apiData) => {
  * This function handles all top players with verified links and resolves others dynamically.
  */
 const getRealtimePlayerPhoto = async (playerName) => {
-    // 1. Premium Map with Normalized Keys (Lowercase, No Accents)
-    const premiumMap = {
-        "kylian mbappe": "https://www.thesportsdb.com/images/media/player/render/vdy67z1664188730.png",
-        "kylian mbappé": "https://www.thesportsdb.com/images/media/player/render/vdy67z1664188730.png",
-        "robert lewandowski": "https://www.thesportsdb.com/images/media/player/render/rtun9l1532431447.png",
-        "vinicius junior": "https://www.thesportsdb.com/images/media/player/render/yofq6l1668700200.png",
-        "vinícius júnior": "https://www.thesportsdb.com/images/media/player/render/yofq6l1668700200.png",
-        "lamine yamal": "https://www.thesportsdb.com/images/media/player/render/dksvqr1702410100.png",
-        "antoine griezmann": "https://www.thesportsdb.com/images/media/player/render/7p9v3z1532431454.png",
-        "jude bellingham": "https://www.thesportsdb.com/images/media/player/render/q9vz9q1664188681.png",
-        "ferran torres": "https://www.thesportsdb.com/images/media/player/render/0z6z6z1664188725.png"
+    // 1. Nickname/Search Mapping (Helps finding the right player)
+    const searchOverrides = {
+        "vinicius junior": "Vinicius Junior",
+        "vinícius júnior": "Vinicius Junior",
+        "lamine yamal": "Lamine Yamal",
+        "kylian mbappe": "Kylian Mbappe",
+        "robert lewandowski": "Robert Lewandowski",
+        "rafinha": "Raphinha",
+        "raphinha": "Raphinha",
+        "inaki williams": "Inaki Williams",
+        "iñaki williams": "Inaki Williams"
     };
 
     const normalizedName = playerName.toLowerCase().trim();
-    if (premiumMap[normalizedName]) return premiumMap[normalizedName];
-
-    // Fuzzy Check (Removing accents manually)
-    const simpleName = normalizedName.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    if (premiumMap[simpleName]) return premiumMap[simpleName];
+    // Use override if exists, otherwise use original name sanitized
+    const queryName = searchOverrides[normalizedName] || normalizedName.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
     // 2. Dynamic Search (Fuzzy Lookup)
     try {
-        const searchUrl = `https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?p=${encodeURIComponent(simpleName)}`;
-        const response = await axios.get(searchUrl, { timeout: 3000 });
+        const searchUrl = `https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?p=${encodeURIComponent(queryName)}`;
+        const response = await axios.get(searchUrl, { timeout: 3500 });
 
         if (response.data && response.data.player) {
             // Find the best match or first result
@@ -115,6 +112,7 @@ const getRealtimePlayerPhoto = async (playerName) => {
         }
     } catch (err) {
         // Silently fail to fallback
+        console.error(`Photo search failed for ${playerName}`);
     }
     return null;
 };
