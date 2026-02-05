@@ -10,46 +10,42 @@
             "use": "@vercel/static"
         }
     ],
-    "routes": [
+    "rewrites": [
         {
-            "src": "/api/health",
-            "dest": "backend/server.js"
+            "source": "/api/(.*)",
+            "destination": "/backend/server.js"
         },
         {
-            "src": "/api/(.*)",
-            "dest": "backend/server.js"
+            "source": "/",
+            "destination": "/frontend/home.html"
         },
         {
-            "src": "/",
-            "dest": "frontend/home.html"
+            "source": "/home",
+            "destination": "/frontend/home.html"
         },
         {
-            "src": "/home",
-            "dest": "frontend/home.html"
+            "source": "/news",
+            "destination": "/frontend/news.html"
         },
         {
-            "src": "/standings",
-            "dest": "frontend/standings.html"
+            "source": "/standings",
+            "destination": "/frontend/standings.html"
         },
         {
-            "src": "/fixtures",
-            "dest": "frontend/fixtures.html"
+            "source": "/fixtures",
+            "destination": "/frontend/fixtures.html"
         },
         {
-            "src": "/scorers",
-            "dest": "frontend/scorers.html"
+            "source": "/scorers",
+            "destination": "/frontend/scorers.html"
         },
         {
-            "src": "/transfers",
-            "dest": "frontend/transfers.html"
+            "source": "/transfers",
+            "destination": "/frontend/transfers.html"
         },
         {
-            "src": "/news",
-            "dest": "frontend/news.html"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "frontend/$1"
+            "source": "/(.*)",
+            "destination": "/frontend/$1"
         }
     ]
 }

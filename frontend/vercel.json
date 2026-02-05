@@ -1,0 +1,33 @@
+{
+    "version": 2,
+    "rewrites": [
+        {
+            "source": "/",
+            "destination": "/home.html"
+        },
+        {
+            "source": "/home",
+            "destination": "/home.html"
+        },
+        {
+            "source": "/news",
+            "destination": "/news.html"
+        },
+        {
+            "source": "/standings",
+            "destination": "/standings.html"
+        },
+        {
+            "source": "/fixtures",
+            "destination": "/fixtures.html"
+        },
+        {
+            "source": "/scorers",
+            "destination": "/scorers.html"
+        },
+        {
+            "source": "/transfers",
+            "destination": "/transfers.html"
+        }
+    ]
+}
