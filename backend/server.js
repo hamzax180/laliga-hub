@@ -134,7 +134,14 @@ const fetchLiveNews = async () => {
         "barcelona": "https://www.thesportsdb.com/images/media/team/stadium/133739.jpg", // Camp Nou
         "real madrid": "https://www.thesportsdb.com/images/media/team/stadium/133746.jpg", // Bernabeu
         "atletico": "https://www.thesportsdb.com/images/media/team/stadium/133932.jpg", // Metropolitano
-        "athletic": "https://www.thesportsdb.com/images/media/team/stadium/133923.jpg" // San Mames
+        "athletic": "https://www.thesportsdb.com/images/media/team/stadium/133923.jpg", // San Mames
+        "sevilla": "https://www.thesportsdb.com/images/media/team/stadium/133936.jpg", // Sanchez Pizjuan
+        "betis": "https://www.thesportsdb.com/images/media/team/stadium/133928.jpg", // Benito Villamarin
+        "valencia": "https://www.thesportsdb.com/images/media/team/stadium/133938.jpg", // Mestalla
+        "villarreal": "https://www.thesportsdb.com/images/media/team/stadium/134440.jpg", // Ceramics
+        "sociedad": "https://www.thesportsdb.com/images/media/team/stadium/133935.jpg", // Anoeta
+        "pedri": "https://www.thesportsdb.com/images/media/player/action/15206263.jpg",
+        "gavi": "https://www.thesportsdb.com/images/media/player/action/15206264.jpg"
     };
 
     const categories = ['match', 'player', 'league', 'transfer', 'standings', 'scorers'];
