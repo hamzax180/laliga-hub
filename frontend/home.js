@@ -118,14 +118,14 @@ function renderMiniFixtures(fixtures) {
     }
 
     container.innerHTML = fixtures.map(match => {
-        const hLogo = match.homeLogo ? `<img src="${match.homeLogo}" width="16">` : (teamEmojis[match.homeTeam] || '⚽');
-        const aLogo = match.awayLogo ? `<img src="${match.awayLogo}" width="16">` : (teamEmojis[match.awayTeam] || '⚽');
+        const hLogo = match.homeLogo ? `<img src="${match.homeLogo}" class="mini-logo-img">` : (teamEmojis[match.homeTeam] || '⚽');
+        const aLogo = match.awayLogo ? `<img src="${match.awayLogo}" class="mini-logo-img">` : (teamEmojis[match.awayTeam] || '⚽');
         return `
             <div class="mini-match">
                 <div class="mini-match-teams">
-                    <span>${hLogo} ${match.homeTeam}</span>
+                    <span class="mini-team-item">${hLogo} ${match.homeTeam}</span>
                     <span class="vs">vs</span>
-                    <span>${match.awayTeam} ${aLogo}</span>
+                    <span class="mini-team-item">${match.awayTeam} ${aLogo}</span>
                 </div>
                 <div class="mini-match-info">
                     <span>${formatDate(match.date)}</span>

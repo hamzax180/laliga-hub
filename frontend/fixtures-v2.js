@@ -22,9 +22,24 @@ document.getElementById('navToggle')?.addEventListener('click', () => {
 
 async function fetchCalendar() {
     try {
-        const response = await fetch(`${API_BASE_URL}/calendar`);
-        if (!response.ok) throw new Error('Failed to fetch calendar');
-        return await response.json();
+        const response = await fetch(`${API_BASE_URL}/fixtures`);
+        if (!response.ok) throw new Error('Failed to fetch fixtures');
+        const matches = await response.json();
+
+        // Group matches by date to create the calendar structure
+        const grouped = matches.reduce((acc, match) => {
+            if (!acc[match.date]) {
+                acc[match.date] = {
+                    date: match.date,
+                    dayName: new Date(match.date).toLocaleDateString('en-US', { weekday: 'long' }),
+                    matches: []
+                };
+            }
+            acc[match.date].matches.push(match);
+            return acc;
+        }, {});
+
+        return Object.values(grouped).sort((a, b) => new Date(a.date) - new Date(b.date));
     } catch (error) {
         console.error('Error fetching calendar:', error);
         return null;

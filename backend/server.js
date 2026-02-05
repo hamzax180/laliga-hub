@@ -79,7 +79,8 @@ const mapScorers = (apiData) => {
     return apiData.scorers.map((item) => ({
         id: item.player.id,
         name: item.player.name,
-        photo: null, // football-data.org doesn't provide player photos in free tier
+        // Using a professional avatar service as fallback since Football-Data.org free tier lacks photos
+        photo: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(item.player.name)}&backgroundColor=b6e3f4,c0aede,d1d4f9`,
         team: item.team.name,
         nationality: item.player.nationality,
         position: item.player.section === 'Offence' ? 'Forward' : item.player.section,
