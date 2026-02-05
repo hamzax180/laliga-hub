@@ -139,6 +139,23 @@ app.get('/api/fixtures', async (req, res) => {
     }
 });
 
+app.get('/api/debug-scorers', async (req, res) => {
+    try {
+        if (API_KEY) {
+            const response = await footballApi.get('/players/topscorers', {
+                params: { league: LEAGUE_ID, season: SEASON }
+            });
+            return res.json({
+                status: response.status,
+                data: response.data
+            });
+        }
+        res.json({ error: 'No API Key' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 app.get('/api/news', (req, res) => res.json(mockNews));
 app.get('/api/transfers', (req, res) => res.json(mockTransfers));
 
