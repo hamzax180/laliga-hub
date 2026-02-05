@@ -83,28 +83,39 @@ const mapStandings = (apiData) => {
  * This function handles all top players with verified links and resolves others dynamically.
  */
 const getRealtimePlayerPhoto = async (playerName) => {
-    // 1. Hardcoded High-Quality Links for La Liga's Biggest Stars
-    const premiumPhotos = {
-        "Kylian Mbappé": "https://www.thesportsdb.com/images/media/player/render/vdy67z1664188730.png",
-        "Robert Lewandowski": "https://www.thesportsdb.com/images/media/player/render/rtun9l1532431447.png",
-        "Vinícius Júnior": "https://www.thesportsdb.com/images/media/player/render/yofq6l1668700200.png",
-        "Lamine Yamal": "https://www.thesportsdb.com/images/media/player/render/dksvqr1702410100.png",
-        "Antoine Griezmann": "https://www.thesportsdb.com/images/media/player/render/7p9v3z1532431454.png",
-        "Jude Bellingham": "https://www.thesportsdb.com/images/media/player/render/q9vz9q1664188681.png",
-        "Ferran Torres": "https://www.thesportsdb.com/images/media/player/render/0z6z6z1664188725.png"
+    // 1. Premium Map with Normalized Keys (Lowercase, No Accents)
+    const premiumMap = {
+        "kylian mbappe": "https://www.thesportsdb.com/images/media/player/render/vdy67z1664188730.png",
+        "kylian mbappé": "https://www.thesportsdb.com/images/media/player/render/vdy67z1664188730.png",
+        "robert lewandowski": "https://www.thesportsdb.com/images/media/player/render/rtun9l1532431447.png",
+        "vinicius junior": "https://www.thesportsdb.com/images/media/player/render/yofq6l1668700200.png",
+        "vinícius júnior": "https://www.thesportsdb.com/images/media/player/render/yofq6l1668700200.png",
+        "lamine yamal": "https://www.thesportsdb.com/images/media/player/render/dksvqr1702410100.png",
+        "antoine griezmann": "https://www.thesportsdb.com/images/media/player/render/7p9v3z1532431454.png",
+        "jude bellingham": "https://www.thesportsdb.com/images/media/player/render/q9vz9q1664188681.png",
+        "ferran torres": "https://www.thesportsdb.com/images/media/player/render/0z6z6z1664188725.png"
     };
 
-    if (premiumPhotos[playerName]) return premiumPhotos[playerName];
+    const normalizedName = playerName.toLowerCase().trim();
+    if (premiumMap[normalizedName]) return premiumMap[normalizedName];
+
+    // Fuzzy Check (Removing accents manually)
+    const simpleName = normalizedName.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    if (premiumMap[simpleName]) return premiumMap[simpleName];
 
     // 2. Dynamic Search (Fuzzy Lookup)
     try {
-        const searchUrl = `https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?p=${encodeURIComponent(playerName)}`;
-        const response = await axios.get(searchUrl, { timeout: 2000 });
-        if (response.data && response.data.player && response.data.player[0]) {
+        const searchUrl = `https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?p=${encodeURIComponent(simpleName)}`;
+        const response = await axios.get(searchUrl, { timeout: 3000 });
+
+        if (response.data && response.data.player) {
+            // Find the best match or first result
             const p = response.data.player[0];
             return p.strRender || p.strThumb || p.strCutout || null;
         }
-    } catch (err) { }
+    } catch (err) {
+        // Silently fail to fallback
+    }
     return null;
 };
 
