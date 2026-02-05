@@ -39,6 +39,7 @@ function renderScorers(scorers) {
         return `
             <div class="scorer-card">
                 <div class="scorer-rank ${rankClass}">${rank}</div>
+                ${scorer.photo ? `<img src="${scorer.photo}" alt="${scorer.name}" class="scorer-photo">` : ''}
                 <div class="scorer-info">
                     <div class="scorer-name">${scorer.name}</div>
                     <div class="scorer-team">${scorer.team}</div>

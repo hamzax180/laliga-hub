@@ -97,8 +97,13 @@ function renderCalendar(calendar, filterTeam = '') {
 }
 
 function renderMatchCard(match) {
-    const homeEmoji = getTeamEmoji(match.homeTeam);
-    const awayEmoji = getTeamEmoji(match.awayTeam);
+    const homeLogo = match.homeLogo
+        ? `<img src="${match.homeLogo}" alt="${match.homeTeam}" class="team-logo-small">`
+        : getTeamEmoji(match.homeTeam);
+    const awayLogo = match.awayLogo
+        ? `<img src="${match.awayLogo}" alt="${match.awayTeam}" class="team-logo-small">`
+        : getTeamEmoji(match.awayTeam);
+
     const isElClasico = (match.homeTeam.includes('Barcelona') && match.awayTeam.includes('Real Madrid')) ||
         (match.homeTeam.includes('Real Madrid') && match.awayTeam.includes('Barcelona'));
 
@@ -106,16 +111,16 @@ function renderMatchCard(match) {
         <div class="match-card ${isElClasico ? 'el-clasico' : ''}">
             <div class="match-team home">
                 <span class="match-team-name">${match.homeTeam}</span>
-                <div class="match-team-logo">${homeEmoji}</div>
+                <div class="match-team-logo">${homeLogo}</div>
             </div>
             <div class="match-info">
                 <span class="match-time">${match.time}</span>
                 <span class="match-vs">VS</span>
-                <span class="match-stadium">${match.stadium}</span>
+                <span class="match-stadium">${match.stadium || 'Estadio'}</span>
                 <span class="match-matchday">Matchday ${match.matchday}</span>
             </div>
             <div class="match-team away">
-                <div class="match-team-logo">${awayEmoji}</div>
+                <div class="match-team-logo">${awayLogo}</div>
                 <span class="match-team-name">${match.awayTeam}</span>
             </div>
         </div>

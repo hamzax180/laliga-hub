@@ -1,378 +1,179 @@
-/**
- * La Liga Hub - Backend API Server
- * Express server providing REST API for La Liga data
- */
-
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const axios = require('axios');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const API_KEY = process.env.FOOTBALL_API_KEY;
+const LEAGUE_ID = 140; // La Liga
+const SEASON = 2025; // Current season
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// Request logging middleware
-app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
-    next();
+// Load fallback mock data
+const mockTeams = require('./data/teams.json');
+const mockScorers = require('./data/scorers.json');
+const mockFixtures = require('./data/fixtures.json');
+const mockNews = require('./data/news.json');
+const mockTransfers = require('./data/transfers.json');
+
+// API-Football Client
+const footballApi = axios.create({
+    baseURL: 'https://api-football-v1.p.rapidapi.com/v3',
+    headers: {
+        'x-rapidapi-key': API_KEY,
+        'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+    }
 });
 
-// Load mock data
-const teams = require('./data/teams.json');
-const scorers = require('./data/scorers.json');
-const fixtures = require('./data/fixtures.json');
-const news = require('./data/news.json');
-const transfers = require('./data/transfers.json');
+// ============================================
+// Data Mapping Helpers
+// ============================================
 
-// League statistics (calculated from data)
-const stats = {
-    totalMatches: 220,
-    totalGoals: 583,
-    avgGoalsPerMatch: 2.65,
-    cleanSheets: 87,
-    yellowCards: 892,
-    redCards: 34
+const mapStandings = (apiData) => {
+    if (!apiData || !apiData.response || !apiData.response[0]) return mockTeams;
+    const standings = apiData.response[0].league.standings[0];
+    return standings.map(team => ({
+        id: team.team.id,
+        name: team.team.name,
+        logo: team.team.logo,
+        played: team.all.played,
+        won: team.all.win,
+        drawn: team.all.draw,
+        lost: team.all.lose,
+        goalsFor: team.all.goals.for,
+        goalsAgainst: team.all.goals.against,
+        goalDifference: team.goalsDiff,
+        points: team.points,
+        form: team.form
+    }));
+};
+
+const mapScorers = (apiData) => {
+    if (!apiData || !apiData.response) return mockScorers;
+    return apiData.response.map((item, index) => ({
+        id: item.player.id,
+        name: item.player.name,
+        photo: item.player.photo,
+        team: item.statistics[0].team.name,
+        nationality: item.player.nationality,
+        position: item.statistics[0].games.position,
+        goals: item.statistics[0].goals.total,
+        assists: item.statistics[0].goals.assists || 0,
+        matches: item.statistics[0].games.appearences,
+        minutesPlayed: item.statistics[0].games.minutes
+    }));
+};
+
+const mapFixtures = (apiData) => {
+    if (!apiData || !apiData.response) return mockFixtures;
+    return apiData.response.map(item => ({
+        id: item.fixture.id,
+        date: item.fixture.date.split('T')[0],
+        time: item.fixture.date.split('T')[1].substring(0, 5),
+        homeTeam: item.teams.home.name,
+        homeLogo: item.teams.home.logo,
+        awayTeam: item.teams.away.name,
+        awayLogo: item.teams.away.logo,
+        homeGoals: item.goals.home,
+        awayGoals: item.goals.away,
+        status: item.fixture.status.short,
+        matchday: parseInt(item.league.round.replace(/[^0-9]/g, ''))
+    }));
 };
 
 // ============================================
 // API Routes
 // ============================================
 
-/**
- * Health check endpoint
- */
-app.get('/health', (req, res) => {
-    res.json({
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-        service: 'laliga-backend'
-    });
-});
-
-/**
- * Get all teams with standings
- * GET /api/teams
- */
-app.get('/api/teams', (req, res) => {
+app.get('/api/teams', async (req, res) => {
     try {
-        // Sort by points (descending), then goal difference
-        const sortedTeams = [...teams].sort((a, b) => {
-            if (b.points !== a.points) return b.points - a.points;
-            return b.goalDifference - a.goalDifference;
-        });
-
-        res.json(sortedTeams);
-    } catch (error) {
-        console.error('Error fetching teams:', error);
-        res.status(500).json({ error: 'Failed to fetch teams' });
-    }
-});
-
-/**
- * Get single team by ID
- * GET /api/teams/:id
- */
-app.get('/api/teams/:id', (req, res) => {
-    try {
-        const team = teams.find(t => t.id === parseInt(req.params.id));
-        if (!team) {
-            return res.status(404).json({ error: 'Team not found' });
+        if (API_KEY) {
+            const response = await footballApi.get('/standings', {
+                params: { league: LEAGUE_ID, season: SEASON }
+            });
+            return res.json(mapStandings(response.data));
         }
-        res.json(team);
+        res.json(mockTeams);
     } catch (error) {
-        console.error('Error fetching team:', error);
-        res.status(500).json({ error: 'Failed to fetch team' });
+        console.error('Live API Error (Teams):', error.message);
+        res.json(mockTeams);
     }
 });
 
-/**
- * Get top scorers
- * GET /api/scorers
- */
-app.get('/api/scorers', (req, res) => {
+app.get('/api/scorers', async (req, res) => {
     try {
-        // Sort by goals (descending)
-        const sortedScorers = [...scorers].sort((a, b) => {
-            if (b.goals !== a.goals) return b.goals - a.goals;
-            return b.assists - a.assists;
-        });
-
-        res.json(sortedScorers);
-    } catch (error) {
-        console.error('Error fetching scorers:', error);
-        res.status(500).json({ error: 'Failed to fetch scorers' });
-    }
-});
-
-/**
- * Get single scorer by ID
- * GET /api/scorers/:id
- */
-app.get('/api/scorers/:id', (req, res) => {
-    try {
-        const scorer = scorers.find(s => s.id === parseInt(req.params.id));
-        if (!scorer) {
-            return res.status(404).json({ error: 'Scorer not found' });
+        if (API_KEY) {
+            const response = await footballApi.get('/players/topscorers', {
+                params: { league: LEAGUE_ID, season: SEASON }
+            });
+            return res.json(mapScorers(response.data));
         }
-        res.json(scorer);
+        res.json(mockScorers);
     } catch (error) {
-        console.error('Error fetching scorer:', error);
-        res.status(500).json({ error: 'Failed to fetch scorer' });
+        console.error('Live API Error (Scorers):', error.message);
+        res.json(mockScorers);
     }
 });
 
-/**
- * Get league statistics
- * GET /api/stats
- */
-app.get('/api/stats', (req, res) => {
+app.get('/api/fixtures', async (req, res) => {
     try {
-        res.json(stats);
+        if (API_KEY) {
+            const response = await footballApi.get('/fixtures', {
+                params: { league: LEAGUE_ID, season: SEASON }
+            });
+            return res.json(mapFixtures(response.data));
+        }
+        res.json(mockFixtures);
     } catch (error) {
-        console.error('Error fetching stats:', error);
-        res.status(500).json({ error: 'Failed to fetch stats' });
+        console.error('Live API Error (Fixtures):', error.message);
+        res.json(mockFixtures);
     }
 });
 
-/**
- * Get all fixtures
- * GET /api/fixtures
- */
-app.get('/api/fixtures', (req, res) => {
+app.get('/api/news', (req, res) => res.json(mockNews));
+app.get('/api/transfers', (req, res) => res.json(mockTransfers));
+
+app.get('/api/dashboard', async (req, res) => {
     try {
-        // Sort by date
-        const sortedFixtures = [...fixtures].sort((a, b) => {
-            return new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time);
-        });
-        res.json(sortedFixtures);
-    } catch (error) {
-        console.error('Error fetching fixtures:', error);
-        res.status(500).json({ error: 'Failed to fetch fixtures' });
-    }
-});
+        let teamsArr = mockTeams;
+        let scorersArr = mockScorers;
+        let fixturesArr = mockFixtures;
 
-/**
- * Get fixtures by matchday
- * GET /api/fixtures/matchday/:matchday
- */
-app.get('/api/fixtures/matchday/:matchday', (req, res) => {
-    try {
-        const matchday = parseInt(req.params.matchday);
-        const matchdayFixtures = fixtures.filter(f => f.matchday === matchday);
-        res.json(matchdayFixtures);
-    } catch (error) {
-        console.error('Error fetching matchday fixtures:', error);
-        res.status(500).json({ error: 'Failed to fetch matchday fixtures' });
-    }
-});
+        if (API_KEY) {
+            const [standingsRes, scorersRes, fixturesRes] = await Promise.allSettled([
+                footballApi.get('/standings', { params: { league: LEAGUE_ID, season: SEASON } }),
+                footballApi.get('/players/topscorers', { params: { league: LEAGUE_ID, season: SEASON } }),
+                footballApi.get('/fixtures', { params: { league: LEAGUE_ID, season: SEASON, next: 10 } })
+            ]);
 
-/**
- * Get fixtures for a specific team
- * GET /api/fixtures/team/:teamName
- */
-app.get('/api/fixtures/team/:teamName', (req, res) => {
-    try {
-        const teamName = decodeURIComponent(req.params.teamName).toLowerCase();
-        const teamFixtures = fixtures.filter(f =>
-            f.homeTeam.toLowerCase().includes(teamName) ||
-            f.awayTeam.toLowerCase().includes(teamName)
-        );
-
-        // Sort by date
-        teamFixtures.sort((a, b) => {
-            return new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time);
-        });
-
-        res.json(teamFixtures);
-    } catch (error) {
-        console.error('Error fetching team fixtures:', error);
-        res.status(500).json({ error: 'Failed to fetch team fixtures' });
-    }
-});
-
-/**
- * Get calendar view grouped by date
- * GET /api/calendar
- */
-app.get('/api/calendar', (req, res) => {
-    try {
-        // Group fixtures by date
-        const calendar = {};
-        fixtures.forEach(fixture => {
-            if (!calendar[fixture.date]) {
-                calendar[fixture.date] = [];
-            }
-            calendar[fixture.date].push(fixture);
-        });
-
-        // Sort matches within each day by time
-        Object.keys(calendar).forEach(date => {
-            calendar[date].sort((a, b) => a.time.localeCompare(b.time));
-        });
-
-        // Convert to array and sort by date
-        const sortedCalendar = Object.entries(calendar)
-            .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB))
-            .map(([date, matches]) => ({
-                date,
-                dayName: new Date(date).toLocaleDateString('en-US', { weekday: 'long' }),
-                matches
-            }));
-
-        res.json(sortedCalendar);
-    } catch (error) {
-        console.error('Error fetching calendar:', error);
-        res.status(500).json({ error: 'Failed to fetch calendar' });
-    }
-});
-
-/**
- * Get recent news
- * GET /api/news
- */
-app.get('/api/news', (req, res) => {
-    try {
-        // Sort by date (most recent first)
-        const sortedNews = [...news].sort((a, b) =>
-            new Date(b.date) - new Date(a.date)
-        );
-        res.json(sortedNews);
-    } catch (error) {
-        console.error('Error fetching news:', error);
-        res.status(500).json({ error: 'Failed to fetch news' });
-    }
-});
-
-/**
- * Get all transfers
- * GET /api/transfers
- */
-app.get('/api/transfers', (req, res) => {
-    try {
-        // Sort by date (most recent first)
-        const sortedTransfers = [...transfers].sort((a, b) =>
-            new Date(b.date) - new Date(a.date)
-        );
-        res.json(sortedTransfers);
-    } catch (error) {
-        console.error('Error fetching transfers:', error);
-        res.status(500).json({ error: 'Failed to fetch transfers' });
-    }
-});
-
-/**
- * Get transfers by type (in, out, loan, extension)
- * GET /api/transfers/type/:type
- */
-app.get('/api/transfers/type/:type', (req, res) => {
-    try {
-        const type = req.params.type.toLowerCase();
-        const filteredTransfers = transfers.filter(t => t.type === type);
-        res.json(filteredTransfers);
-    } catch (error) {
-        console.error('Error fetching transfers by type:', error);
-        res.status(500).json({ error: 'Failed to fetch transfers' });
-    }
-});
-
-/**
- * Get dashboard summary for home page
- * GET /api/dashboard
- */
-app.get('/api/dashboard', (req, res) => {
-    try {
-        // Get top 5 teams
-        const topTeams = [...teams]
-            .sort((a, b) => b.points - a.points)
-            .slice(0, 5);
-
-        // Get top 3 scorers
-        const topScorers = [...scorers]
-            .sort((a, b) => b.goals - a.goals)
-            .slice(0, 3);
-
-        // Get next 3 fixtures
-        const nextFixtures = [...fixtures]
-            .sort((a, b) => new Date(a.date) - new Date(b.date))
-            .slice(0, 3);
-
-        // Get latest 3 news
-        const latestNews = [...news]
-            .sort((a, b) => new Date(b.date) - new Date(a.date))
-            .slice(0, 3);
-
-        // Get latest 3 transfers
-        const latestTransfers = [...transfers]
-            .sort((a, b) => new Date(b.date) - new Date(a.date))
-            .slice(0, 3);
+            if (standingsRes.status === 'fulfilled') teamsArr = mapStandings(standingsRes.value.data);
+            if (scorersRes.status === 'fulfilled') scorersArr = mapScorers(scorersRes.value.data);
+            if (fixturesRes.status === 'fulfilled') fixturesArr = mapFixtures(fixturesRes.value.data);
+        }
 
         res.json({
-            topTeams,
-            topScorers,
-            nextFixtures,
-            latestNews,
-            latestTransfers,
-            stats
+            topTeams: teamsArr.slice(0, 5),
+            topScorers: scorersArr.slice(0, 3),
+            nextFixtures: fixturesArr.filter(f => f.status === 'NS').slice(0, 3),
+            latestNews: mockNews.slice(0, 3),
+            latestTransfers: mockTransfers.slice(0, 3),
+            stats: { totalMatches: 220, totalGoals: 583, avgGoalsPerMatch: 2.65 }
         });
     } catch (error) {
-        console.error('Error fetching dashboard:', error);
         res.status(500).json({ error: 'Failed to fetch dashboard' });
     }
 });
 
-/**
- * API info endpoint
- * GET /api
- */
-app.get('/api', (req, res) => {
-    res.json({
-        name: 'La Liga Hub API',
-        version: '2.0.0',
-        endpoints: {
-            health: 'GET /health',
-            dashboard: 'GET /api/dashboard',
-            teams: 'GET /api/teams',
-            team: 'GET /api/teams/:id',
-            scorers: 'GET /api/scorers',
-            scorer: 'GET /api/scorers/:id',
-            stats: 'GET /api/stats',
-            fixtures: 'GET /api/fixtures',
-            matchday: 'GET /api/fixtures/matchday/:matchday',
-            teamFixtures: 'GET /api/fixtures/team/:teamName',
-            calendar: 'GET /api/calendar',
-            news: 'GET /api/news',
-            transfers: 'GET /api/transfers',
-            transfersByType: 'GET /api/transfers/type/:type'
-        }
-    });
+app.get('/health', (req, res) => {
+    res.json({ status: 'healthy', live: !!API_KEY });
 });
 
-// 404 handler
-app.use((req, res) => {
-    res.status(404).json({ error: 'Not found' });
-});
-
-// Error handler
-app.use((err, req, res, next) => {
-    console.error('Server error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-});
-
-// Start server
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`
-    ⚽ La Liga Hub Backend API
-    ==========================
-    🚀 Server running on port ${PORT}
-    📊 Endpoints available:
-       - GET /health
-       - GET /api/teams
-       - GET /api/scorers
-       - GET /api/stats
-    `);
+    console.log(`🚀 Server running on port ${PORT} (Live Mode: ${!!API_KEY})`);
 });
 
 module.exports = app;

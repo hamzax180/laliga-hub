@@ -46,11 +46,15 @@ function renderStandings(teams) {
         else if (position <= 6) { rowClass = 'europa'; }
         else if (position >= 18) { rowClass = 'relegation'; }
 
+        const logoContent = team.logo
+            ? `<img src="${team.logo}" alt="${team.name}" class="team-logo-img">`
+            : (teamEmojis[team.name] || '⚽');
+
         return `
             <div class="team-row ${rowClass}">
                 <span class="position ${posClass}">${position}</span>
                 <div class="team-info">
-                    <div class="team-logo">${teamEmojis[team.name] || '⚽'}</div>
+                    <div class="team-logo">${logoContent}</div>
                     <span class="team-name">${team.name}</span>
                 </div>
                 <span class="col-stat">${team.played}</span>

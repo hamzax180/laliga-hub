@@ -66,14 +66,19 @@ function renderMiniStandings(teams) {
         return;
     }
 
-    container.innerHTML = teams.map((team, index) => `
-        <div class="mini-team-row ${index < 4 ? 'champions' : ''}">
-            <span class="mini-pos">${index + 1}</span>
-            <span class="mini-logo">${teamEmojis[team.name] || '⚽'}</span>
-            <span class="mini-name">${team.name}</span>
-            <span class="mini-pts">${team.points} pts</span>
-        </div>
-    `).join('');
+    container.innerHTML = teams.map((team, index) => {
+        const logoContent = team.logo
+            ? `<img src="${team.logo}" alt="${team.name}" class="mini-logo-img">`
+            : (teamEmojis[team.name] || '⚽');
+        return `
+            <div class="mini-team-row ${index < 4 ? 'champions' : ''}">
+                <span class="mini-pos">${index + 1}</span>
+                <span class="mini-logo">${logoContent}</span>
+                <span class="mini-name">${team.name}</span>
+                <span class="mini-pts">${team.points} pts</span>
+            </div>
+        `;
+    }).join('');
 }
 
 /**
@@ -91,6 +96,7 @@ function renderMiniScorers(scorers) {
         return `
             <div class="mini-scorer-row">
                 <span class="mini-medal">${medals[index] || ''}</span>
+                ${scorer.photo ? `<img src="${scorer.photo}" alt="${scorer.name}" class="mini-scorer-photo">` : ''}
                 <div class="mini-scorer-info">
                     <span class="mini-scorer-name">${scorer.name}</span>
                     <span class="mini-scorer-team">${scorer.team}</span>
@@ -111,19 +117,23 @@ function renderMiniFixtures(fixtures) {
         return;
     }
 
-    container.innerHTML = fixtures.map(match => `
-        <div class="mini-match">
-            <div class="mini-match-teams">
-                <span>${teamEmojis[match.homeTeam] || '⚽'} ${match.homeTeam}</span>
-                <span class="vs">vs</span>
-                <span>${match.awayTeam} ${teamEmojis[match.awayTeam] || '⚽'}</span>
+    container.innerHTML = fixtures.map(match => {
+        const hLogo = match.homeLogo ? `<img src="${match.homeLogo}" width="16">` : (teamEmojis[match.homeTeam] || '⚽');
+        const aLogo = match.awayLogo ? `<img src="${match.awayLogo}" width="16">` : (teamEmojis[match.awayTeam] || '⚽');
+        return `
+            <div class="mini-match">
+                <div class="mini-match-teams">
+                    <span>${hLogo} ${match.homeTeam}</span>
+                    <span class="vs">vs</span>
+                    <span>${match.awayTeam} ${aLogo}</span>
+                </div>
+                <div class="mini-match-info">
+                    <span>${formatDate(match.date)}</span>
+                    <span>${match.time}</span>
+                </div>
             </div>
-            <div class="mini-match-info">
-                <span>${formatDate(match.date)}</span>
-                <span>${match.time}</span>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 /**
