@@ -96,7 +96,7 @@ function renderMiniScorers(scorers) {
         return `
             <div class="mini-scorer-row">
                 <span class="mini-medal">${medals[index] || ''}</span>
-                ${scorer.photo ? `<img src="${scorer.photo}" alt="${scorer.name}" class="mini-scorer-photo">` : ''}
+                ${scorer.photo ? `<img src="${scorer.photo}" alt="${scorer.name}" class="mini-scorer-photo" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(scorer.name)}&background=random&color=fff&size=64';">` : ''}
                 <div class="mini-scorer-info">
                     <span class="mini-scorer-name">${scorer.name}</span>
                     <span class="mini-scorer-team">${scorer.team}</span>

@@ -798,9 +798,9 @@ body {
     border-radius: var(--radius-xl);
     padding: 20px 16px;
     display: grid;
-    /* Rank | Info (flexible) | Stats (fixed width) */
-    grid-template-columns: auto minmax(120px, 1fr) auto;
-    gap: 12px;
+    /* Rank (40px) | Photo (60px) | Info (flexible) | Stats (auto) */
+    grid-template-columns: 40px 60px 1fr auto;
+    gap: 16px;
     align-items: center;
     transition: var(--transition-normal);
     position: relative;
@@ -858,20 +858,30 @@ body {
 }
 
 .scorer-name {
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     font-weight: 700;
     margin-bottom: 2px;
     line-height: 1.2;
-    /* Allow wrapping up to 2 lines */
-    white-space: normal;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.scorer-team-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.scorer-team-logo-small {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
 }
 
 .scorer-team {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--text-secondary);
     white-space: nowrap;
     overflow: hidden;

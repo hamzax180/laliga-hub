@@ -39,10 +39,13 @@ function renderScorers(scorers) {
         return `
             <div class="scorer-card">
                 <div class="scorer-rank ${rankClass}">${rank}</div>
-                ${scorer.photo ? `<img src="${scorer.photo}" alt="${scorer.name}" class="scorer-photo">` : ''}
+                ${scorer.photo ? `<img src="${scorer.photo}" alt="${scorer.name}" class="scorer-photo" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(scorer.name)}&background=random&color=fff&size=128';">` : ''}
                 <div class="scorer-info">
                     <div class="scorer-name">${scorer.name}</div>
-                    <div class="scorer-team">${scorer.team}</div>
+                    <div class="scorer-team-container">
+                        ${scorer.teamLogo ? `<img src="${scorer.teamLogo}" alt="${scorer.team}" class="scorer-team-logo-small" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(scorer.team)}&background=random&color=fff&size=32';">` : ''}
+                        <span class="scorer-team">${scorer.team}</span>
+                    </div>
                     <div class="scorer-nationality">${scorer.nationality} • ${scorer.position}</div>
                 </div>
                 <div class="scorer-stats">
