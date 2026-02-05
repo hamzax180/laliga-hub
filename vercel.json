@@ -17,11 +17,11 @@
         },
         {
             "src": "/",
-            "dest": "frontend/index.html"
+            "dest": "frontend/home.html"
         },
         {
-            "src": "/index",
-            "dest": "frontend/index.html"
+            "src": "/home",
+            "dest": "frontend/home.html"
         },
         {
             "src": "/standings",
