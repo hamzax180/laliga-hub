@@ -147,7 +147,12 @@ function renderMatchCard(match) {
  */
 function renderMiniNews(newsItems) {
     const container = document.getElementById('miniNews');
-    if (!container || !newsItems || newsItems.length === 0) return;
+    if (!container) return;
+
+    if (!newsItems || newsItems.length === 0) {
+        container.innerHTML = '<p class="no-data">News temporarily unavailable</p>';
+        return;
+    }
 
     const latestNews = newsItems.slice(0, 4);
 
@@ -168,8 +173,10 @@ function renderMiniNews(newsItems) {
 async function fetchLatestNews() {
     try {
         const response = await fetch('/api/news');
+        if (!response.ok) throw new Error('API error');
         return await response.json();
     } catch (e) {
+        console.warn('News fetch failed', e);
         return [];
     }
 }
@@ -231,18 +238,24 @@ function populateTeamFilter(teams) {
 async function init() {
     console.log('🚀 Fixtures page initializing...');
 
-    const [calendar, teams, news] = await Promise.all([
-        fetchCalendar(),
-        fetchTeams(),
-        fetchLatestNews()
-    ]);
+    // Load main data independently
+    const calendarPromise = fetchCalendar();
+    const teamsPromise = fetchTeams();
 
-    allCalendarData = calendar || [];
-    renderCalendar(calendar);
-    populateTeamFilter(teams);
-    renderMiniNews(news);
+    Promise.all([calendarPromise, teamsPromise]).then(([calendar, teams]) => {
+        allCalendarData = calendar || [];
+        renderCalendar(calendar);
+        populateTeamFilter(teams);
+        console.log('✅ Fixtures data loaded!');
+    }).catch(err => {
+        console.error('Core data failed to load:', err);
+    });
 
-    console.log('✅ Fixtures loaded!');
+    // Independent news fetch
+    fetchLatestNews().then(news => {
+        renderMiniNews(news);
+        console.log('✅ News grid loaded!');
+    });
 }
 
 document.addEventListener('DOMContentLoaded', init);

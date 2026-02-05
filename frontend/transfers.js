@@ -72,7 +72,12 @@ function renderTransfers(transfers) {
  */
 function renderMiniNews(newsItems) {
     const container = document.getElementById('miniNews');
-    if (!container || !newsItems || newsItems.length === 0) return;
+    if (!container) return;
+
+    if (!newsItems || newsItems.length === 0) {
+        container.innerHTML = '<p class="no-data">News temporarily unavailable</p>';
+        return;
+    }
 
     const latestNews = newsItems.slice(0, 4);
 
@@ -93,8 +98,10 @@ function renderMiniNews(newsItems) {
 async function fetchLatestNews() {
     try {
         const response = await fetch('/api/news');
+        if (!response.ok) throw new Error('API error');
         return await response.json();
     } catch (e) {
+        console.warn('News fetch failed', e);
         return [];
     }
 }
@@ -127,15 +134,22 @@ function setupFilters() {
 
 async function init() {
     console.log('🚀 Transfers page initializing...');
-    const [transfers, news] = await Promise.all([
-        fetchTransfers(),
-        fetchLatestNews()
-    ]);
-    allTransfers = transfers || []; // Ensure allTransfers is populated for filters
-    renderTransfers(allTransfers);
-    renderMiniNews(news);
-    setupFilters(); // Call setupFilters after allTransfers is populated
-    console.log('✅ Transfers loaded!');
+
+    // Main data fetch
+    fetchTransfers().then(transfers => {
+        allTransfers = transfers || [];
+        renderTransfers(allTransfers);
+        setupFilters();
+        console.log('✅ Transfers data loaded!');
+    }).catch(err => {
+        console.error('Transfers failed to load:', err);
+    });
+
+    // Independent news fetch
+    fetchLatestNews().then(news => {
+        renderMiniNews(news);
+        console.log('✅ News grid loaded!');
+    });
 }
 
 document.addEventListener('DOMContentLoaded', init);
