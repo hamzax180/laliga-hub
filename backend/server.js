@@ -155,7 +155,7 @@ const fetchLiveNews = async () => {
         scorers: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?auto=format&fit=crop&q=80&w=800' // Goal net
     };
 
-    // Enhancing news with smart image matching
+    // Enhancing mock news with fallback logic
     return mockNews.map((item, idx) => {
         let selectedImage = item.image;
         if (item.image.length < 5) { // If emoji or placeholder
@@ -227,6 +227,21 @@ app.get('/api/player-photo', async (req, res) => {
     if (photoUrl) return res.json({ photo: photoUrl });
 
     res.json({ photo: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&size=200&bold=true` });
+});
+
+app.get('/api/news', async (req, res) => {
+    const cachedNews = getCachedData('news');
+    if (cachedNews) return res.json(cachedNews);
+
+    try {
+        const news = await fetchRSSNews();
+        setCachedData('news', news);
+        res.json(news);
+    } catch (error) {
+        // Fallback to offline news if RSS fails completely
+        console.error("Failed to fetch RSS news, falling back to live news:", error);
+        res.json(await fetchLiveNews());
+    }
 });
 
 app.get('/api/teams', async (req, res) => {
