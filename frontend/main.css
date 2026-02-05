@@ -1725,12 +1725,30 @@ body {
 }
 
 .newsletter-title {
-    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
     font-weight: 900;
     color: white;
     text-transform: uppercase;
-    letter-spacing: -1px;
+    letter-spacing: -2px;
     margin-bottom: 16px;
+    line-height: 1;
+}
+
+.newsletter-title span {
+    display: inline-block;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
 }
 
 .newsletter-subtitle {
@@ -1744,12 +1762,12 @@ body {
     position: relative;
     z-index: 2;
     display: flex;
-    max-width: 600px;
+    max-width: 650px;
     margin: 0 auto;
-    background: rgba(255, 255, 255, 1);
-    padding: 8px;
+    background: #ffffff;
+    padding: 10px;
     border-radius: 100px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
 .newsletter-form input {
@@ -1766,17 +1784,18 @@ body {
     background: var(--primary);
     color: white;
     border: none;
-    padding: 16px 40px;
+    padding: 18px 45px;
     border-radius: 100px;
     font-size: 1.1rem;
     font-weight: 800;
     cursor: pointer;
-    transition: var(--transition-normal);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .newsletter-form button:hover {
     background: var(--primary-dark);
-    transform: scale(1.05);
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 10px 20px rgba(255, 45, 85, 0.4);
 }
 
 @media (max-width: 768px) {
