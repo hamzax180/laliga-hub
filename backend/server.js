@@ -543,7 +543,9 @@ app.post('/api/subscribe', async (req, res) => {
         // Send Welcome Email if credentials exist
         if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
             const transporter = nodemailer.createTransport({
-                service: 'gmail',
+                host: 'smtp-relay.brevo.com',
+                port: 587,
+                secure: false, // true for 465, false for other ports
                 auth: {
                     user: process.env.EMAIL_USER,
                     pass: process.env.EMAIL_PASS
@@ -551,7 +553,7 @@ app.post('/api/subscribe', async (req, res) => {
             });
 
             const mailOptions = {
-                from: '"La Liga Hub" <no-reply@laligahub.com>',
+                from: `"La Liga Hub" <${process.env.EMAIL_USER}>`,
                 to: email,
                 subject: 'Welcome to the Club! ⚽',
                 html: `
@@ -567,16 +569,22 @@ app.post('/api/subscribe', async (req, res) => {
                             <p style="font-size: 16px; line-height: 1.6; color: #a0a6b5;">
                                 You will receive real-time updates on matchday fixtures, breaking transfer news, and exclusive player insights.
                             </p>
+                            <div style="margin-top: 25px; padding: 15px; background: rgba(255, 60, 74, 0.1); border-radius: 6px; text-align: center;">
+                                <p style="color: #ff3c4a; margin: 0; font-weight: 600;">¡Vamos La Liga!</p>
+                            </div>
                         </div>
                         <div style="margin-top: 30px; text-align: center; color: #6e7687; font-size: 14px;">
                             <hr style="border: 0; border-top: 1px solid #1f2128; margin: 20px 0;">
-                            <p>&copy; 2025 La Liga Hub. Created by Hamza.</p>
+                            <p>&copy; 2025 La Liga Hub. Your daily source for Spanish Football.</p>
                         </div>
                     </div>
                 `
             };
 
-            transporter.sendMail(mailOptions).catch(err => console.error("Email error:", err));
+            // Non-blocking send
+            transporter.sendMail(mailOptions)
+                .then(info => console.log('✅ Welcome email sent:', info.messageId))
+                .catch(err => console.error("❌ Email error:", err));
         }
 
         // Simulating success
