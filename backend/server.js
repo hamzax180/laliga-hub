@@ -123,25 +123,26 @@ const getRealtimePlayerPhoto = async (playerName) => {
  */
 const fetchLiveNews = async () => {
     // 1. Star Player & Team Maps for Specific Images
+    // 1. Star Player & Team Maps for Specific Images (Using Unsplash/Pexels for reliability)
     const starImages = {
-        "mbappe": "https://www.thesportsdb.com/images/media/player/action/8316886.jpg", // Action shot
-        "mbappé": "https://www.thesportsdb.com/images/media/player/action/8316886.jpg",
-        "lewandowski": "https://www.thesportsdb.com/images/media/player/action/4862529.jpg",
-        "yamal": "https://www.thesportsdb.com/images/media/player/action/21575775.jpg", // Lamine
-        "vinicius": "https://www.thesportsdb.com/images/media/player/action/16578036.jpg",
-        "bellingham": "https://www.thesportsdb.com/images/media/player/action/15206260.jpg",
-        "griezmann": "https://www.thesportsdb.com/images/media/player/action/5069722.jpg",
-        "barcelona": "https://www.thesportsdb.com/images/media/team/stadium/133739.jpg", // Camp Nou
-        "real madrid": "https://www.thesportsdb.com/images/media/team/stadium/133746.jpg", // Bernabeu
-        "atletico": "https://www.thesportsdb.com/images/media/team/stadium/133932.jpg", // Metropolitano
-        "athletic": "https://www.thesportsdb.com/images/media/team/stadium/133923.jpg", // San Mames
-        "sevilla": "https://www.thesportsdb.com/images/media/team/stadium/133936.jpg", // Sanchez Pizjuan
-        "betis": "https://www.thesportsdb.com/images/media/team/stadium/133928.jpg", // Benito Villamarin
-        "valencia": "https://www.thesportsdb.com/images/media/team/stadium/133938.jpg", // Mestalla
-        "villarreal": "https://www.thesportsdb.com/images/media/team/stadium/134440.jpg", // Ceramics
-        "sociedad": "https://www.thesportsdb.com/images/media/team/stadium/133935.jpg", // Anoeta
-        "pedri": "https://www.thesportsdb.com/images/media/player/action/15206263.jpg",
-        "gavi": "https://www.thesportsdb.com/images/media/player/action/15206264.jpg"
+        "mbappe": "https://images.unsplash.com/photo-1517466787929-bc90951d6dbd?auto=format&fit=crop&q=80&w=800", // Dynamic forward
+        "mbappé": "https://images.unsplash.com/photo-1517466787929-bc90951d6dbd?auto=format&fit=crop&q=80&w=800",
+        "lewandowski": "https://images.unsplash.com/photo-1522778526097-96a2ec665e8a?auto=format&fit=crop&q=80&w=800", // Striker
+        "yamal": "https://images.unsplash.com/photo-1511886929837-354d827aae26?auto=format&fit=crop&q=80&w=800", // Young winger vibe
+        "vinicius": "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&q=80&w=800", // Fast winger
+        "bellingham": "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&q=80&w=800", // Midfielder
+        "griezmann": "https://images.unsplash.com/photo-1599474924187-334a405be655?auto=format&fit=crop&q=80&w=800",
+        "barcelona": "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&q=80&w=800", // Camp Nou vibe
+        "real madrid": "https://images.unsplash.com/photo-1575026210218-47a8c44569c7?auto=format&fit=crop&q=80&w=800", // White kit stadium
+        "atletico": "https://images.unsplash.com/photo-1624880357913-a8539238245b?auto=format&fit=crop&q=80&w=800", // Red/White vibe
+        "athletic": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800", // San Mames vibe
+        "sevilla": "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&q=80&w=800",
+        "betis": "https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&q=80&w=800", // Green vibe
+        "valencia": "https://images.unsplash.com/photo-1516475429286-465d815a0df4?auto=format&fit=crop&q=80&w=800",
+        "villarreal": "https://images.unsplash.com/photo-1624880357913-a8539238245b?auto=format&fit=crop&q=80&w=800", // Yellow vibe
+        "sociedad": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800",
+        "pedri": "https://images.unsplash.com/photo-1606925797300-0b35e9d17d27?auto=format&fit=crop&q=80&w=800",
+        "gavi": "https://images.unsplash.com/photo-1599474924187-334a405be655?auto=format&fit=crop&q=80&w=800"
     };
 
     const categories = ['match', 'player', 'league', 'transfer', 'standings', 'scorers'];
