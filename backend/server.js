@@ -607,6 +607,7 @@ app.get('/api/matches/today', async (req, res) => {
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Server running on port ${PORT} (Live Mode: ${!!API_KEY})`);
+    console.log(`🎵 Theme Song & Stadium Audio: Configured via Frontend`);
 });
 
 module.exports = app;

@@ -35,20 +35,23 @@ graph TD
 ```
 kubernetes/
 ├── frontend/
-│   ├── index.html          # Main HTML page
+│   ├── home.html           # Main home page (Root)
+│   ├── news.html           # News section
+│   ├── standings.html      # League standings
 │   ├── main.css            # Dark theme CSS (v5.0 cache-busted)
-│   ├── fixtures-v2.js      # JavaScript app (v2 cache-busted)
+│   ├── audio.js            # Stadium Mode & Notifications logic
+│   ├── home.js             # Data fetching for home page
+│   ├── fixtures-v2.js      # Fixtures & Results logic
 │   ├── nginx.conf          # Nginx proxy configuration
 │   └── Dockerfile          # Nginx Alpine image
 ├── backend/
 │   ├── server.js           # Express API server
-│   ├── data/               # Mock JSON data
+│   ├── data/               # Mock JSON data (news, standings, etc.)
 │   └── Dockerfile          # Node.js Alpine image
 ├── k8s/
 │   ├── namespace.yaml      # 'laliga' namespace
-│   ├── frontend-*.yaml     # Deployment & Service (LoadBalancer)
-│   ├── backend-*.yaml      # Deployment & Service (ClusterIP)
-│   └── ingress.yaml        # Ingress rules
+│   ├── frontend-*.yaml     # Deployment & Service
+│   └── backend-*.yaml      # Deployment & Service
 └── docker-compose.yml      # Local development config
 ```
 

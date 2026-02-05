@@ -30,14 +30,14 @@ function showNotification(msg, type = 'warning') {
  * Handles the background anthem and stadium sounds.
  */
 function setupStadiumMode() {
-    console.log('🔈 Stadium Mode initializing...');
+    console.log('🔈 Theme Song & Stadium Mode initializing...');
     const toggle = document.getElementById('soundToggle');
     const anthem = document.getElementById('stadiumAudio');
     const fans = document.getElementById('fansAudio');
     const icon = toggle?.querySelector('.sound-icon');
 
     if (!toggle || !anthem || !fans) {
-        console.warn('❌ Sound elements missing!');
+        console.warn('❌ Theme song or sound elements missing!');
         return;
     }
 
@@ -82,7 +82,7 @@ function setupStadiumMode() {
                 }, 100);
 
             } catch (err) {
-                console.warn('❌ Auth playback failed:', err);
+                console.warn('❌ Anthem playback failed:', err);
                 toggle.classList.remove('active');
                 if (icon) icon.textContent = '🔈';
                 showNotification('Click anywhere on the field first to unlock the stadium atmosphere! 🏟️');
@@ -109,8 +109,10 @@ function setupStadiumMode() {
     });
 
     // Simple ping to check if sources are available
+    console.log('🔍 Checking theme song availability...');
     fetch(anthem.querySelector('source').src, { method: 'HEAD', mode: 'no-cors' })
-        .catch(() => console.warn('Anthem source might be slow to load.'));
+        .then(() => console.log('🎵 Theme song found and ready!'))
+        .catch(() => console.warn('⚠️ Theme song source might be slow to load.'));
 }
 
 // Global expose
