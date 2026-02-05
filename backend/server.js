@@ -28,6 +28,29 @@ const footballApi = axios.create({
     }
 });
 
+// Simple In-Memory Cache (Global)
+const cache = {
+    standings: { data: null, lastFetch: 0 },
+    scorers: { data: null, lastFetch: 0 },
+    fixtures: { data: null, lastFetch: 0 },
+    dashboard: { data: null, lastFetch: 0 }
+};
+
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+const getCachedData = (key) => {
+    const now = Date.now();
+    if (cache[key].data && (now - cache[key].lastFetch < CACHE_DURATION)) {
+        return cache[key].data;
+    }
+    return null;
+};
+
+const setCachedData = (key, data) => {
+    cache[key].data = data;
+    cache[key].lastFetch = Date.now();
+};
+
 // ============================================
 // Data Mapping Helpers (Football-Data.org v4)
 // ============================================
@@ -91,9 +114,14 @@ const mapFixtures = (apiData) => {
 
 app.get('/api/teams', async (req, res) => {
     try {
+        const cached = getCachedData('standings');
+        if (cached) return res.json(cached);
+
         if (API_KEY) {
             const response = await footballApi.get(`/competitions/${COMPETITION}/standings`);
-            return res.json(mapStandings(response.data));
+            const mapped = mapStandings(response.data);
+            setCachedData('standings', mapped);
+            return res.json(mapped);
         }
         res.json(mockTeams);
     } catch (error) {
@@ -104,9 +132,14 @@ app.get('/api/teams', async (req, res) => {
 
 app.get('/api/scorers', async (req, res) => {
     try {
+        const cached = getCachedData('scorers');
+        if (cached) return res.json(cached);
+
         if (API_KEY) {
             const response = await footballApi.get(`/competitions/${COMPETITION}/scorers`);
-            return res.json(mapScorers(response.data));
+            const mapped = mapScorers(response.data);
+            setCachedData('scorers', mapped);
+            return res.json(mapped);
         }
         res.json(mockScorers);
     } catch (error) {
@@ -117,9 +150,14 @@ app.get('/api/scorers', async (req, res) => {
 
 app.get('/api/fixtures', async (req, res) => {
     try {
+        const cached = getCachedData('fixtures');
+        if (cached) return res.json(cached);
+
         if (API_KEY) {
             const response = await footballApi.get(`/competitions/${COMPETITION}/matches`);
-            return res.json(mapFixtures(response.data));
+            const mapped = mapFixtures(response.data);
+            setCachedData('fixtures', mapped);
+            return res.json(mapped);
         }
         res.json(mockFixtures);
     } catch (error) {
@@ -133,6 +171,9 @@ app.get('/api/transfers', (req, res) => res.json(mockTransfers));
 
 app.get('/api/dashboard', async (req, res) => {
     try {
+        const cached = getCachedData('dashboard');
+        if (cached) return res.json(cached);
+
         let teamsArr = mockTeams;
         let scorersArr = mockScorers;
         let fixturesArr = mockFixtures;
@@ -149,14 +190,17 @@ app.get('/api/dashboard', async (req, res) => {
             if (fixturesRes.status === 'fulfilled') fixturesArr = mapFixtures(fixturesRes.value.data);
         }
 
-        res.json({
+        const dashboardData = {
             topTeams: teamsArr.slice(0, 5),
             topScorers: scorersArr.slice(0, 3),
             nextFixtures: fixturesArr.slice(0, 3),
             latestNews: mockNews.slice(0, 3),
             latestTransfers: mockTransfers.slice(0, 3),
             stats: { totalMatches: 220, totalGoals: 583, avgGoalsPerMatch: 2.65 }
-        });
+        };
+
+        setCachedData('dashboard', dashboardData);
+        res.json(dashboardData);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch dashboard' });
     }
