@@ -129,7 +129,7 @@ function renderFilters(categories) {
                         <div class="featured-content">
                             <span class="news-category cat-${featured.category}">${featured.category}</span>
                             <h2 class="featured-title">${featured.title}</h2>
-                            <p class="featured-summary">${featured.content}</p>
+                            <p class="featured-summary">${featured.summary || featured.content || featured.title}</p>
                             <div class="featured-meta">
                                 <span>${formatDate(featured.date)}</span>
                                 <span>•</span>

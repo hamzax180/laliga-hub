@@ -70,60 +70,15 @@ function renderStandings(teams) {
     }).join('');
 }
 
-/**
- * Render mini news (Bottom Section)
- */
-function renderMiniNews(newsItems) {
-    const container = document.getElementById('miniNews');
-    if (!container) return;
-
-    if (!newsItems || newsItems.length === 0) {
-        container.innerHTML = '<p class="no-data">News temporarily unavailable</p>';
-        return;
-    }
-
-    const latestNews = newsItems.slice(0, 4);
-
-    container.innerHTML = latestNews.map(item => `
-        <div class="mini-news-item">
-            <div class="mini-news-img-container">
-                <img src="${item.image}" alt="${item.title}" class="mini-news-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1579952363873-27f3bde9be2e?auto=format&fit=crop&q=80&w=800';">
-                <span class="mini-news-cat">${item.category}</span>
-            </div>
-            <div class="mini-news-content">
-                <h3 class="mini-news-title">${item.title}</h3>
-                <span class="mini-news-date">${new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-            </div>
-        </div>
-    `).join('');
-}
-
-async function fetchLatestNews() {
-    try {
-        const response = await fetch('/api/news');
-        if (!response.ok) throw new Error('API error');
-        return await response.json();
-    } catch (e) {
-        console.warn('News fetch failed', e);
-        return [];
-    }
-}
-
 async function init() {
     console.log('🚀 Standings page initializing...');
 
-    // Main data fetch - don't block news
+    // Main data fetch
     fetchTeams().then(teams => {
         renderStandings(teams);
         console.log('✅ Standings data loaded!');
     }).catch(err => {
         console.error('Standings failed to load:', err);
-    });
-
-    // Independent news fetch
-    fetchLatestNews().then(news => {
-        renderMiniNews(news);
-        console.log('✅ News grid loaded!');
     });
 }
 

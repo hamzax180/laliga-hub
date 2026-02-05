@@ -29,7 +29,8 @@ const footballApi = axios.create({
     baseURL: 'https://api.football-data.org/v4',
     headers: {
         'X-Auth-Token': API_KEY
-    }
+    },
+    timeout: 10000 // 10 second timeout
 });
 
 // Simple In-Memory Cache (Global)
@@ -37,7 +38,8 @@ const cache = {
     standings: { data: null, lastFetch: 0 },
     scorers: { data: null, lastFetch: 0 },
     fixtures: { data: null, lastFetch: 0 },
-    dashboard: { data: null, lastFetch: 0 }
+    dashboard: { data: null, lastFetch: 0 },
+    news: { data: null, lastFetch: 0 }
 };
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
@@ -289,16 +291,29 @@ app.get('/api/player-photo', async (req, res) => {
 });
 
 app.get('/api/news', async (req, res) => {
-    const cachedNews = getCachedData('news');
-    if (cachedNews) return res.json(cachedNews);
+    const { category } = req.query;
 
     try {
-        const news = await fetchRSSNews();
-        setCachedData('news', news);
+        let news = getCachedData('news');
+
+        if (!news) {
+            console.log('Cache miss for news, fetching from RSS...');
+            news = await fetchRSSNews();
+            setCachedData('news', news);
+        }
+
+        // Apply filtering if category is provided and not 'all'
+        if (category && category !== 'all') {
+            const filtered = news.filter(n => n.category.toLowerCase() === category.toLowerCase());
+            return res.json(filtered);
+        }
+
         res.json(news);
     } catch (error) {
-        console.error("Failed to fetch RSS news, falling back to mock news:", error);
-        res.json(await fetchLiveNews());
+        console.error("News endpoint error:", error);
+        // On fatal error, return mock news directly without caching it as 'news'
+        const fallback = await fetchLiveNews();
+        res.json(fallback);
     }
 });
 
@@ -353,14 +368,7 @@ app.get('/api/fixtures', async (req, res) => {
     }
 });
 
-app.get('/api/news', async (req, res) => {
-    const { category } = req.query;
-    let news = await fetchLiveNews();
-    if (category && category !== 'all') {
-        news = news.filter(n => n.category === category.toLowerCase());
-    }
-    res.json(news);
-});
+// Consolidated news endpoint moved up
 
 app.get('/api/news/categories', (req, res) => {
     const categories = ['All', 'Match', 'Player', 'League', 'Transfer', 'Standings', 'Scorers'];
