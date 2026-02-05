@@ -147,6 +147,7 @@ const categoryImages = {
 const getSmartImage = (title, category = 'league') => {
     const lowerTitle = title.toLowerCase();
     const matchedKey = Object.keys(starImages).find(key => lowerTitle.includes(key));
+    
     if (matchedKey) return starImages[matchedKey];
     return categoryImages[category] || categoryImages.league;
 };
