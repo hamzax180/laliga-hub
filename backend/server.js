@@ -235,13 +235,14 @@ const fetchRSSNews = async () => {
  */
 const fetchRSSTransfers = async () => {
     try {
-        console.log('Fetching live transfers from Sky Sports...');
-        const response = await axios.get('https://www.skysports.com/rss/12026', {
+        console.log('Fetching live transfers from BBC Sport...');
+        // Using BBC's dedicated football transfers feed
+        const response = await axios.get('https://feeds.bbci.co.uk/sport/football/transfers/rss.xml', {
             timeout: 5000,
-            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)...' }
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' }
         });
         const xml = response.data;
-        const items = xml.split('<item>').slice(1, 15);
+        const items = xml.split('<item>').slice(1, 21); // Increased to 20 items
 
         const transfers = items.map((item, index) => {
             const titleMatch = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/s) || item.match(/<title>(.*?)<\/title>/s);
@@ -286,11 +287,15 @@ const fetchRSSTransfers = async () => {
                 fee: 'Undisclosed',
                 type: type,
                 image: '⚽',
-                summary: summary
+                summary: summary,
+                timestamp: timestamp
             };
         }).filter(t => t !== null);
 
-        if (transfers.length > 0) return transfers;
+        // Sort by timestamp (newest first)
+        const sortedTransfers = transfers.sort((a, b) => b.timestamp - a.timestamp);
+
+        if (sortedTransfers.length > 0) return sortedTransfers;
     } catch (error) {
         console.error('Transfers RSS Fetch Failed:', error.message);
     }
