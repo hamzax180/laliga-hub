@@ -1,71 +1,147 @@
 # La Liga Hub ⚽
 
-La Liga Hub is a premium, real-time football dashboard providing the latest news, standings, fixtures, and transfer updates from the Spanish top flight.
+A modern, visually stunning website showcasing La Liga's top teams and top scorers, containerized with Docker and deployed on Kubernetes.
 
-## 🚀 Production Deployment (Kubernetes)
+![La Liga Hub](https://img.shields.io/badge/La%20Liga-Hub-ff2d55?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyeiIvPjwvc3ZnPg==)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
 
-This project is built for high-scale production using **Docker** and **Kubernetes**. It features a decoupled architecture with an Nginx-powered frontend and a Node.js backend.
+## 🌟 Features
 
-### Prerequisites
-- Docker & Docker Compose
-- A Kubernetes cluster (minikube, Kind, or managed K8s like GKE/EKS)
-- `kubectl` configured to your cluster
+- **📊 League Standings** - Live La Liga table with team positions, points, and goal difference
+- **⚽ Top Scorers** - Golden Boot race with goals and assists
+- **📈 Statistics** - Season overview with key metrics
+- **🎨 Modern Design** - Dark theme, glassmorphism cards, and smooth animations
+- **⚡ Reactive UI** - CSS Grid layouts and custom-styled dropdowns
+- **📱 Responsive** - Fully optimized for mobile, tablet, and desktop
+- **🐳 Cloud Ready** - Docker containerized and Kubernetes deployed
+- **🚀 Vercel** - Live deployment with Serverless Functions
 
-### 1. Configure Secrets
-We use Kubernetes Secrets to manage sensitive API keys. 
-1. Copy `k8s/secrets-example.yaml` to `k8s/secrets.yaml`.
-2. Fill in your `FOOTBALL_API_KEY`, `EMAIL_USER`, and `EMAIL_PASS` (Brevo API key).
-3. Apply the secret:
-   ```bash
-   kubectl apply -f k8s/secrets.yaml
-   ```
+## 🏗️ Architecture
 
-### 2. Build and Push Images
-Build the Docker images for both services:
-```bash
-# Backend
-docker build -t your-registry/laliga-backend:latest ./backend
-docker push your-registry/laliga-backend:latest
-
-# Frontend
-docker build -t your-registry/laliga-frontend:latest ./frontend
-docker push your-registry/laliga-frontend:latest
+```mermaid
+graph TD
+    User[User Browser] -->|HTTP:80| LB[LoadBalancer Service]
+    LB -->|Selects| Pods["Frontend Pods (Nginx)"]
+    
+    subgraph "Kubernetes Cluster (Namespace: laliga)"
+        Pods -->|Proxy /api| BackendSvc[Backend Service]
+        BackendSvc -->|Selects| API["Backend Pods (Node.js)"]
+    end
 ```
 
-### 3. Deploy to Kubernetes
-Apply the configuration files in order:
+## 📁 Project Structure
+
+```
+kubernetes/
+├── frontend/
+│   ├── home.html           # Main home page (Root)
+│   ├── news.html           # News section
+│   ├── standings.html      # League standings
+│   ├── main.css            # Dark theme CSS (v5.0 cache-busted)
+│   ├── audio.js            # Stadium Mode & Notifications logic
+│   ├── home.js             # Data fetching for home page
+│   ├── fixtures-v2.js      # Fixtures & Results logic
+│   ├── nginx.conf          # Nginx proxy configuration
+│   └── Dockerfile          # Nginx Alpine image
+├── backend/
+│   ├── server.js           # Express API server
+│   ├── data/               # Mock JSON data (news, standings, etc.)
+│   └── Dockerfile          # Node.js Alpine image
+├── k8s/
+│   ├── namespace.yaml      # 'laliga' namespace
+│   ├── frontend-*.yaml     # Deployment & Service
+│   └── backend-*.yaml      # Deployment & Service
+└── docker-compose.yml      # Local development config
+```
+
+## 🚀 Quick Start
+
+### Option 1: Docker Compose (Fastest)
+
+Ideal for local development without Kubernetes.
+
 ```bash
-# Create Namespace
+# Build and start
+docker-compose up --build
+
+# Access
+# Frontend: http://localhost:8080
+```
+
+### Option 2: Live Deployment (Vercel)
+
+The easiest way to view the live site and API without local setup.
+
+👉 **[https://laliga-hub.vercel.app](https://laliga-hub.vercel.app)**
+
+### Option 3: Kubernetes (Production-Like)
+
+Deploy to a local cluster (Docker Desktop, Minikube).
+
+#### 1. Build Images
+```bash
+docker build -t laliga-frontend:latest ./frontend
+docker build -t laliga-backend:latest ./backend
+```
+
+#### 2. Deploy
+```bash
+# Create namespace and apply resources
 kubectl apply -f k8s/namespace.yaml
-
-# Deploy Backend
-kubectl apply -f k8s/backend-deployment.yaml
-kubectl apply -f k8s/backend-service.yaml
-
-# Deploy Frontend
-kubectl apply -f k8s/frontend-deployment.yaml
-kubectl apply -f k8s/frontend-service.yaml
-
-# Configure Ingress
-kubectl apply -f k8s/ingress.yaml
+kubectl apply -f k8s/
 ```
 
-### 4. Access the Application
-The application will be available via the Ingress controller. By default, it is configured for `laliga.local`. You may need to add this to your `/etc/hosts`:
-```text
-127.0.0.1  laliga.local
+#### 3. Verify
+```bash
+# Check pods in the 'laliga' namespace
+kubectl get pods -n laliga
 ```
 
-## 🛠️ Tech Stack
-- **Frontend**: Vanilla HTML5, CSS3 (Modern Glassmorphism), JavaScript (ES6+)
-- **Backend**: Node.js, Express, Axios, Nodemailer (Brevo API)
-- **Infrastructure**: Nginx (Static Serving & Reverse Proxy), Docker, Kubernetes
+#### 4. Access (Docker Desktop)
+The frontend service is configured as a `LoadBalancer`, so it exposes port 80 on localhost.
+👉 **Open http://localhost:80**
 
-## ✨ Features
-- **Real-time Data**: Live feeds for standings, scorers, and news.
-- **Stadium Mode**: Immersive matchday audio atmosphere.
-- **Smart Subscription**: Newsletter with native browser matchday notifications.
-- **Daily Match Alerts**: Automated 2 PM Barcelona-time fixture notifications.
+*(If port 80 is blocked, use port forwarding)*:
+```bash
+kubectl port-forward -n laliga svc/frontend-service 8080:80
+# Open http://localhost:8080
+```
+
+## 🔧 Troubleshooting
+
+### "localhost refused to connect"
+- **Check Namespace**: Verify pods are running in the correct namespace:
+  ```bash
+  kubectl get pods -n laliga
+  ```
+  *(Running `kubectl get pods` checks the 'default' namespace, which is wrong)*.
+
+- **Check Service**: Ensure external IP/Port is assigned:
+  ```bash
+  kubectl get svc -n laliga
+  ```
+
+### Browser Caching
+- If old styles persist, do a hard refresh (Ctrl+F5).
+- We use `?v=5.0` query strings and filenames like `main.css` to bust caches.
+
+## 📊 Tech Stack
+
+| Component | Technology |
+|-----------|------------|
+| Frontend | HTML5, CSS3 (Grid/Flex), Vanilla JS |
+| Backend | Node.js 18, Express |
+| Web Server | Nginx Alpine |
+| Container | Docker |
+| Orchestration | Kubernetes |
+
+## 🎨 Design System
+
+- **Colors**: `#0a0a0f` (Background), `#12121a` (Cards), `#ff2d55` (Accents)
+- **Typography**: Inter / System UI
+- **Effects**: Glassmorphism (`backdrop-filter: blur`), Hover Lifts
 
 ---
-Created by [Hamza](https://github.com/hamzax180)
+
+Made with ❤️ for La Liga fans
