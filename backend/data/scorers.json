@@ -1,36 +1,36 @@
 [
     {
         "id": 1,
-        "name": "Robert Lewandowski",
-        "team": "Barcelona",
-        "nationality": "Poland",
-        "position": "Forward",
-        "goals": 18,
-        "assists": 5,
-        "matches": 21,
-        "minutesPlayed": 1785
-    },
-    {
-        "id": 2,
         "name": "Kylian Mbappé",
         "team": "Real Madrid",
         "nationality": "France",
         "position": "Forward",
+        "goals": 22,
+        "assists": 6,
+        "matches": 22,
+        "minutesPlayed": 1850
+    },
+    {
+        "id": 2,
+        "name": "Vedat Muriqi",
+        "team": "Mallorca",
+        "nationality": "Kosovo",
+        "position": "Forward",
         "goals": 15,
-        "assists": 4,
-        "matches": 20,
-        "minutesPlayed": 1680
+        "assists": 3,
+        "matches": 21,
+        "minutesPlayed": 1720
     },
     {
         "id": 3,
-        "name": "Raphinha",
+        "name": "Ferran Torres",
         "team": "Barcelona",
-        "nationality": "Brazil",
-        "position": "Winger",
-        "goals": 13,
-        "assists": 9,
+        "nationality": "Spain",
+        "position": "Forward",
+        "goals": 12,
+        "assists": 4,
         "matches": 22,
-        "minutesPlayed": 1890
+        "minutesPlayed": 1680
     },
     {
         "id": 4,
@@ -38,97 +38,64 @@
         "team": "Real Madrid",
         "nationality": "Brazil",
         "position": "Winger",
-        "goals": 12,
+        "goals": 11,
         "assists": 8,
         "matches": 21,
         "minutesPlayed": 1755
     },
     {
         "id": 5,
+        "name": "Ante Budimir",
+        "team": "Osasuna",
+        "nationality": "Croatia",
+        "position": "Forward",
+        "goals": 10,
+        "assists": 2,
+        "matches": 22,
+        "minutesPlayed": 1810
+    },
+    {
+        "id": 6,
+        "name": "Robert Lewandowski",
+        "team": "Barcelona",
+        "nationality": "Poland",
+        "position": "Forward",
+        "goals": 9,
+        "assists": 5,
+        "matches": 19,
+        "minutesPlayed": 1620
+    },
+    {
+        "id": 7,
+        "name": "Lamine Yamal",
+        "team": "Barcelona",
+        "nationality": "Spain",
+        "position": "Winger",
+        "goals": 9,
+        "assists": 12,
+        "matches": 22,
+        "minutesPlayed": 1850
+    },
+    {
+        "id": 8,
         "name": "Antoine Griezmann",
         "team": "Atletico Madrid",
         "nationality": "France",
         "position": "Forward",
-        "goals": 11,
+        "goals": 8,
         "assists": 7,
         "matches": 22,
         "minutesPlayed": 1850
     },
     {
-        "id": 6,
-        "name": "Jude Bellingham",
-        "team": "Real Madrid",
-        "nationality": "England",
-        "position": "Midfielder",
-        "goals": 10,
-        "assists": 6,
-        "matches": 18,
-        "minutesPlayed": 1520
-    },
-    {
-        "id": 7,
-        "name": "Alexander Sørloth",
-        "team": "Atletico Madrid",
-        "nationality": "Norway",
-        "position": "Forward",
-        "goals": 10,
-        "assists": 2,
-        "matches": 20,
-        "minutesPlayed": 1420
-    },
-    {
-        "id": 8,
+        "id": 9,
         "name": "Ayoze Pérez",
         "team": "Villarreal",
         "nationality": "Spain",
         "position": "Forward",
-        "goals": 9,
-        "assists": 4,
-        "matches": 22,
-        "minutesPlayed": 1680
-    },
-    {
-        "id": 9,
-        "name": "Iago Aspas",
-        "team": "Celta Vigo",
-        "nationality": "Spain",
-        "position": "Forward",
         "goals": 8,
-        "assists": 5,
+        "assists": 4,
         "matches": 21,
-        "minutesPlayed": 1720
-    },
-    {
-        "id": 10,
-        "name": "Lamine Yamal",
-        "team": "Barcelona",
-        "nationality": "Spain",
-        "position": "Winger",
-        "goals": 7,
-        "assists": 11,
-        "matches": 22,
-        "minutesPlayed": 1850
-    },
-    {
-        "id": 11,
-        "name": "Gorka Guruzeta",
-        "team": "Athletic Bilbao",
-        "nationality": "Spain",
-        "position": "Forward",
-        "goals": 7,
-        "assists": 2,
-        "matches": 20,
-        "minutesPlayed": 1450
-    },
-    {
-        "id": 12,
-        "name": "Álvaro Morata",
-        "team": "Real Madrid",
-        "nationality": "Spain",
-        "position": "Forward",
-        "goals": 6,
-        "assists": 3,
-        "matches": 15,
-        "minutesPlayed": 980
+        "minutesPlayed": 1610
     }
 ]
