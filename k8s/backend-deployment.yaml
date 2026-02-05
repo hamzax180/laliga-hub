@@ -29,6 +29,21 @@ spec:
               value: "production"
             - name: PORT
               value: "3000"
+            - name: FOOTBALL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: FOOTBALL_API_KEY
+            - name: EMAIL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: EMAIL_USER
+            - name: EMAIL_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: EMAIL_PASS
           resources:
             requests:
               memory: "128Mi"

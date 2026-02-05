@@ -10,6 +10,9 @@ COPY *.css /usr/share/nginx/html/
 # Copy all JavaScript files
 COPY *.js /usr/share/nginx/html/
 
+# Copy audio files
+COPY audio /usr/share/nginx/html/audio/
+
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 

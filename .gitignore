@@ -13,3 +13,7 @@ Thumbs.db
 dist/
 build/
 .vercel
+.env.local
+
+# Kubernetes Secrets
+k8s/secrets.yaml
