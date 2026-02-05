@@ -121,60 +121,118 @@ const getRealtimePlayerPhoto = async (playerName) => {
  * LIVE NEWS FETCHING
  * Provides real-time sports news with high-quality images.
  */
-const fetchLiveNews = async () => {
-    // 1. Star Player & Team Maps for Specific Images
-    // 1. Star Player & Team Maps for Specific Images (Using Unsplash/Pexels for reliability)
-    const starImages = {
-        "mbappe": "https://images.unsplash.com/photo-1517466787929-bc90951d6dbd?auto=format&fit=crop&q=80&w=800", // Dynamic forward
-        "mbappé": "https://images.unsplash.com/photo-1517466787929-bc90951d6dbd?auto=format&fit=crop&q=80&w=800",
-        "lewandowski": "https://images.unsplash.com/photo-1522778526097-96a2ec665e8a?auto=format&fit=crop&q=80&w=800", // Striker
-        "yamal": "https://images.unsplash.com/photo-1511886929837-354d827aae26?auto=format&fit=crop&q=80&w=800", // Young winger vibe
-        "vinicius": "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&q=80&w=800", // Fast winger
-        "bellingham": "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&q=80&w=800", // Midfielder
-        "griezmann": "https://images.unsplash.com/photo-1599474924187-334a405be655?auto=format&fit=crop&q=80&w=800",
-        "barcelona": "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&q=80&w=800", // Camp Nou vibe
-        "real madrid": "https://images.unsplash.com/photo-1575026210218-47a8c44569c7?auto=format&fit=crop&q=80&w=800", // White kit stadium
-        "atletico": "https://images.unsplash.com/photo-1624880357913-a8539238245b?auto=format&fit=crop&q=80&w=800", // Red/White vibe
-        "athletic": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800", // San Mames vibe
-        "sevilla": "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&q=80&w=800",
-        "betis": "https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&q=80&w=800", // Green vibe
-        "valencia": "https://images.unsplash.com/photo-1516475429286-465d815a0df4?auto=format&fit=crop&q=80&w=800",
-        "villarreal": "https://images.unsplash.com/photo-1624880357913-a8539238245b?auto=format&fit=crop&q=80&w=800", // Yellow vibe
-        "sociedad": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800",
-        "pedri": "https://images.unsplash.com/photo-1606925797300-0b35e9d17d27?auto=format&fit=crop&q=80&w=800",
-        "gavi": "https://images.unsplash.com/photo-1599474924187-334a405be655?auto=format&fit=crop&q=80&w=800"
-    };
 
-    const categories = ['match', 'player', 'league', 'transfer', 'standings', 'scorers'];
-    const sportsImages = {
-        match: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=800', // Stadium
-        player: 'https://images.unsplash.com/photo-1518605348400-43ded60bae24?auto=format&fit=crop&q=80&w=800', // Player action close up (generic)
-        league: 'https://images.unsplash.com/photo-1579952363873-27f3bde9be2e?auto=format&fit=crop&q=80&w=800', // Ball on field
-        transfer: 'https://images.unsplash.com/photo-1541252260730-0412e8e2108e?auto=format&fit=crop&q=80&w=800', // Suit/Office generic
-        standings: 'https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?auto=format&fit=crop&q=80&w=800', // Field wide
-        scorers: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?auto=format&fit=crop&q=80&w=800' // Goal net
-    };
+// Star Player & Team image fallbacks (reliable Unsplash)
+const starImages = {
+    "mbappe": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800",
+    "mbappé": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800",
+    "lewandowski": "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&q=80&w=800",
+    "yamal": "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&q=80&w=800",
+    "vinicius": "https://images.unsplash.com/photo-1517466787929-bc90951d6dbd?auto=format&fit=crop&q=80&w=800",
+    "bellingham": "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&q=80&w=800",
+    "barcelona": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=800",
+    "real madrid": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=800",
+    "atletico": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800",
+    "sevilla": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800"
+};
 
-    // Enhancing mock news with fallback logic
-    return mockNews.map((item, idx) => {
-        let selectedImage = item.image;
-        if (item.image.length < 5) { // If emoji or placeholder
-            const lowerTitle = item.title.toLowerCase();
+const categoryImages = {
+    match: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=800',
+    player: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&q=80&w=800',
+    league: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800',
+    transfer: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&q=80&w=800'
+};
 
-            // Try to find a specific match in the title
-            const matchedKey = Object.keys(starImages).find(key => lowerTitle.includes(key));
-            if (matchedKey) {
-                selectedImage = starImages[matchedKey];
-            } else {
-                // Fallback to category default
-                selectedImage = sportsImages[item.category] || sportsImages.match;
+// Get smart image based on article title
+const getSmartImage = (title, category = 'league') => {
+    const lowerTitle = title.toLowerCase();
+    const matchedKey = Object.keys(starImages).find(key => lowerTitle.includes(key));
+    if (matchedKey) return starImages[matchedKey];
+    return categoryImages[category] || categoryImages.league;
+};
+
+/**
+ * LIVE RSS NEWS FETCHER
+ * Fetches real news from Sky Sports La Liga RSS feed with real images
+ */
+const fetchRSSNews = async () => {
+    try {
+        console.log('Fetching live news from Sky Sports RSS...');
+        const response = await axios.get('https://www.skysports.com/rss/12026', { timeout: 8000 });
+        const xml = response.data;
+
+        // Simple XML parsing
+        const items = xml.split('<item>').slice(1, 11); // Limit to 10 items
+
+        const newsItems = items.map((item, index) => {
+            // Extract title
+            const titleMatch = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/s) || item.match(/<title>(.*?)<\/title>/s);
+            const title = titleMatch ? titleMatch[1].trim() : 'La Liga News';
+
+            // Extract description
+            const descMatch = item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/s) || item.match(/<description>(.*?)<\/description>/s);
+            let summary = descMatch ? descMatch[1].replace(/<[^>]*>/g, '').trim() : '';
+            summary = summary.length > 150 ? summary.substring(0, 150) + '...' : summary;
+
+            // Extract link
+            const linkMatch = item.match(/<link>(.*?)<\/link>/);
+            const link = linkMatch ? linkMatch[1].trim() : '#';
+
+            // Extract image from enclosure or media:thumbnail
+            const enclosureMatch = item.match(/<enclosure[^>]*url="([^"]*)"/);
+            const mediaMatch = item.match(/<media:thumbnail[^>]*url="([^"]*)"/);
+            let image = enclosureMatch ? enclosureMatch[1] : (mediaMatch ? mediaMatch[1] : '');
+
+            // Extract date
+            const dateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
+            const date = dateMatch ? new Date(dateMatch[1]).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+
+            // Determine category
+            const lowerTitle = title.toLowerCase();
+            let category = 'league';
+            if (lowerTitle.includes('win') || lowerTitle.includes('score') || lowerTitle.includes('beat') || lowerTitle.includes('vs')) category = 'match';
+            else if (lowerTitle.includes('transfer') || lowerTitle.includes('sign') || lowerTitle.includes('deal') || lowerTitle.includes('move')) category = 'transfer';
+            else if (lowerTitle.includes('injury') || lowerTitle.includes('return') || lowerTitle.includes('goal')) category = 'player';
+
+            // Use RSS image or smart fallback
+            if (!image || image.length < 10) {
+                image = getSmartImage(title, category);
             }
-        }
 
+            return {
+                id: `news-${index + 1}`,
+                title,
+                summary,
+                date,
+                category,
+                image,
+                link,
+                source: 'Sky Sports'
+            };
+        }).filter(item => item.title && item.title !== 'La Liga News');
+
+        if (newsItems.length > 0) {
+            console.log(`Fetched ${newsItems.length} live news items`);
+            return newsItems;
+        }
+    } catch (error) {
+        console.error('RSS Fetch Failed:', error.message);
+    }
+
+    // Fallback to mock news with smart images
+    return fetchLiveNews();
+};
+
+/**
+ * FALLBACK NEWS - Uses mock data with smart images
+ */
+const fetchLiveNews = async () => {
+    return mockNews.map((item, idx) => {
+        const image = item.image && item.image.length > 10 ? item.image : getSmartImage(item.title, item.category);
         return {
             ...item,
-            image: selectedImage,
-            content: `Detailed report for article ${item.id}. This is a live-fetched article about ${item.title}. The event took place with thousands of fans watching. Stay tuned for more updates.`,
+            image,
+            content: `Detailed report about ${item.title}.`,
             author: 'La Liga Hub News Desk'
         };
     });
