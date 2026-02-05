@@ -52,9 +52,6 @@ function setupStadiumMode() {
         if (icon) icon.textContent = '🔊';
 
         // Auto-play on page load if it was active
-        // Note: Browsers usually block auto-play without interaction, 
-        // but since they already interacted on the previous page, some might allow it.
-        // If it fails, the user just clicks once.
         window.addEventListener('load', async () => {
             try {
                 await anthem.play();
@@ -73,15 +70,13 @@ function setupStadiumMode() {
         e.preventDefault();
         e.stopPropagation();
 
-        // If not playing, try to start
         if (anthem.paused) {
             try {
                 toggle.classList.add('active');
                 if (icon) icon.textContent = '⌛';
 
-                // We try them separately to be sure
                 await anthem.play();
-                await fans.play().catch(e => console.warn('Fans playback failed, continuing with anthem only'));
+                await fans.play().catch(e => console.warn('Fans playback failed'));
 
                 if (icon) icon.textContent = '🔊';
                 localStorage.setItem('stadiumMode', 'true');
@@ -124,12 +119,6 @@ function setupStadiumMode() {
             localStorage.setItem('stadiumMode', 'false');
         }
     });
-
-    // Simple ping to check if sources are available
-    console.log('🔍 Checking theme song availability...');
-    fetch(anthem.querySelector('source').src, { method: 'HEAD', mode: 'no-cors' })
-        .then(() => console.log('🎵 Theme song found and ready!'))
-        .catch(() => console.warn('⚠️ Theme song source might be slow to load.'));
 }
 
 // Global expose

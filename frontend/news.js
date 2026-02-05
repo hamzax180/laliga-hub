@@ -188,6 +188,10 @@ function setupSubscription() {
 
             if (data.success) {
                 showNotification('Welcome to the Club! Check your inbox. ✅', 'success');
+                sendSystemNotification("Welcome to the Hub! ⚽", {
+                    body: "You've successfully subscribed to La Liga matchday alerts. ¡Vamos!",
+                    tag: 'welcome-subscription'
+                });
                 form.reset();
             } else {
                 showNotification(data.error || 'Something went wrong.', 'warning');
