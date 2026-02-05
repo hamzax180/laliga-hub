@@ -63,7 +63,7 @@ const mapStandings = (apiData) => {
     return standings.map(team => ({
         id: team.team.id,
         name: team.team.name,
-        logo: team.team.logo,
+        logo: team.team.logo || null,
         played: team.all.played,
         won: team.all.win,
         drawn: team.all.draw,
@@ -77,11 +77,14 @@ const mapStandings = (apiData) => {
 };
 
 const mapScorers = (apiData) => {
-    if (!apiData || !apiData.response) return mockScorers;
+    if (!apiData || !apiData.response) return mockScorers.map(s => ({
+        ...s,
+        photo: s.photo || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(s.name)}&backgroundColor=b6e3f4,c0aede,d1d4f9`
+    }));
     return apiData.response.map((item) => ({
         id: item.player.id,
         name: item.player.name,
-        photo: item.player.photo, // Real player photo from API
+        photo: item.player.photo || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(item.player.name)}&backgroundColor=b6e3f4,c0aede,d1d4f9`,
         team: item.statistics[0].team.name,
         nationality: item.player.nationality,
         position: item.statistics[0].games.position,
