@@ -116,7 +116,11 @@ app.get('/api/scorers', async (req, res) => {
         res.json(mockScorers);
     } catch (error) {
         console.error('Live API Error (Scorers):', error.message);
-        res.json(mockScorers);
+        res.status(500).json({
+            error: 'Live API Failed',
+            details: error.message,
+            fallback: mockScorers
+        });
     }
 });
 
