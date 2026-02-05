@@ -21,6 +21,14 @@ document.getElementById('navToggle')?.addEventListener('click', () => {
 });
 
 /**
+ * Format Date Helper
+ */
+function formatDate(dateString) {
+    const options = { month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-US', options);
+}
+
+/**
  * Fetch dashboard data
  */
 async function fetchDashboard() {
@@ -239,6 +247,7 @@ function renderMiniNews(newsItems) {
         </div>
     `).join('');
 }
+
 
 /**
  * Render stats

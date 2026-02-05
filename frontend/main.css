@@ -1495,6 +1495,18 @@ body {
     gap: 24px;
 }
 
+@media (max-width: 1024px) {
+    .dashboard-section .container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-section .container {
+        grid-template-columns: 1fr;
+    }
+}
+
 .dashboard-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -1512,6 +1524,7 @@ body {
    Bottom News Grid (Home Page)
    ============================================ */
 .news-card-wide {
+    grid-column: 1 / -1;
     border-top: 1px solid var(--border-color);
     padding-top: 32px;
 }
@@ -1683,13 +1696,15 @@ body {
 }
 
 .newsletter-card {
+    grid-column: 1 / -1;
     background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     border-radius: var(--radius-2xl);
-    padding: 80px 40px;
+    padding: 60px 40px;
     text-align: center;
     position: relative;
     overflow: hidden;
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+    margin: 40px 0;
 }
 
 .newsletter-card::before {
@@ -1771,24 +1786,26 @@ body {
         background: transparent;
         box-shadow: none;
         gap: 16px;
+        padding: 0;
     }
 
     .newsletter-form input {
         background: white;
         text-align: center;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .newsletter-form button {
+        width: 100%;
     }
 
     .newsletter-card {
         padding: 60px 24px;
     }
 
-    .news-item {
-        flex-direction: column;
-    }
-
-    .news-img-container {
-        width: 100%;
-        height: 200px;
+    .news-section-bottom {
+        padding: 40px 0 80px;
     }
 }
 

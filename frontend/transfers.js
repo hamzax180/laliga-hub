@@ -67,6 +67,38 @@ function renderTransfers(transfers) {
     }).join('');
 }
 
+/**
+ * Render mini news (Bottom Section)
+ */
+function renderMiniNews(newsItems) {
+    const container = document.getElementById('miniNews');
+    if (!container || !newsItems || newsItems.length === 0) return;
+
+    const latestNews = newsItems.slice(0, 4);
+
+    container.innerHTML = latestNews.map(item => `
+        <div class="mini-news-item">
+            <div class="mini-news-img-container">
+                <img src="${item.image}" alt="${item.title}" class="mini-news-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1579952363873-27f3bde9be2e?auto=format&fit=crop&q=80&w=800';">
+                <span class="mini-news-cat">${item.category}</span>
+            </div>
+            <div class="mini-news-content">
+                <h3 class="mini-news-title">${item.title}</h3>
+                <span class="mini-news-date">${new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function fetchLatestNews() {
+    try {
+        const response = await fetch('/api/news');
+        return await response.json();
+    } catch (e) {
+        return [];
+    }
+}
+
 function formatDate(dateStr) {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -95,11 +127,14 @@ function setupFilters() {
 
 async function init() {
     console.log('🚀 Transfers page initializing...');
-
-    allTransfers = await fetchTransfers() || [];
+    const [transfers, news] = await Promise.all([
+        fetchTransfers(),
+        fetchLatestNews()
+    ]);
+    allTransfers = transfers || []; // Ensure allTransfers is populated for filters
     renderTransfers(allTransfers);
-    setupFilters();
-
+    renderMiniNews(news);
+    setupFilters(); // Call setupFilters after allTransfers is populated
     console.log('✅ Transfers loaded!');
 }
 
