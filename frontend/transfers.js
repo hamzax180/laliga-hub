@@ -61,10 +61,10 @@ function renderTransfers(transfers) {
                         <span class="club-name">${transfer.toTeam}</span>
                     </div>
                 </div>
-                <div class="transfer-summary" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); pt: 8px;">
+                <div class="transfer-summary" style="font-size: 0.95rem; line-height: 1.5; color: var(--text-light); margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
                     ${transfer.summary || ''}
                 </div>
-                <div class="transfer-fee-badge">${transfer.fee}</div>
+                <div class="transfer-fee-badge" style="background: var(--primary-gradient); font-weight: 600;">${transfer.fee}</div>
             </div>
         `;
     }).join('');

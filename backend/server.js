@@ -235,83 +235,67 @@ const fetchRSSNews = async () => {
  */
 const fetchRSSTransfers = async () => {
     try {
-        console.log('Fetching live transfers from BBC Sport RSS...');
-        const response = await axios.get('https://feeds.bbci.co.uk/sport/football/transfers/rss.xml', {
-            timeout: 5000,
-            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' }
+        console.log('Fetching live transfers from Google News (La Liga Search)...');
+        // Google News RSS Search provides more "live" results than static feeds
+        const response = await axios.get('https://news.google.com/rss/search?q=La+Liga+transfer+signing+OR+deal+OR+move+OR+contract&hl=en-GB&gl=GB&ceid=GB:en', {
+            timeout: 5000
         });
         const xml = response.data;
-        const items = xml.split('<item>').slice(1, 21);
+        const items = xml.split('<item>').slice(1, 25);
 
         const transfers = items.map((item, index) => {
-            const titleMatch = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/s) || item.match(/<title>(.*?)<\/title>/s);
-            const title = titleMatch ? titleMatch[1].trim() : 'Transfer Update';
+            const titleMatch = item.match(/<title>(.*?)<\/title>/s);
+            const title = titleMatch ? titleMatch[1].replace(' - Google News', '').trim() : 'Transfer Update';
 
             const lowerTitle = title.toLowerCase();
-            const isTransfer = lowerTitle.includes('sign') || lowerTitle.includes('deal') || lowerTitle.includes('move') || lowerTitle.includes('transfer') || lowerTitle.includes('bid') || lowerTitle.includes('loan') || lowerTitle.includes('close');
-
-            if (!isTransfer) return null;
-
-            const descMatch = item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/s) || item.match(/<description>(.*?)<\/description>/s);
-            let summary = descMatch ? descMatch[1].replace(/<[^>]*>/g, '').trim() : '';
+            // Filter for actually relevant transfer keywords
+            const isRelevant = lowerTitle.includes('sign') || lowerTitle.includes('deal') || lowerTitle.includes('move') || lowerTitle.includes('transfer') || lowerTitle.includes('contract') || lowerTitle.includes('join') || lowerTitle.includes('bid');
+            if (!isRelevant) return null;
 
             const dateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
             const pubDate = dateMatch ? new Date(dateMatch[1]) : new Date();
-            const date = pubDate.toISOString().split('T')[0];
             const timestamp = pubDate.getTime();
 
-            // Better BBC parsing
-            let player = title;
-            let fromTeam = 'News';
-            let toTeam = 'Update';
-            let type = 'in';
+            // Extract source
+            const sourceMatch = item.match(/<source[^>]*>(.*?)<\/source>/);
+            const source = sourceMatch ? sourceMatch[1] : 'Sport News';
 
-            if (lowerTitle.includes('sign')) {
+            let player = title;
+            let team = 'La Liga';
+
+            // Basic parsing for "Player signs for/joins Team"
+            if (lowerTitle.includes(' sign')) {
                 const parts = title.split(/sign/i);
-                if (parts.length > 1) {
-                    toTeam = parts[0].trim();
-                    player = parts[1].trim();
-                }
-            } else if (lowerTitle.includes('move')) {
-                type = 'out';
-                const parts = title.split(/move/i);
-                if (parts.length > 1) {
-                    player = parts[0].trim();
-                    toTeam = parts[1].trim();
-                }
-            } else if (lowerTitle.includes('loan')) {
-                type = 'loan';
-            } else if (lowerTitle.includes('deal')) {
-                type = 'in';
-                fromTeam = 'Transfer';
-                toTeam = 'Centre';
+                player = parts[0].trim();
+            } else if (lowerTitle.includes(' join')) {
+                const parts = title.split(/join/i);
+                player = parts[0].trim();
             }
 
             return {
-                id: `trans-${index + 1}`,
-                player: player.split(' - ')[0].substring(0, 50),
-                fromTeam: fromTeam,
-                toTeam: toTeam,
-                date: date,
-                fee: 'Official',
-                type: type,
+                id: `live-trans-${index}`,
+                player: player.split(' - ')[0].substring(0, 60),
+                fromTeam: source,
+                toTeam: 'Update',
+                date: pubDate.toISOString().split('T')[0],
+                fee: 'Live Update',
+                type: lowerTitle.includes('loan') ? 'loan' : 'in',
                 image: '⚽',
-                summary: summary,
+                summary: title,
                 timestamp: timestamp
             };
         }).filter(t => t !== null);
 
-        // Sort by timestamp (newest first)
-        const sortedTransfers = transfers.sort((a, b) => b.timestamp - a.timestamp);
+        // Sort by timestamp (newest first - DESCENDING)
+        const sorted = transfers.sort((a, b) => b.timestamp - a.timestamp);
 
-        if (sortedTransfers.length > 0) {
-            console.log(`Successfully fetched and sorted ${sortedTransfers.length} live transfers.`);
-            return sortedTransfers;
+        if (sorted.length > 0) {
+            console.log(`✅ Successfully fetched ${sorted.length} live transfers.`);
+            return sorted;
         }
     } catch (error) {
-        console.error('Transfers RSS Fetch Failed:', error.message);
+        console.error('Live Transfer Feed Failed:', error.message);
     }
-    console.log('Falling back to mock transfers.');
     return mockTransfers;
 };
 
