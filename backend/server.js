@@ -235,7 +235,7 @@ const fetchRSSNews = async () => {
  */
 const fetchRSSTransfers = async () => {
     try {
-        console.log('Fetching live transfers from BBC Sport...');
+        console.log('Fetching live transfers from BBC Sport RSS...');
         const response = await axios.get('https://feeds.bbci.co.uk/sport/football/transfers/rss.xml', {
             timeout: 5000,
             headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' }
@@ -260,29 +260,40 @@ const fetchRSSTransfers = async () => {
             const date = pubDate.toISOString().split('T')[0];
             const timestamp = pubDate.getTime();
 
+            // Better BBC parsing
             let player = title;
-            let fromTeam = 'Rumor';
-            let toTeam = 'Check Details';
+            let fromTeam = 'News';
+            let toTeam = 'Update';
             let type = 'in';
 
             if (lowerTitle.includes('sign')) {
                 const parts = title.split(/sign/i);
-                toTeam = parts[0].trim();
-                player = parts[1].trim();
-                type = 'in';
+                if (parts.length > 1) {
+                    toTeam = parts[0].trim();
+                    player = parts[1].trim();
+                }
             } else if (lowerTitle.includes('move')) {
                 type = 'out';
+                const parts = title.split(/move/i);
+                if (parts.length > 1) {
+                    player = parts[0].trim();
+                    toTeam = parts[1].trim();
+                }
             } else if (lowerTitle.includes('loan')) {
                 type = 'loan';
+            } else if (lowerTitle.includes('deal')) {
+                type = 'in';
+                fromTeam = 'Transfer';
+                toTeam = 'Centre';
             }
 
             return {
                 id: `trans-${index + 1}`,
-                player: player.split(' - ')[0],
+                player: player.split(' - ')[0].substring(0, 50),
                 fromTeam: fromTeam,
                 toTeam: toTeam,
                 date: date,
-                fee: 'Undisclosed',
+                fee: 'Official',
                 type: type,
                 image: '⚽',
                 summary: summary,
@@ -293,10 +304,14 @@ const fetchRSSTransfers = async () => {
         // Sort by timestamp (newest first)
         const sortedTransfers = transfers.sort((a, b) => b.timestamp - a.timestamp);
 
-        if (sortedTransfers.length > 0) return sortedTransfers;
+        if (sortedTransfers.length > 0) {
+            console.log(`Successfully fetched and sorted ${sortedTransfers.length} live transfers.`);
+            return sortedTransfers;
+        }
     } catch (error) {
         console.error('Transfers RSS Fetch Failed:', error.message);
     }
+    console.log('Falling back to mock transfers.');
     return mockTransfers;
 };
 
