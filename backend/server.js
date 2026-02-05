@@ -6,7 +6,7 @@ const axios = require('axios');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const API_KEY = process.env.FOOTBALL_API_KEY;
+const API_KEY = process.env.FOOTBALL_API_KEY ? process.env.FOOTBALL_API_KEY.trim() : null;
 const LEAGUE_ID = 140; // La Liga
 const SEASON = 2025; // Current season
 
