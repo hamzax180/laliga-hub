@@ -122,6 +122,21 @@ const getRealtimePlayerPhoto = async (playerName) => {
  * Provides real-time sports news with high-quality images.
  */
 const fetchLiveNews = async () => {
+    // 1. Star Player & Team Maps for Specific Images
+    const starImages = {
+        "mbappe": "https://www.thesportsdb.com/images/media/player/action/8316886.jpg", // Action shot
+        "mbappé": "https://www.thesportsdb.com/images/media/player/action/8316886.jpg",
+        "lewandowski": "https://www.thesportsdb.com/images/media/player/action/4862529.jpg",
+        "yamal": "https://www.thesportsdb.com/images/media/player/action/21575775.jpg ", // Lamine
+        "vinicius": "https://www.thesportsdb.com/images/media/player/action/16578036.jpg",
+        "bellingham": "https://www.thesportsdb.com/images/media/player/action/15206260.jpg",
+        "griezmann": "https://www.thesportsdb.com/images/media/player/action/5069722.jpg",
+        "barcelona": "https://www.thesportsdb.com/images/media/team/stadium/133739.jpg", // Camp Nou
+        "real madrid": "https://www.thesportsdb.com/images/media/team/stadium/133746.jpg", // Bernabeu
+        "atletico": "https://www.thesportsdb.com/images/media/team/stadium/133932.jpg", // Metropolitano
+        "athletic": "https://www.thesportsdb.com/images/media/team/stadium/133923.jpg" // San Mames
+    };
+
     const categories = ['match', 'player', 'league', 'transfer', 'standings', 'scorers'];
     const sportsImages = {
         match: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800',
@@ -132,14 +147,29 @@ const fetchLiveNews = async () => {
         scorers: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&q=80&w=800'
     };
 
-    // Enhancing mock news with real professional images and categories
-    return mockNews.map((item, idx) => ({
-        ...item,
-        // If image is an emoji, replace with a high-end photography link
-        image: item.image.length < 3 ? sportsImages[item.category] || sportsImages.match : item.image,
-        content: `Detailed report for article ${item.id}. This is a live-fetched article about ${item.title}. The event took place in a packed stadium with thousands of fans watching.`,
-        author: 'La Liga Hub News Desk'
-    }));
+    // Enhancing news with smart image matching
+    return mockNews.map((item, idx) => {
+        let selectedImage = item.image;
+        if (item.image.length < 5) { // If emoji or placeholder
+            const lowerTitle = item.title.toLowerCase();
+
+            // Try to find a specific match in the title
+            const matchedKey = Object.keys(starImages).find(key => lowerTitle.includes(key));
+            if (matchedKey) {
+                selectedImage = starImages[matchedKey];
+            } else {
+                // Fallback to category default
+                selectedImage = sportsImages[item.category] || sportsImages.match;
+            }
+        }
+
+        return {
+            ...item,
+            image: selectedImage,
+            content: `Detailed report for article ${item.id}. This is a live-fetched article about ${item.title}. The event took place with thousands of fans watching. Stay tuned for more updates.`,
+            author: 'La Liga Hub News Desk'
+        };
+    });
 };
 
 const mapScorers = (apiData) => {
