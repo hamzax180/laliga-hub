@@ -36,11 +36,24 @@ function renderScorers(scorers) {
         else if (rank === 2) rankClass = 'silver';
         else if (rank === 3) rankClass = 'bronze';
 
+        const photoId = `player-photo-${scorer.id}`;
+
+        // Async fetch the real photo from our new backend API
+        fetch(`/api/player-photo?name=${encodeURIComponent(scorer.name)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.photo) {
+                    const img = document.getElementById(photoId);
+                    if (img) img.src = data.photo;
+                }
+            })
+            .catch(err => console.error('Photo fetch error:', err));
+
         return `
             <div class="scorer-card">
                 <div class="scorer-rank ${rankClass}">${rank}</div>
                 <div class="scorer-header">
-                    ${scorer.photo ? `<img src="${scorer.photo}" alt="${scorer.name}" class="scorer-photo" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(scorer.name)}&background=random&color=fff&size=128';">` : ''}
+                    <img src="${scorer.photo}" id="${photoId}" alt="${scorer.name}" class="scorer-photo" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(scorer.name)}&background=random&color=fff&size=128';">
                     <div class="scorer-info">
                         <div class="scorer-name">${scorer.name}</div>
                         <div class="scorer-team-container">
