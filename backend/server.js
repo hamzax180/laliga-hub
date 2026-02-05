@@ -540,29 +540,15 @@ app.post('/api/subscribe', async (req, res) => {
             todayMatches = cachedFixtures.filter(f => f.date === now).length;
         }
 
-        // Send Welcome Email if credentials exist
-        console.log('📬 Checking email config:', {
-            hasUser: !!process.env.EMAIL_USER,
-            hasPass: !!process.env.EMAIL_PASS,
-            user: process.env.EMAIL_USER ? `${process.env.EMAIL_USER.substring(0, 3)}...` : 'none'
-        });
+        // Send Welcome Email using Brevo API (More reliable with API Key)
+        if (process.env.EMAIL_PASS && process.env.EMAIL_USER) {
+            console.log('📤 Sending email via Brevo API...');
 
-        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-            const transporter = nodemailer.createTransport({
-                host: 'smtp-relay.brevo.com',
-                port: 587,
-                secure: false, // true for 465, false for other ports
-                auth: {
-                    user: process.env.EMAIL_USER.trim(),
-                    pass: process.env.EMAIL_PASS.trim()
-                }
-            });
-
-            const mailOptions = {
-                from: `"La Liga Hub" <${process.env.EMAIL_USER.trim()}>`,
-                to: email,
-                subject: 'Welcome to the Club! ⚽',
-                html: `
+            const emailData = {
+                sender: { name: "La Liga Hub", email: process.env.EMAIL_USER.trim() },
+                to: [{ email: email }],
+                subject: "Welcome to the Club! ⚽",
+                htmlContent: `
                     <div style="font-family: sans-serif; background-color: #0c0d11; color: #ffffff; padding: 40px; border-radius: 12px; max-width: 600px; margin: auto; border: 1px solid #1f2128;">
                         <div style="text-align: center; margin-bottom: 30px;">
                             <h1 style="color: #ff3c4a; margin-top: 10px; font-size: 28px; letter-spacing: 1px;">LA LIGA HUB</h1>
@@ -587,16 +573,22 @@ app.post('/api/subscribe', async (req, res) => {
                 `
             };
 
-            // Non-blocking send
-            console.log('📤 Attempting to send welcome email to:', email);
-            transporter.sendMail(mailOptions)
-                .then(info => console.log('✅ Welcome email sent:', info.messageId))
-                .catch(err => {
-                    console.error("❌ Email transport error:", err.message);
-                    console.error("❌ Error code:", err.code);
+            axios.post('https://api.brevo.com/v3/smtp/email', emailData, {
+                headers: {
+                    'api-key': process.env.EMAIL_PASS.trim(),
+                    'Content-Type': 'application/json',
+                    'accept': 'application/json'
+                }
+            })
+                .then(response => {
+                    console.log('✅ Brevo API Success:', response.data);
+                })
+                .catch(error => {
+                    console.error('❌ Brevo API Error:', error.response ? error.response.data : error.message);
                 });
+
         } else {
-            console.warn('⚠️ Skipping email send: Missing EMAIL_USER or EMAIL_PASS environment variables');
+            console.warn('⚠️ Skipping email: Missing credentials');
         }
 
         // Simulating success
