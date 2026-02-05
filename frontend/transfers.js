@@ -104,6 +104,7 @@ async function init() {
         allTransfers = transfers || [];
         renderTransfers(allTransfers);
         setupFilters();
+        setupStadiumMode();
         console.log('✅ Transfers data loaded!');
     }).catch(err => {
         console.error('Transfers failed to load:', err);

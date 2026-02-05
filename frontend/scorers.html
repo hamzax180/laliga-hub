@@ -13,9 +13,21 @@
     <link rel="stylesheet" href="main.css">
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>">
+
+    <!-- Stadium Mode Audio -->
+    <audio id="stadiumAudio" loop>
+        <source
+            src="https://ia800109.us.archive.org/27/items/uefa-champions-league-anthem-official-audio/UEFA%20Champions%20League%20Anthem%20%28Official%20Audio%29.mp3"
+            type="audio/mpeg">
+    </audio>
 </head>
 
 <body>
+    <!-- Sound Toggle -->
+    <div class="sound-control" id="soundToggle" title="Enable Stadium Mode">
+        <span class="sound-icon">🔈</span>
+        <span class="sound-text">Stadium Mode</span>
+    </div>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
@@ -75,6 +87,7 @@
                     Your ultimate destination for La Liga football statistics and updates.
                 </p>
                 <div class="footer-links">
+                    <a href="news">News</a>
                     <a href="standings">Standings</a>
                     <a href="fixtures">Fixtures</a>
                     <a href="scorers">Top Scorers</a>
@@ -89,6 +102,7 @@
         </div>
     </footer>
 
+    <script src="audio.js"></script>
     <script src="scorers-v2.js"></script>
 </body>
 

@@ -3,6 +3,7 @@ require('dotenv').config();
 const cors = require('cors');
 const path = require('path');
 const axios = require('axios');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -539,10 +540,49 @@ app.post('/api/subscribe', async (req, res) => {
             todayMatches = cachedFixtures.filter(f => f.date === now).length;
         }
 
+        // Send Welcome Email if credentials exist
+        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS
+                }
+            });
+
+            const mailOptions = {
+                from: '"La Liga Hub" <no-reply@laligahub.com>',
+                to: email,
+                subject: 'Welcome to the Club! ⚽',
+                html: `
+                    <div style="font-family: sans-serif; background-color: #0c0d11; color: #ffffff; padding: 40px; border-radius: 12px; max-width: 600px; margin: auto; border: 1px solid #1f2128;">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h1 style="color: #ff3c4a; margin-top: 10px; font-size: 28px; letter-spacing: 1px;">LA LIGA HUB</h1>
+                        </div>
+                        <div style="background-color: #16181d; padding: 30px; border-radius: 8px; border-left: 4px solid #ff3c4a;">
+                            <h2 style="color: #ffffff; margin-top: 0;">You're In!</h2>
+                            <p style="font-size: 16px; line-height: 1.6; color: #a0a6b5;">
+                                Thank you for subscribing to <strong>La Liga Hub</strong>. 
+                            </p>
+                            <p style="font-size: 16px; line-height: 1.6; color: #a0a6b5;">
+                                You will receive real-time updates on matchday fixtures, breaking transfer news, and exclusive player insights.
+                            </p>
+                        </div>
+                        <div style="margin-top: 30px; text-align: center; color: #6e7687; font-size: 14px;">
+                            <hr style="border: 0; border-top: 1px solid #1f2128; margin: 20px 0;">
+                            <p>&copy; 2025 La Liga Hub. Created by Hamza.</p>
+                        </div>
+                    </div>
+                `
+            };
+
+            transporter.sendMail(mailOptions).catch(err => console.error("Email error:", err));
+        }
+
         // Simulating success
         res.json({
             success: true,
-            message: `Successfully subscribed ${email}! You'll receive alerts for the ${todayMatches} matches happening today.`,
+            message: `Subscribed!`,
             matchCount: todayMatches
         });
     } catch (error) {

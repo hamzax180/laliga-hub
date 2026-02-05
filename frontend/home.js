@@ -361,6 +361,7 @@ async function init() {
                 .catch(err => console.warn('Categories failed to load', err));
 
             setupSubscription();
+            setupStadiumMode();
             console.log('✅ Home page loaded!');
         } else {
             throw new Error('No data received from dashboard API');

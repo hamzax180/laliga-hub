@@ -208,6 +208,7 @@ async function init() {
         .catch(err => console.warn('Failed to load categories:', err));
 
     setupSubscription();
+    setupStadiumMode();
 }
 
 document.addEventListener('DOMContentLoaded', init);

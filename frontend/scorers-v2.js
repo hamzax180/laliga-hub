@@ -88,6 +88,7 @@ async function init() {
     // Main data fetch
     fetchScorers().then(scorers => {
         renderScorers(scorers);
+        setupStadiumMode();
         console.log('✅ Scorers data loaded!');
     }).catch(err => {
         console.error('Scorers failed to load:', err);

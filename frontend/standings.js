@@ -76,6 +76,7 @@ async function init() {
     // Main data fetch
     fetchTeams().then(teams => {
         renderStandings(teams);
+        setupStadiumMode();
         console.log('✅ Standings data loaded!');
     }).catch(err => {
         console.error('Standings failed to load:', err);

@@ -207,6 +207,7 @@ async function init() {
         allCalendarData = calendar || [];
         renderCalendar(calendar);
         populateTeamFilter(teams);
+        setupStadiumMode();
         console.log('✅ Fixtures data loaded!');
     }).catch(err => {
         console.error('Core data failed to load:', err);
