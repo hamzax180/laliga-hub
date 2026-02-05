@@ -236,19 +236,17 @@ const fetchRSSNews = async () => {
 const fetchRSSTransfers = async () => {
     try {
         console.log('Fetching live transfers from BBC Sport...');
-        // Using BBC's dedicated football transfers feed
         const response = await axios.get('https://feeds.bbci.co.uk/sport/football/transfers/rss.xml', {
             timeout: 5000,
             headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' }
         });
         const xml = response.data;
-        const items = xml.split('<item>').slice(1, 21); // Increased to 20 items
+        const items = xml.split('<item>').slice(1, 21);
 
         const transfers = items.map((item, index) => {
             const titleMatch = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/s) || item.match(/<title>(.*?)<\/title>/s);
             const title = titleMatch ? titleMatch[1].trim() : 'Transfer Update';
 
-            // Skip non-transfer news if possible, but keep it broad
             const lowerTitle = title.toLowerCase();
             const isTransfer = lowerTitle.includes('sign') || lowerTitle.includes('deal') || lowerTitle.includes('move') || lowerTitle.includes('transfer') || lowerTitle.includes('bid') || lowerTitle.includes('loan') || lowerTitle.includes('close');
 
@@ -258,10 +256,10 @@ const fetchRSSTransfers = async () => {
             let summary = descMatch ? descMatch[1].replace(/<[^>]*>/g, '').trim() : '';
 
             const dateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
-            const date = dateMatch ? new Date(dateMatch[1]).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+            const pubDate = dateMatch ? new Date(dateMatch[1]) : new Date();
+            const date = pubDate.toISOString().split('T')[0];
+            const timestamp = pubDate.getTime();
 
-            // Attempt to extract teams/player from title (Simplified)
-            // Example: "Barcelona sign Olmo" -> Player: Olmo, To: Barcelona
             let player = title;
             let fromTeam = 'Rumor';
             let toTeam = 'Check Details';
@@ -280,7 +278,7 @@ const fetchRSSTransfers = async () => {
 
             return {
                 id: `trans-${index + 1}`,
-                player: player.split(' - ')[0], // Clean up
+                player: player.split(' - ')[0],
                 fromTeam: fromTeam,
                 toTeam: toTeam,
                 date: date,
