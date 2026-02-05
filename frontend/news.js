@@ -173,6 +173,11 @@ function setupSubscription() {
         e.preventDefault();
         const email = document.getElementById('subscriberEmail').value;
 
+        if (!email || !email.includes('@')) {
+            showNotification('Please enter a valid La Liga scout email! ⚽');
+            return;
+        }
+
         try {
             const response = await fetch(`${API_BASE_URL}/subscribe`, {
                 method: 'POST',
@@ -182,15 +187,13 @@ function setupSubscription() {
             const data = await response.json();
 
             if (data.success) {
-                message.style.color = '#4cd964';
-                message.textContent = data.message;
+                showNotification('Welcome to the Club! Check your inbox. ✅', 'success');
                 form.reset();
             } else {
-                message.style.color = '#ff3b30';
-                message.textContent = data.error || 'Something went wrong.';
+                showNotification(data.error || 'Something went wrong.', 'warning');
             }
         } catch (e) {
-            message.textContent = 'Connection error. Try again later.';
+            showNotification('Connection error. Try again later.', 'warning');
         }
     });
 }

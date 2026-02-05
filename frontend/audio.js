@@ -1,18 +1,19 @@
 /**
- * AUDIO UTILITIES FOR LA LIGA HUB
+ * AUDIO & UTILS FOR LA LIGA HUB
  */
 
 /**
  * Show a modern notification instead of browser alert
  */
-function showNotification(msg) {
+function showNotification(msg, type = 'warning') {
     const existing = document.querySelector('.audio-toast');
     if (existing) existing.remove();
 
     const toast = document.createElement('div');
-    toast.className = 'audio-toast';
+    toast.className = `audio-toast ${type}`;
+    const icon = type === 'success' ? '✅' : '⚽';
     toast.innerHTML = `
-        <span class="toast-icon">⚠️</span>
+        <span class="toast-icon">${icon}</span>
         <span class="toast-message">${msg}</span>
     `;
     document.body.appendChild(toast);
@@ -29,14 +30,18 @@ function showNotification(msg) {
  * Handles the background anthem and stadium sounds.
  */
 function setupStadiumMode() {
+    console.log('🔈 Stadium Mode initializing...');
     const toggle = document.getElementById('soundToggle');
     const anthem = document.getElementById('stadiumAudio');
     const fans = document.getElementById('fansAudio');
     const icon = toggle?.querySelector('.sound-icon');
 
-    if (!toggle || !anthem || !fans) return;
+    if (!toggle || !anthem || !fans) {
+        console.warn('❌ Sound elements missing!');
+        return;
+    }
 
-    // Reset volume to 0 initially
+    // Prepare audio for immediate response after interaction
     anthem.volume = 0;
     fans.volume = 0;
 
@@ -45,36 +50,30 @@ function setupStadiumMode() {
     if (wasActive) {
         toggle.classList.add('active');
         if (icon) icon.textContent = '🔊';
-        // Try to prime the audio on first interaction
-        const primeAudio = () => {
-            if (localStorage.getItem('stadiumMode') === 'true' && anthem.paused) {
-                // Not starting automatically to be safe, but ready
-            }
-            document.removeEventListener('click', primeAudio);
-        };
-        document.addEventListener('click', primeAudio);
     }
 
     toggle.addEventListener('click', async (e) => {
+        e.preventDefault();
         e.stopPropagation();
 
+        // If not playing, try to start
         if (anthem.paused) {
             try {
-                // Update UI immediately to show intent
                 toggle.classList.add('active');
                 if (icon) icon.textContent = '⌛';
 
-                // Play both
-                await Promise.all([anthem.play(), fans.play()]);
+                // We try them separately to be sure
+                await anthem.play();
+                await fans.play().catch(e => console.warn('Fans playback failed, continuing with anthem only'));
 
                 if (icon) icon.textContent = '🔊';
                 localStorage.setItem('stadiumMode', 'true');
 
-                // Fade in volume
+                // Fade in
                 let vol = 0;
                 const fade = setInterval(() => {
-                    if (vol < 0.4) {
-                        vol += 0.05;
+                    vol += 0.05;
+                    if (vol <= 0.4) {
                         anthem.volume = vol;
                         fans.volume = vol * 0.7;
                     } else {
@@ -83,25 +82,23 @@ function setupStadiumMode() {
                 }, 100);
 
             } catch (err) {
-                console.warn('Audio play failed:', err);
+                console.warn('❌ Auth playback failed:', err);
                 toggle.classList.remove('active');
                 if (icon) icon.textContent = '🔈';
-                showNotification('Click anywhere on the pitch first to unlock the stadium sounds!');
+                showNotification('Click anywhere on the field first to unlock the stadium atmosphere! 🏟️');
             }
         } else {
-            // Fade out then pause
+            // Fade out
             let vol = anthem.volume;
             const fadeOut = setInterval(() => {
-                if (vol > 0.05) {
-                    vol -= 0.05;
+                vol -= 0.05;
+                if (vol > 0) {
                     anthem.volume = vol;
                     fans.volume = vol * 0.7;
                 } else {
                     clearInterval(fadeOut);
                     anthem.pause();
                     fans.pause();
-                    anthem.currentTime = 0;
-                    fans.currentTime = 0;
                 }
             }, 50);
 
@@ -111,14 +108,11 @@ function setupStadiumMode() {
         }
     });
 
-    // Handle source errors
-    anthem.addEventListener('error', () => {
-        console.error('Anthem failed to load');
-        showNotification('Anthem source unavailable. Trying to reload...');
-    });
+    // Simple ping to check if sources are available
+    fetch(anthem.querySelector('source').src, { method: 'HEAD', mode: 'no-cors' })
+        .catch(() => console.warn('Anthem source might be slow to load.'));
 }
 
-// Initialize on load
-if (typeof window !== 'undefined') {
-    window.setupStadiumMode = setupStadiumMode;
-}
+// Global expose
+window.showNotification = showNotification;
+window.setupStadiumMode = setupStadiumMode;
