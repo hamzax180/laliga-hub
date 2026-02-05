@@ -541,19 +541,25 @@ app.post('/api/subscribe', async (req, res) => {
         }
 
         // Send Welcome Email if credentials exist
+        console.log('📬 Checking email config:', {
+            hasUser: !!process.env.EMAIL_USER,
+            hasPass: !!process.env.EMAIL_PASS,
+            user: process.env.EMAIL_USER ? `${process.env.EMAIL_USER.substring(0, 3)}...` : 'none'
+        });
+
         if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
             const transporter = nodemailer.createTransport({
                 host: 'smtp-relay.brevo.com',
                 port: 587,
                 secure: false, // true for 465, false for other ports
                 auth: {
-                    user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_PASS
+                    user: process.env.EMAIL_USER.trim(),
+                    pass: process.env.EMAIL_PASS.trim()
                 }
             });
 
             const mailOptions = {
-                from: `"La Liga Hub" <${process.env.EMAIL_USER}>`,
+                from: `"La Liga Hub" <${process.env.EMAIL_USER.trim()}>`,
                 to: email,
                 subject: 'Welcome to the Club! ⚽',
                 html: `
@@ -582,9 +588,15 @@ app.post('/api/subscribe', async (req, res) => {
             };
 
             // Non-blocking send
+            console.log('📤 Attempting to send welcome email to:', email);
             transporter.sendMail(mailOptions)
                 .then(info => console.log('✅ Welcome email sent:', info.messageId))
-                .catch(err => console.error("❌ Email error:", err));
+                .catch(err => {
+                    console.error("❌ Email transport error:", err.message);
+                    console.error("❌ Error code:", err.code);
+                });
+        } else {
+            console.warn('⚠️ Skipping email send: Missing EMAIL_USER or EMAIL_PASS environment variables');
         }
 
         // Simulating success
