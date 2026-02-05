@@ -61,6 +61,9 @@ function renderTransfers(transfers) {
                         <span class="club-name">${transfer.toTeam}</span>
                     </div>
                 </div>
+                <div class="transfer-summary" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); pt: 8px;">
+                    ${transfer.summary || ''}
+                </div>
                 <div class="transfer-fee-badge">${transfer.fee}</div>
             </div>
         `;

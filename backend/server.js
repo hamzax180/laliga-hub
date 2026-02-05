@@ -39,7 +39,8 @@ const cache = {
     scorers: { data: null, lastFetch: 0 },
     fixtures: { data: null, lastFetch: 0 },
     dashboard: { data: null, lastFetch: 0 },
-    news: { data: null, lastFetch: 0 }
+    news: { data: null, lastFetch: 0 },
+    transfers: { data: null, lastFetch: 0 }
 };
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
@@ -230,6 +231,73 @@ const fetchRSSNews = async () => {
 };
 
 /**
+ * LIVE TRANSFERS FETCHER (Sky Sports Transfer Centre)
+ */
+const fetchRSSTransfers = async () => {
+    try {
+        console.log('Fetching live transfers from Sky Sports...');
+        const response = await axios.get('https://www.skysports.com/rss/12026', {
+            timeout: 5000,
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)...' }
+        });
+        const xml = response.data;
+        const items = xml.split('<item>').slice(1, 15);
+
+        const transfers = items.map((item, index) => {
+            const titleMatch = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/s) || item.match(/<title>(.*?)<\/title>/s);
+            const title = titleMatch ? titleMatch[1].trim() : 'Transfer Update';
+
+            // Skip non-transfer news if possible, but keep it broad
+            const lowerTitle = title.toLowerCase();
+            const isTransfer = lowerTitle.includes('sign') || lowerTitle.includes('deal') || lowerTitle.includes('move') || lowerTitle.includes('transfer') || lowerTitle.includes('bid') || lowerTitle.includes('loan') || lowerTitle.includes('close');
+
+            if (!isTransfer) return null;
+
+            const descMatch = item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/s) || item.match(/<description>(.*?)<\/description>/s);
+            let summary = descMatch ? descMatch[1].replace(/<[^>]*>/g, '').trim() : '';
+
+            const dateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
+            const date = dateMatch ? new Date(dateMatch[1]).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+
+            // Attempt to extract teams/player from title (Simplified)
+            // Example: "Barcelona sign Olmo" -> Player: Olmo, To: Barcelona
+            let player = title;
+            let fromTeam = 'Rumor';
+            let toTeam = 'Check Details';
+            let type = 'in';
+
+            if (lowerTitle.includes('sign')) {
+                const parts = title.split(/sign/i);
+                toTeam = parts[0].trim();
+                player = parts[1].trim();
+                type = 'in';
+            } else if (lowerTitle.includes('move')) {
+                type = 'out';
+            } else if (lowerTitle.includes('loan')) {
+                type = 'loan';
+            }
+
+            return {
+                id: `trans-${index + 1}`,
+                player: player.split(' - ')[0], // Clean up
+                fromTeam: fromTeam,
+                toTeam: toTeam,
+                date: date,
+                fee: 'Undisclosed',
+                type: type,
+                image: '⚽',
+                summary: summary
+            };
+        }).filter(t => t !== null);
+
+        if (transfers.length > 0) return transfers;
+    } catch (error) {
+        console.error('Transfers RSS Fetch Failed:', error.message);
+    }
+    return mockTransfers;
+};
+
+/**
  * FALLBACK NEWS - Uses mock data with smart images
  */
 const fetchLiveNews = async () => {
@@ -385,7 +453,18 @@ app.get('/api/news/articles/:id', async (req, res) => {
     res.json(article);
 });
 
-app.get('/api/transfers', (req, res) => res.json(mockTransfers));
+app.get('/api/transfers', async (req, res) => {
+    try {
+        let transfers = getCachedData('transfers');
+        if (!transfers) {
+            transfers = await fetchRSSTransfers();
+            setCachedData('transfers', transfers);
+        }
+        res.json(transfers);
+    } catch (error) {
+        res.json(mockTransfers);
+    }
+});
 
 app.get('/api/dashboard', async (req, res) => {
     try {
