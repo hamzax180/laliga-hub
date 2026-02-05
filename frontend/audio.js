@@ -8,10 +8,11 @@
  */
 function setupStadiumMode() {
     const toggle = document.getElementById('soundToggle');
-    const audio = document.getElementById('stadiumAudio');
+    const anthem = document.getElementById('stadiumAudio');
+    const fans = document.getElementById('fansAudio');
     const icon = toggle?.querySelector('.sound-icon');
 
-    if (!toggle || !audio) return;
+    if (!toggle || !anthem || !fans) return;
 
     // Check if user previously had it active
     const wasActive = localStorage.getItem('stadiumMode') === 'true';
@@ -21,44 +22,52 @@ function setupStadiumMode() {
     }
 
     toggle.addEventListener('click', () => {
-        // Use current playback state to determine action
-        if (audio.paused) {
-            audio.play().then(() => {
+        // Use current playback state to determine action (checking anthem state)
+        if (anthem.paused) {
+            // Play both anthem and fans
+            const playAnthem = anthem.play();
+            const playFans = fans.play();
+
+            Promise.all([playAnthem, playFans]).then(() => {
                 toggle.classList.add('active');
                 if (icon) icon.textContent = '🔊';
                 localStorage.setItem('stadiumMode', 'true');
 
                 // Fade in volume for premium feel
-                audio.volume = 0;
+                anthem.volume = 0;
+                fans.volume = 0;
                 let volume = 0;
                 const fade = setInterval(() => {
                     if (volume < 0.4) {
                         volume += 0.05;
-                        audio.volume = volume;
+                        anthem.volume = volume;
+                        fans.volume = volume * 0.8; // Fans slightly quieter
                     } else {
                         clearInterval(fade);
                     }
                 }, 100);
             }).catch(err => {
                 console.warn('Audio play failed:', err);
-                // Reset UI state on error (usually browser block)
                 toggle.classList.remove('active');
                 if (icon) icon.textContent = '🔈';
                 alert('Please click anywhere on the page first, then try the Stadium Mode button again!');
             });
         } else {
-            audio.pause();
+            // Pause both
+            anthem.pause();
+            fans.pause();
             toggle.classList.remove('active');
             if (icon) icon.textContent = '🔈';
             localStorage.setItem('stadiumMode', 'false');
         }
     });
 
-    // Handle audio error just in case URL is dead
-    audio.addEventListener('error', () => {
-        console.error('Stadium audio source failed to load.');
-        toggle.style.display = 'none'; // Hide if broken
-    });
+    // Handle audio errors
+    const handleError = (e) => {
+        console.error('Audio source failed to load:', e.target.id);
+    };
+    anthem.addEventListener('error', handleError);
+    fans.addEventListener('error', handleError);
 }
 
 /**
