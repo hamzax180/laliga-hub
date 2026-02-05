@@ -463,9 +463,13 @@ app.get('/api/transfers', async (req, res) => {
             transfers = await fetchRSSTransfers();
             setCachedData('transfers', transfers);
         }
-        res.json(transfers);
+
+        // Ensure sorting is applied to whatever data we have (Live or Mock)
+        const sorted = [...transfers].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        res.json(sorted);
     } catch (error) {
-        res.json(mockTransfers);
+        const sortedMock = [...mockTransfers].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        res.json(sortedMock);
     }
 });
 
