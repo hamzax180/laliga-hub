@@ -1408,8 +1408,121 @@ body {
 .card-link:hover {
     background: var(--primary);
     border-color: var(--primary);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(255, 45, 85, 0.4);
+}
+
+/* Newsletter Styles */
+.newsletter-section {
+    padding: 100px 0;
+}
+
+.newsletter-card {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    border-radius: var(--radius-2xl);
+    padding: 80px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+}
+
+.newsletter-card::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+    opacity: 0.1;
+}
+
+.newsletter-header {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 40px;
+}
+
+.newsletter-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+}
+
+.newsletter-subtitle {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.newsletter-form {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    max-width: 600px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 1);
+    padding: 8px;
+    border-radius: 100px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.newsletter-form input {
+    flex: 1;
+    border: none;
+    padding: 16px 32px;
+    font-size: 1.1rem;
+    border-radius: 100px;
+    outline: none;
+    color: var(--bg-dark);
+}
+
+.newsletter-form button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 16px 40px;
+    border-radius: 100px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: var(--transition-normal);
+}
+
+.newsletter-form button:hover {
+    background: var(--primary-dark);
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .newsletter-form {
+        flex-direction: column;
+        border-radius: var(--radius-xl);
+        background: transparent;
+        box-shadow: none;
+        gap: 16px;
+    }
+
+    .newsletter-form input {
+        background: white;
+        text-align: center;
+    }
+
+    .newsletter-card {
+        padding: 60px 24px;
+    }
+
+    .news-item {
+        flex-direction: column;
+    }
+
+    .news-img-container {
+        width: 100%;
+        height: 200px;
+    }
 }
 
 /* News Card */
@@ -1425,46 +1538,115 @@ body {
 
 .news-item {
     display: flex;
-    gap: 16px;
-    padding: 16px;
+    gap: 20px;
+    padding: 24px;
     background: var(--bg-card-hover);
-    border-radius: var(--radius-md);
-    transition: var(--transition-fast);
+    border-radius: var(--radius-xl);
+    transition: var(--transition-normal);
+    border: 1px solid var(--border-color);
+    margin-bottom: 20px;
+    align-items: flex-start;
 }
 
 .news-item:hover {
-    background: rgba(255, 45, 85, 0.1);
+    background: rgba(255, 45, 85, 0.05);
+    border-color: var(--primary);
+    transform: translateY(-2px);
 }
 
-.news-icon {
-    font-size: 2rem;
+.news-img-container {
+    width: 240px;
+    height: 160px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
     flex-shrink: 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.news-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition-normal);
+}
+
+.news-item:hover .news-img {
+    transform: scale(1.1);
 }
 
 .news-content {
     flex: 1;
 }
 
+.news-category {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.cat-match {
+    background: rgba(88, 86, 214, 0.2);
+    color: #5856d6;
+}
+
+.cat-player {
+    background: rgba(255, 149, 0, 0.2);
+    color: #ff9500;
+}
+
+.cat-league {
+    background: rgba(255, 45, 85, 0.2);
+    color: #ff2d55;
+}
+
+.cat-transfer {
+    background: rgba(175, 82, 222, 0.2);
+    color: #af52de;
+}
+
+.cat-standings {
+    background: rgba(76, 217, 100, 0.2);
+    color: #4cd964;
+}
+
+.cat-scorers {
+    background: rgba(255, 215, 0, 0.2);
+    color: #ffd700;
+}
+
 .news-title {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 6px;
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    line-height: 1.3;
 }
 
 .news-summary {
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 16px;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    line-height: 1.4;
-    margin-bottom: 8px;
 }
 
-.news-date {
-    font-size: 0.75rem;
+.news-detailed-content p {
+    margin-bottom: 12px;
+}
+
+.news-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
     color: var(--text-muted);
 }
 
@@ -1546,6 +1728,15 @@ body {
 .mini-scorer-team {
     font-size: 0.8rem;
     color: var(--text-secondary);
+}
+
+.mini-scorer-photo {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--bg-dark);
+    border: 1px solid var(--border-color);
 }
 
 .mini-goals {

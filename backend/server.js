@@ -113,12 +113,14 @@ const getRealtimePlayerPhoto = async (playerName) => {
  * Provides real-time sports news with high-quality images.
  */
 const fetchLiveNews = async () => {
-    const categories = ['match', 'player', 'league', 'transfer'];
+    const categories = ['match', 'player', 'league', 'transfer', 'standings', 'scorers'];
     const sportsImages = {
         match: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800',
         player: 'https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&q=80&w=800',
         league: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=800',
-        transfer: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=800'
+        transfer: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=800',
+        standings: 'https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=800',
+        scorers: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&q=80&w=800'
     };
 
     // Enhancing mock news with real professional images and categories
@@ -241,7 +243,7 @@ app.get('/api/news', async (req, res) => {
 });
 
 app.get('/api/news/categories', (req, res) => {
-    const categories = ['All', 'Match', 'Player', 'League', 'Transfer'];
+    const categories = ['All', 'Match', 'Player', 'League', 'Transfer', 'Standings', 'Scorers'];
     res.json(categories);
 });
 
