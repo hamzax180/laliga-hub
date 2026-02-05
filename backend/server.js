@@ -7,8 +7,7 @@ const axios = require('axios');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const API_KEY = process.env.FOOTBALL_API_KEY ? process.env.FOOTBALL_API_KEY.trim() : null;
-const LEAGUE_ID = 140; // La Liga
-const SEASON = 2025; // Current season
+const COMPETITION = 'PD'; // La Liga Primera Division
 
 // Middleware
 app.use(cors());
@@ -21,68 +20,68 @@ const mockFixtures = require('./data/fixtures.json');
 const mockNews = require('./data/news.json');
 const mockTransfers = require('./data/transfers.json');
 
-// API-Football Client
+// Football-Data.org Client
 const footballApi = axios.create({
-    baseURL: 'https://api-football-v1.p.rapidapi.com/v3',
+    baseURL: 'https://api.football-data.org/v4',
     headers: {
-        'x-rapidapi-key': API_KEY,
-        'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+        'X-Auth-Token': API_KEY
     }
 });
 
 // ============================================
-// Data Mapping Helpers
+// Data Mapping Helpers (Football-Data.org v4)
 // ============================================
 
 const mapStandings = (apiData) => {
-    if (!apiData || !apiData.response || !apiData.response[0]) return mockTeams;
-    const standings = apiData.response[0].league.standings[0];
-    return standings.map(team => ({
-        id: team.team.id,
-        name: team.team.name,
-        logo: team.team.logo,
-        played: team.all.played,
-        won: team.all.win,
-        drawn: team.all.draw,
-        lost: team.all.lose,
-        goalsFor: team.all.goals.for,
-        goalsAgainst: team.all.goals.against,
-        goalDifference: team.goalsDiff,
-        points: team.points,
-        form: team.form
+    if (!apiData || !apiData.standings || !apiData.standings[0]) return mockTeams;
+    const table = apiData.standings[0].table;
+    return table.map(entry => ({
+        id: entry.team.id,
+        name: entry.team.shortName || entry.team.name,
+        logo: entry.team.crest,
+        played: entry.playedGames,
+        won: entry.won,
+        drawn: entry.draw,
+        lost: entry.lost,
+        goalsFor: entry.goalsFor,
+        goalsAgainst: entry.goalsAgainst,
+        goalDifference: entry.goalDifference,
+        points: entry.points,
+        form: entry.form
     }));
 };
 
 const mapScorers = (apiData) => {
-    if (!apiData || !apiData.response) return mockScorers;
-    return apiData.response.map((item, index) => ({
+    if (!apiData || !apiData.scorers) return mockScorers;
+    return apiData.scorers.map((item) => ({
         id: item.player.id,
         name: item.player.name,
-        photo: item.player.photo,
-        team: item.statistics[0].team.name,
+        photo: null, // football-data.org doesn't provide player photos in free tier
+        team: item.team.name,
         nationality: item.player.nationality,
-        position: item.statistics[0].games.position,
-        goals: item.statistics[0].goals.total,
-        assists: item.statistics[0].goals.assists || 0,
-        matches: item.statistics[0].games.appearences,
-        minutesPlayed: item.statistics[0].games.minutes
+        position: item.player.section === 'Offence' ? 'Forward' : item.player.section,
+        goals: item.goals,
+        assists: item.assists || 0,
+        matches: item.playedMatches,
+        minutesPlayed: null
     }));
 };
 
 const mapFixtures = (apiData) => {
-    if (!apiData || !apiData.response) return mockFixtures;
-    return apiData.response.map(item => ({
-        id: item.fixture.id,
-        date: item.fixture.date.split('T')[0],
-        time: item.fixture.date.split('T')[1].substring(0, 5),
-        homeTeam: item.teams.home.name,
-        homeLogo: item.teams.home.logo,
-        awayTeam: item.teams.away.name,
-        awayLogo: item.teams.away.logo,
-        homeGoals: item.goals.home,
-        awayGoals: item.goals.away,
-        status: item.fixture.status.short,
-        matchday: parseInt(item.league.round.replace(/[^0-9]/g, ''))
+    if (!apiData || !apiData.matches) return mockFixtures;
+    return apiData.matches.map(item => ({
+        id: item.id,
+        date: item.utcDate.split('T')[0],
+        time: new Date(item.utcDate).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+        homeTeam: item.homeTeam.shortName || item.homeTeam.name,
+        homeLogo: item.homeTeam.crest,
+        awayTeam: item.awayTeam.shortName || item.awayTeam.name,
+        awayLogo: item.awayTeam.crest,
+        homeGoals: item.score.fullTime.home,
+        awayGoals: item.score.fullTime.away,
+        status: item.status,
+        matchday: item.matchday,
+        stadium: null // Not always provided
     }));
 };
 
@@ -93,9 +92,7 @@ const mapFixtures = (apiData) => {
 app.get('/api/teams', async (req, res) => {
     try {
         if (API_KEY) {
-            const response = await footballApi.get('/standings', {
-                params: { league: LEAGUE_ID, season: SEASON }
-            });
+            const response = await footballApi.get(`/competitions/${COMPETITION}/standings`);
             return res.json(mapStandings(response.data));
         }
         res.json(mockTeams);
@@ -108,61 +105,26 @@ app.get('/api/teams', async (req, res) => {
 app.get('/api/scorers', async (req, res) => {
     try {
         if (API_KEY) {
-            const response = await footballApi.get('/players/topscorers', {
-                params: { league: LEAGUE_ID, season: SEASON }
-            });
+            const response = await footballApi.get(`/competitions/${COMPETITION}/scorers`);
             return res.json(mapScorers(response.data));
         }
         res.json(mockScorers);
     } catch (error) {
         console.error('Live API Error (Scorers):', error.message);
-        res.status(500).json({
-            error: 'Live API Failed',
-            details: error.message,
-            fallback: mockScorers
-        });
+        res.json(mockScorers);
     }
 });
 
 app.get('/api/fixtures', async (req, res) => {
     try {
         if (API_KEY) {
-            const response = await footballApi.get('/fixtures', {
-                params: { league: LEAGUE_ID, season: SEASON }
-            });
+            const response = await footballApi.get(`/competitions/${COMPETITION}/matches`);
             return res.json(mapFixtures(response.data));
         }
         res.json(mockFixtures);
     } catch (error) {
         console.error('Live API Error (Fixtures):', error.message);
         res.json(mockFixtures);
-    }
-});
-
-app.get('/api/debug-scorers', async (req, res) => {
-    try {
-        if (API_KEY) {
-            console.log('Fetching live scorers with key:', API_KEY.substring(0, 4) + '...');
-            const response = await footballApi.get('/players/topscorers', {
-                params: { league: LEAGUE_ID, season: SEASON }
-            });
-            return res.json({
-                status: response.status,
-                headers: response.headers,
-                data: response.data
-            });
-        }
-        res.json({ error: 'No API Key' });
-    } catch (error) {
-        console.error('Debug Scorer Error:', error.message);
-        if (error.response) {
-            res.status(error.response.status).json({
-                error: error.message,
-                apiResponse: error.response.data
-            });
-        } else {
-            res.status(500).json({ error: error.message });
-        }
     }
 });
 
@@ -177,9 +139,9 @@ app.get('/api/dashboard', async (req, res) => {
 
         if (API_KEY) {
             const [standingsRes, scorersRes, fixturesRes] = await Promise.allSettled([
-                footballApi.get('/standings', { params: { league: LEAGUE_ID, season: SEASON } }),
-                footballApi.get('/players/topscorers', { params: { league: LEAGUE_ID, season: SEASON } }),
-                footballApi.get('/fixtures', { params: { league: LEAGUE_ID, season: SEASON, next: 10 } })
+                footballApi.get(`/competitions/${COMPETITION}/standings`),
+                footballApi.get(`/competitions/${COMPETITION}/scorers`),
+                footballApi.get(`/competitions/${COMPETITION}/matches`, { params: { status: 'SCHEDULED', limit: 3 } })
             ]);
 
             if (standingsRes.status === 'fulfilled') teamsArr = mapStandings(standingsRes.value.data);
@@ -190,7 +152,7 @@ app.get('/api/dashboard', async (req, res) => {
         res.json({
             topTeams: teamsArr.slice(0, 5),
             topScorers: scorersArr.slice(0, 3),
-            nextFixtures: fixturesArr.filter(f => f.status === 'NS').slice(0, 3),
+            nextFixtures: fixturesArr.slice(0, 3),
             latestNews: mockNews.slice(0, 3),
             latestTransfers: mockTransfers.slice(0, 3),
             stats: { totalMatches: 220, totalGoals: 583, avgGoalsPerMatch: 2.65 }
@@ -201,7 +163,23 @@ app.get('/api/dashboard', async (req, res) => {
 });
 
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'healthy', live: !!API_KEY, keyPrefix: API_KEY ? API_KEY.substring(0, 4) : 'none' });
+    res.json({
+        status: 'healthy',
+        provider: 'football-data.org',
+        live: !!API_KEY
+    });
+});
+
+app.get('/api/debug-scorers', async (req, res) => {
+    try {
+        if (API_KEY) {
+            const response = await footballApi.get(`/competitions/${COMPETITION}/scorers`);
+            return res.json({ status: response.status, data: response.data });
+        }
+        res.json({ error: 'No API Key' });
+    } catch (error) {
+        res.status(500).json({ error: error.message, apiResponse: error.response ? error.response.data : null });
+    }
 });
 
 app.listen(PORT, '0.0.0.0', () => {
