@@ -45,11 +45,28 @@ function setupStadiumMode() {
     anthem.volume = 0;
     fans.volume = 0;
 
-    // Check if user previously had it active
+    // Check if user previously had it active and play if so
     const wasActive = localStorage.getItem('stadiumMode') === 'true';
     if (wasActive) {
         toggle.classList.add('active');
         if (icon) icon.textContent = '🔊';
+
+        // Auto-play on page load if it was active
+        // Note: Browsers usually block auto-play without interaction, 
+        // but since they already interacted on the previous page, some might allow it.
+        // If it fails, the user just clicks once.
+        window.addEventListener('load', async () => {
+            try {
+                await anthem.play();
+                await fans.play().catch(() => { });
+                anthem.volume = 0.4;
+                fans.volume = 0.28;
+            } catch (err) {
+                console.log('🔇 Auto-play blocked by browser. User must click to resume.');
+                toggle.classList.remove('active');
+                if (icon) icon.textContent = '🔈';
+            }
+        });
     }
 
     toggle.addEventListener('click', async (e) => {
