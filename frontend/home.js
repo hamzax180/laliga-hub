@@ -50,7 +50,7 @@ function renderNews(news) {
             <div class="news-item">
                 <div class="news-img-container">
                     ${hasImageUrl
-                ? `<img src="${item.image}" alt="${item.title}" class="news-img">`
+                ? `<img src="${item.image}" alt="${item.title}" class="news-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1579952363873-27f3bde9be2e?auto=format&fit=crop&q=80&w=800';">`
                 : `<span class="news-icon-large">${item.image}</span>`
             }
                 </div>

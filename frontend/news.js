@@ -44,7 +44,7 @@ async function renderPage() {
         featuredContainer.innerHTML = `
             <div class="featured-card">
                 <div class="featured-img-container">
-                    <img src="${featured.image}" alt="${featured.title}" class="featured-img">
+                    <img src="${featured.image}" alt="${featured.title}" class="featured-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1579952363873-27f3bde9be2e?auto=format&fit=crop&q=80&w=800';">
                 </div>
                 <div class="featured-content">
                     <span class="news-category cat-${featured.category}">${featured.category}</span>
@@ -72,7 +72,7 @@ async function renderPage() {
         gridContainer.innerHTML = gridItems.map(item => `
             <div class="news-grid-item">
                 <div class="grid-img-container">
-                    ${item.image.length > 3 ? `<img src="${item.image}" alt="${item.title}">` : '<span class="news-icon">📰</span>'}
+                    ${item.image.length > 3 ? `<img src="${item.image}" alt="${item.title}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1579952363873-27f3bde9be2e?auto=format&fit=crop&q=80&w=800';">` : '<span class="news-icon">📰</span>'}
                 </div>
                 <div class="grid-content">
                     <span class="news-category cat-${item.category}">${item.category}</span>
@@ -122,7 +122,7 @@ function renderFilters(categories) {
                 featuredContainer.innerHTML = `
                     <div class="featured-card">
                         <div class="featured-img-container">
-                            <img src="${featured.image}" alt="${featured.title}" class="featured-img">
+                            <img src="${featured.image}" alt="${featured.title}" class="featured-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1579952363873-27f3bde9be2e?auto=format&fit=crop&q=80&w=800';">
                         </div>
                         <div class="featured-content">
                             <span class="news-category cat-${featured.category}">${featured.category}</span>
@@ -141,7 +141,7 @@ function renderFilters(categories) {
                 gridContainer.innerHTML = gridItems.map(item => `
                     <div class="news-grid-item">
                         <div class="grid-img-container">
-                            ${item.image.length > 3 ? `<img src="${item.image}" alt="${item.title}">` : '<span class="news-icon">📰</span>'}
+                            ${item.image.length > 3 ? `<img src="${item.image}" alt="${item.title}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1579952363873-27f3bde9be2e?auto=format&fit=crop&q=80&w=800';">` : '<span class="news-icon">📰</span>'}
                         </div>
                         <div class="grid-content">
                             <span class="news-category cat-${item.category}">${item.category}</span>

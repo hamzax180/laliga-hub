@@ -127,7 +127,7 @@ const fetchLiveNews = async () => {
         "mbappe": "https://www.thesportsdb.com/images/media/player/action/8316886.jpg", // Action shot
         "mbappé": "https://www.thesportsdb.com/images/media/player/action/8316886.jpg",
         "lewandowski": "https://www.thesportsdb.com/images/media/player/action/4862529.jpg",
-        "yamal": "https://www.thesportsdb.com/images/media/player/action/21575775.jpg ", // Lamine
+        "yamal": "https://www.thesportsdb.com/images/media/player/action/21575775.jpg", // Lamine
         "vinicius": "https://www.thesportsdb.com/images/media/player/action/16578036.jpg",
         "bellingham": "https://www.thesportsdb.com/images/media/player/action/15206260.jpg",
         "griezmann": "https://www.thesportsdb.com/images/media/player/action/5069722.jpg",
@@ -146,12 +146,12 @@ const fetchLiveNews = async () => {
 
     const categories = ['match', 'player', 'league', 'transfer', 'standings', 'scorers'];
     const sportsImages = {
-        match: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800',
-        player: 'https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&q=80&w=800',
-        league: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=800',
-        transfer: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=800',
-        standings: 'https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=800',
-        scorers: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&q=80&w=800'
+        match: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=800', // Stadium
+        player: 'https://images.unsplash.com/photo-1518605348400-43ded60bae24?auto=format&fit=crop&q=80&w=800', // Player action close up (generic)
+        league: 'https://images.unsplash.com/photo-1579952363873-27f3bde9be2e?auto=format&fit=crop&q=80&w=800', // Ball on field
+        transfer: 'https://images.unsplash.com/photo-1541252260730-0412e8e2108e?auto=format&fit=crop&q=80&w=800', // Suit/Office generic
+        standings: 'https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?auto=format&fit=crop&q=80&w=800', // Field wide
+        scorers: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?auto=format&fit=crop&q=80&w=800' // Goal net
     };
 
     // Enhancing news with smart image matching
