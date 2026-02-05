@@ -796,12 +796,10 @@ body {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-xl);
-    padding: 20px 16px;
-    display: grid;
-    /* Rank (40px) | Photo (60px) | Info (flexible) | Stats (auto) */
-    grid-template-columns: 40px 60px 1fr auto;
-    gap: 16px;
-    align-items: center;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     transition: var(--transition-normal);
     position: relative;
     overflow: hidden;
@@ -831,37 +829,57 @@ body {
 
 .scorers-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 28px;
+}
+
+.scorer-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
 .scorer-rank {
-    width: 40px;
-    height: 40px;
-    font-size: 1rem;
-    /* ... existing styles ... */
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
     background: var(--gradient-primary);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
+    color: white;
+    z-index: 2;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.scorer-photo {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--radius-lg);
+    object-fit: cover;
+    background: var(--bg-dark);
+    border: 2px solid var(--border-color);
     flex-shrink: 0;
 }
 
 .scorer-info {
+    flex: 1;
     min-width: 0;
-    padding-right: 8px;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
 .scorer-name {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 2px;
-    line-height: 1.2;
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+    color: white;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -896,29 +914,30 @@ body {
 
 /* Adjust stats container */
 .scorer-stats {
-    display: flex;
-    gap: 8px;
-    /* Reduced from 12px */
-    text-align: center;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 6px 10px;
-    /* Reduced padding */
-    border-radius: var(--radius-md);
-    flex-shrink: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 16px;
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .scorer-stat {
     display: flex;
     flex-direction: column;
-    min-width: 36px;
-    /* Reduced min-width */
+    align-items: center;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.scorer-stat:last-child {
+    border-right: none;
 }
 
 .scorer-stat-value {
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     font-weight: 800;
     color: var(--accent);
-    line-height: 1.1;
 }
 
 .scorer-stat-label {

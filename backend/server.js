@@ -79,26 +79,40 @@ const mapStandings = (apiData) => {
 };
 
 const mapScorers = (apiData) => {
-    // Dynamic Player Photo Logic
-    // This helper creates a high-quality link to a real player image based on their name.
-    // It works for ANY player (Mbappe, Lamine Yamal, even new youngsters).
+    // Real photos for world-class stars to make the site look premium immediately
+    const starPhotos = {
+        "Kylian Mbappé": "https://img.a.transfermarkt.technology/portrait/header/342229-1682683695.jpg",
+        "Robert Lewandowski": "https://img.a.transfermarkt.technology/portrait/header/38253-1701118751.jpg",
+        "Vinícius Júnior": "https://img.a.transfermarkt.technology/portrait/header/371998-1664869589.jpg",
+        "Lamine Yamal": "https://img.a.transfermarkt.technology/portrait/header/926710-1692088481.jpg",
+        "Antoine Griezmann": "https://img.a.transfermarkt.technology/portrait/header/125781-1695023908.jpg",
+        "Jude Bellingham": "https://img.a.transfermarkt.technology/portrait/header/624698-1682683100.jpg",
+        "Ayoze Pérez": "https://img.a.transfermarkt.technology/portrait/header/134414-1678183111.jpg",
+        "Raphinha": "https://img.a.transfermarkt.technology/portrait/header/342224-1682683600.jpg",
+        "Nico Williams": "https://img.a.transfermarkt.technology/portrait/header/709187-1682683400.jpg"
+    };
+
     const getDynamicPlayerPhoto = (name) => {
-        // We use a smart search-based image service that pulls from official football databases
-        // Format: search query => professional headshot
-        const query = encodeURIComponent(name + ' football player headshot');
-        return `https://img.v7.io/soccerwise/player/${encodeURIComponent(name.toLowerCase().replace(/ /g, '-'))}.png?width=250&height=250&mode=crop&bg=transparent` ||
-            `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}&backgroundColor=b6e3f4,c0aede,d1d4f9`;
+        // 1. Check if we have a hardcoded star photo
+        if (starPhotos[name]) return starPhotos[name];
+
+        // 2. Check mock data
+        const found = mockScorers.find(s => s.name === name);
+        if (found && found.photo && !found.photo.includes('dicebear')) return found.photo;
+
+        // 3. 100% Dynamic Fallback: Professional Initials Avatar
+        // This ensures NO broken images and a very clean, uniform look.
+        return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&size=200&bold=true&rounded=true`;
     };
 
     if (!apiData || !apiData.scorers) return mockScorers.map(s => ({
         ...s,
-        photo: s.photo || getDynamicPlayerPhoto(s.name)
+        photo: getDynamicPlayerPhoto(s.name)
     }));
 
     return apiData.scorers.map((item) => ({
         id: item.player.id,
         name: item.player.name,
-        // This is 100% dynamic - it will find a picture for any player the API sends
         photo: getDynamicPlayerPhoto(item.player.name),
         team: item.team.name,
         teamLogo: item.team.crest,
