@@ -169,8 +169,8 @@ app.get('/api/dashboard', async (req, res) => {
     }
 });
 
-app.get('/health', (req, res) => {
-    res.json({ status: 'healthy', live: !!API_KEY });
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'healthy', live: !!API_KEY, keyPrefix: API_KEY ? API_KEY.substring(0, 4) : 'none' });
 });
 
 app.listen(PORT, '0.0.0.0', () => {
