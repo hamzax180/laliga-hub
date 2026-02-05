@@ -142,17 +142,27 @@ app.get('/api/fixtures', async (req, res) => {
 app.get('/api/debug-scorers', async (req, res) => {
     try {
         if (API_KEY) {
+            console.log('Fetching live scorers with key:', API_KEY.substring(0, 4) + '...');
             const response = await footballApi.get('/players/topscorers', {
                 params: { league: LEAGUE_ID, season: SEASON }
             });
             return res.json({
                 status: response.status,
+                headers: response.headers,
                 data: response.data
             });
         }
         res.json({ error: 'No API Key' });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Debug Scorer Error:', error.message);
+        if (error.response) {
+            res.status(error.response.status).json({
+                error: error.message,
+                apiResponse: error.response.data
+            });
+        } else {
+            res.status(500).json({ error: error.message });
+        }
     }
 });
 
