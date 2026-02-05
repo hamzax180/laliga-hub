@@ -182,6 +182,30 @@ function renderMiniTransfers(transfers) {
 }
 
 /**
+ * Render mini news (Bottom Section)
+ */
+function renderMiniNews(newsItems) {
+    const container = document.getElementById('miniNews');
+    if (!container || !newsItems || newsItems.length === 0) return;
+
+    // Take top 4 items
+    const latestNews = newsItems.slice(0, 4);
+
+    container.innerHTML = latestNews.map(item => `
+        <div class="mini-news-item">
+            <div class="mini-news-img-container">
+                <img src="${item.image}" alt="${item.title}" class="mini-news-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1579952363873-27f3bde9be2e?auto=format&fit=crop&q=80&w=800';">
+                <span class="mini-news-cat">${item.category}</span>
+            </div>
+            <div class="mini-news-content">
+                <h3 class="mini-news-title">${item.title}</h3>
+                <span class="mini-news-date">${formatDate(item.date)}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+/**
  * Render stats
  */
 function renderStats(stats) {
@@ -278,6 +302,7 @@ async function init() {
 
     if (data) {
         renderNews(data.latestNews);
+        renderMiniNews(data.latestNews); // Render bottom news grid
         renderMiniStandings(data.topTeams);
         renderMiniScorers(data.topScorers);
         renderMiniFixtures(data.nextFixtures);
