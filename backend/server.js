@@ -8,6 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const API_KEY = process.env.FOOTBALL_API_KEY ? process.env.FOOTBALL_API_KEY.trim() : null;
 const COMPETITION = 'PD'; // La Liga Primera Division
+const SEASON = 2025; // 2025/26 Season
 
 // Middleware
 app.use(cors());
@@ -119,7 +120,9 @@ app.get('/api/teams', async (req, res) => {
         if (cached) return res.json(cached);
 
         if (API_KEY) {
-            const response = await footballApi.get(`/competitions/${COMPETITION}/standings`);
+            const response = await footballApi.get(`/competitions/${COMPETITION}/standings`, {
+                params: { season: SEASON }
+            });
             const mapped = mapStandings(response.data);
             setCachedData('standings', mapped);
             return res.json(mapped);
@@ -137,7 +140,9 @@ app.get('/api/scorers', async (req, res) => {
         if (cached) return res.json(cached);
 
         if (API_KEY) {
-            const response = await footballApi.get(`/competitions/${COMPETITION}/scorers`);
+            const response = await footballApi.get(`/competitions/${COMPETITION}/scorers`, {
+                params: { season: SEASON }
+            });
             const mapped = mapScorers(response.data);
             setCachedData('scorers', mapped);
             return res.json(mapped);
@@ -155,7 +160,9 @@ app.get('/api/fixtures', async (req, res) => {
         if (cached) return res.json(cached);
 
         if (API_KEY) {
-            const response = await footballApi.get(`/competitions/${COMPETITION}/matches`);
+            const response = await footballApi.get(`/competitions/${COMPETITION}/matches`, {
+                params: { season: SEASON }
+            });
             const mapped = mapFixtures(response.data);
             setCachedData('fixtures', mapped);
             return res.json(mapped);
@@ -181,9 +188,9 @@ app.get('/api/dashboard', async (req, res) => {
 
         if (API_KEY) {
             const [standingsRes, scorersRes, fixturesRes] = await Promise.allSettled([
-                footballApi.get(`/competitions/${COMPETITION}/standings`),
-                footballApi.get(`/competitions/${COMPETITION}/scorers`),
-                footballApi.get(`/competitions/${COMPETITION}/matches`, { params: { status: 'SCHEDULED', limit: 3 } })
+                footballApi.get(`/competitions/${COMPETITION}/standings`, { params: { season: SEASON } }),
+                footballApi.get(`/competitions/${COMPETITION}/scorers`, { params: { season: SEASON } }),
+                footballApi.get(`/competitions/${COMPETITION}/matches`, { params: { status: 'SCHEDULED', limit: 10, season: SEASON } })
             ]);
 
             if (standingsRes.status === 'fulfilled') teamsArr = mapStandings(standingsRes.value.data);
