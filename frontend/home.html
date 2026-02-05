@@ -71,7 +71,9 @@
             <div class="dashboard-card news-card">
                 <div class="card-header">
                     <h2 class="card-title">📰 Latest News</h2>
-                    <a href="#" class="card-link">View All →</a>
+                    <div class="news-filter-container" id="newsFilters">
+                        <!-- Categories will be loaded here -->
+                    </div>
                 </div>
                 <div class="news-list" id="newsList">
                     <div class="loading-spinner">
@@ -151,6 +153,24 @@
                         <span class="stat-label">Goals/Match</span>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section (Subscription API) -->
+    <section class="section newsletter-section">
+        <div class="container">
+            <div class="newsletter-card">
+                <div class="newsletter-header">
+                    <h2 class="newsletter-title">Stay Updated ⚽</h2>
+                    <p class="newsletter-subtitle">Subscribe to get today's matches and breaking news directly in your
+                        inbox.</p>
+                </div>
+                <form class="newsletter-form" id="newsletterForm">
+                    <input type="email" id="subscriberEmail" placeholder="Enter your email address" required>
+                    <button type="submit" class="btn-subscribe">Subscribe Now</button>
+                </form>
+                <div id="subscriptionMessage" style="margin-top: 20px; font-weight: 600;"></div>
             </div>
         </div>
     </section>

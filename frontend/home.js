@@ -44,16 +44,25 @@ function renderNews(news) {
         return;
     }
 
-    container.innerHTML = news.map(item => `
-        <div class="news-item">
-            <span class="news-icon">${item.image}</span>
-            <div class="news-content">
-                <h3 class="news-title">${item.title}</h3>
-                <p class="news-summary">${item.summary}</p>
-                <span class="news-date">${formatDate(item.date)}</span>
+    container.innerHTML = news.map(item => {
+        const hasImageUrl = item.image && item.image.length > 3;
+        return `
+            <div class="news-item">
+                <div class="news-img-container">
+                    ${hasImageUrl
+                ? `<img src="${item.image}" alt="${item.title}" class="news-img">`
+                : `<span class="news-icon-large">${item.image}</span>`
+            }
+                </div>
+                <div class="news-content">
+                    <span class="news-category cat-${item.category || 'league'}">${item.category || 'League'}</span>
+                    <h3 class="news-title">${item.title}</h3>
+                    <p class="news-summary">${item.summary}</p>
+                    <span class="news-date">${formatDate(item.date)}</span>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 /**
@@ -93,10 +102,22 @@ function renderMiniScorers(scorers) {
 
     container.innerHTML = scorers.map((scorer, index) => {
         const medals = ['🥇', '🥈', '🥉'];
+        const photoId = `mini-photo-${scorer.id}`;
+
+        // Lazy fetch the real photo
+        fetch(`${API_BASE_URL}/player-photo?name=${encodeURIComponent(scorer.name)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.photo) {
+                    const img = document.getElementById(photoId);
+                    if (img) img.src = data.photo;
+                }
+            });
+
         return `
             <div class="mini-scorer-row">
                 <span class="mini-medal">${medals[index] || ''}</span>
-                ${scorer.photo ? `<img src="${scorer.photo}" alt="${scorer.name}" class="mini-scorer-photo" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(scorer.name)}&background=random&color=fff&size=64';">` : ''}
+                <img src="${scorer.photo}" id="${photoId}" alt="${scorer.name}" class="mini-scorer-photo" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(scorer.name)}&background=random&color=fff&size=64';">
                 <div class="mini-scorer-info">
                     <span class="mini-scorer-name">${scorer.name}</span>
                     <span class="mini-scorer-team">${scorer.team}</span>
@@ -180,6 +201,74 @@ function formatDate(dateStr) {
 }
 
 /**
+ * Render news filters
+ */
+function renderNewsFilters(categories) {
+    const container = document.getElementById('newsFilters');
+    if (!container) return;
+
+    container.innerHTML = categories.map(cat => `
+        <span class="filter-chip ${cat === 'All' ? 'active' : ''}" data-category="${cat.toLowerCase()}">${cat}</span>
+    `).join('');
+
+    // Add click events
+    container.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.addEventListener('click', async () => {
+            // UI Toggle
+            container.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+
+            // Fetch filtered news
+            const category = chip.dataset.category;
+            const news = await fetchFilteredNews(category);
+            renderNews(news);
+        });
+    });
+}
+
+async function fetchFilteredNews(category) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/news?category=${category}`);
+        return await response.json();
+    } catch (e) {
+        return [];
+    }
+}
+
+/**
+ * Handle subscription
+ */
+function setupSubscription() {
+    const form = document.getElementById('newsletterForm');
+    const message = document.getElementById('subscriptionMessage');
+
+    form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('subscriberEmail').value;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/subscribe`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                message.style.color = '#4cd964';
+                message.textContent = data.message;
+                form.reset();
+            } else {
+                message.style.color = '#ff3b30';
+                message.textContent = data.error || 'Something went wrong.';
+            }
+        } catch (e) {
+            message.textContent = 'Connection error. Try again later.';
+        }
+    });
+}
+
+/**
  * Initialize
  */
 async function init() {
@@ -194,6 +283,13 @@ async function init() {
         renderMiniFixtures(data.nextFixtures);
         renderMiniTransfers(data.latestTransfers);
         renderStats(data.stats);
+
+        // Load categories
+        fetch(`${API_BASE_URL}/news/categories`)
+            .then(res => res.json())
+            .then(categories => renderNewsFilters(categories));
+
+        setupSubscription();
     }
 
     console.log('✅ Home page loaded!');
