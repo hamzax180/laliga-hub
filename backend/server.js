@@ -235,98 +235,66 @@ const fetchRSSNews = async () => {
  */
 const fetchRSSTransfers = async () => {
     try {
-        console.log('Fetching live transfers from Google News (La Liga Search)...');
-        // Targeted query for La Liga transfers, signings and rumors
-        const response = await axios.get('https://news.google.com/rss/search?q=La+Liga+transfer+signing+OR+joins+OR+moves+to&hl=en-GB&gl=GB&ceid=GB:en', {
-            timeout: 5000
+        console.log('Fetching live transfers from Sky Sports...');
+        const response = await axios.get('https://www.skysports.com/rss/12026', {
+            timeout: 5000,
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)...' }
         });
         const xml = response.data;
-        const items = xml.split('<item>').slice(1, 40); // Fetch more to allow for filtering
+        const items = xml.split('<item>').slice(1, 15);
 
         const transfers = items.map((item, index) => {
-            const titleMatch = item.match(/<title>(.*?)<\/title>/s);
-            if (!titleMatch) return null;
-            const fullTitle = titleMatch[1].replace(' - Google News', '').trim();
+            const titleMatch = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/s) || item.match(/<title>(.*?)<\/title>/s);
+            const title = titleMatch ? titleMatch[1].trim() : 'Transfer Update';
 
-            const lowerTitle = fullTitle.toLowerCase();
+            // Skip non-transfer news if possible, but keep it broad
+            const lowerTitle = title.toLowerCase();
+            const isTransfer = lowerTitle.includes('sign') || lowerTitle.includes('deal') || lowerTitle.includes('move') || lowerTitle.includes('transfer') || lowerTitle.includes('bid') || lowerTitle.includes('loan') || lowerTitle.includes('close');
 
-            // Filter out roundups and generic news
-            if (lowerTitle.includes('deadline day') || lowerTitle.includes('transfer news') || lowerTitle.includes('live updates')) return null;
+            if (!isTransfer) return null;
+
+            const descMatch = item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/s) || item.match(/<description>(.*?)<\/description>/s);
+            let summary = descMatch ? descMatch[1].replace(/<[^>]*>/g, '').trim() : '';
 
             const dateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
-            const pubDate = dateMatch ? new Date(dateMatch[1]) : new Date();
-            const timestamp = pubDate.getTime();
+            const date = dateMatch ? new Date(dateMatch[1]).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
 
-            // Extract source
-            const sourceMatch = item.match(/<source[^>]*>(.*?)<\/source>/);
-            const source = sourceMatch ? sourceMatch[1] : 'News';
+            // Attempt to extract teams/player from title (Simplified)
+            // Example: "Barcelona sign Olmo" -> Player: Olmo, To: Barcelona
+            let player = title;
+            let fromTeam = 'Rumor';
+            let toTeam = 'Check Details';
+            let type = 'in';
 
-            let player = fullTitle;
-            let fromTeam = source;
-            let toTeam = 'Update';
-            let type = 'in'; // Default
-            let fee = 'Live Update';
-
-            // INTELLIGENT PARSING
-            // Pattern: Player joins Team
-            if (lowerTitle.includes(' joins ')) {
-                const parts = fullTitle.split(/ joins /i);
-                player = parts[0].trim();
-                toTeam = parts[1].split(' from ')[0].trim();
-                if (parts[1].toLowerCase().includes(' from ')) {
-                    fromTeam = parts[1].split(/ from /i)[1].trim();
-                }
-            }
-            // Pattern: Team sign(s) Player
-            else if (lowerTitle.includes(' sign ') || lowerTitle.includes(' signs ')) {
-                const parts = fullTitle.split(/ signs? /i);
+            if (lowerTitle.includes('sign')) {
+                const parts = title.split(/sign/i);
                 toTeam = parts[0].trim();
-                player = parts[1].split(' from ')[0].trim();
-                if (parts[1].toLowerCase().includes(' from ')) {
-                    fromTeam = parts[1].split(/ from /i)[1].trim();
-                }
-            }
-            // Pattern: Player moves to Team
-            else if (lowerTitle.includes(' moves to ')) {
-                const parts = fullTitle.split(/ moves to /i);
-                player = parts[0].trim();
-                toTeam = parts[1].split(' from ')[0].trim();
+                player = parts[1].trim();
+                type = 'in';
+            } else if (lowerTitle.includes('move')) {
                 type = 'out';
+            } else if (lowerTitle.includes('loan')) {
+                type = 'loan';
             }
-            // Rumor detection
-            if (lowerTitle.includes('linked with') || lowerTitle.includes('interested in') || lowerTitle.includes('close to')) {
-                fee = 'Rumor';
-                type = 'loan'; // Use loan color for rumors
-            }
-
-            // Cleanup player/team names from source if they got stuck
-            player = player.split(' - ')[0].trim();
-            toTeam = toTeam.split(' - ')[0].trim();
-            fromTeam = fromTeam.split(' - ')[0].trim();
 
             return {
-                id: `live-trans-${timestamp}-${index}`,
-                player: player.substring(0, 50),
+                id: `trans-${index + 1}`,
+                player: player.split(' - ')[0], // Clean up
                 fromTeam: fromTeam,
                 toTeam: toTeam,
-                date: pubDate.toISOString().split('T')[0],
-                fee: fee,
+                date: date,
+                fee: 'Undisclosed',
                 type: type,
                 image: '⚽',
-                summary: fullTitle,
-                timestamp: timestamp
+                summary: summary
             };
         }).filter(t => t !== null);
 
-        // Sort by timestamp (newest first)
-        const sortedTransfers = transfers.sort((a, b) => b.timestamp - a.timestamp);
-
-        if (sortedTransfers.length > 0) {
-            console.log(`✅ Successfully fetched ${sortedTransfers.length} live transfers.`);
-            return sortedTransfers;
+        if (transfers.length > 0) {
+            return transfers.sort((a, b) => new Date(b.date) - new Date(a.date));
         }
     } catch (error) {
-        console.error('Live Transfer Feed Failed:', error.message);
+        console.error('Transfers RSS Fetch Failed:', error.message);
     }
     return mockTransfers;
 };
