@@ -2,100 +2,56 @@
     {
         "id": 1,
         "name": "Kylian Mbappé",
+        "photo": "https://img.a.transfermarkt.technology/portrait/header/342229-1682683695.jpg",
         "team": "Real Madrid",
         "nationality": "France",
         "position": "Forward",
         "goals": 22,
         "assists": 6,
-        "matches": 22,
-        "minutesPlayed": 1850
+        "matches": 22
     },
     {
         "id": 2,
-        "name": "Vedat Muriqi",
-        "team": "Mallorca",
-        "nationality": "Kosovo",
+        "name": "Robert Lewandowski",
+        "photo": "https://img.a.transfermarkt.technology/portrait/header/38253-1701118751.jpg",
+        "team": "Barcelona",
+        "nationality": "Poland",
         "position": "Forward",
-        "goals": 15,
-        "assists": 3,
-        "matches": 21,
-        "minutesPlayed": 1720
+        "goals": 18,
+        "assists": 5,
+        "matches": 21
     },
     {
         "id": 3,
-        "name": "Ferran Torres",
+        "name": "Vinícius Júnior",
+        "photo": "https://img.a.transfermarkt.technology/portrait/header/371998-1664869589.jpg",
+        "team": "Real Madrid",
+        "nationality": "Brazil",
+        "position": "Forward",
+        "goals": 15,
+        "assists": 8,
+        "matches": 20
+    },
+    {
+        "id": 4,
+        "name": "Lamine Yamal",
+        "photo": "https://img.a.transfermarkt.technology/portrait/header/926710-1692088481.jpg",
         "team": "Barcelona",
         "nationality": "Spain",
         "position": "Forward",
         "goals": 12,
-        "assists": 4,
-        "matches": 22,
-        "minutesPlayed": 1680
-    },
-    {
-        "id": 4,
-        "name": "Vinícius Júnior",
-        "team": "Real Madrid",
-        "nationality": "Brazil",
-        "position": "Winger",
-        "goals": 11,
-        "assists": 8,
-        "matches": 21,
-        "minutesPlayed": 1755
+        "assists": 12,
+        "matches": 22
     },
     {
         "id": 5,
-        "name": "Ante Budimir",
-        "team": "Osasuna",
-        "nationality": "Croatia",
-        "position": "Forward",
-        "goals": 10,
-        "assists": 2,
-        "matches": 22,
-        "minutesPlayed": 1810
-    },
-    {
-        "id": 6,
-        "name": "Robert Lewandowski",
-        "team": "Barcelona",
-        "nationality": "Poland",
-        "position": "Forward",
-        "goals": 9,
-        "assists": 5,
-        "matches": 19,
-        "minutesPlayed": 1620
-    },
-    {
-        "id": 7,
-        "name": "Lamine Yamal",
-        "team": "Barcelona",
-        "nationality": "Spain",
-        "position": "Winger",
-        "goals": 9,
-        "assists": 12,
-        "matches": 22,
-        "minutesPlayed": 1850
-    },
-    {
-        "id": 8,
-        "name": "Antoine Griezmann",
-        "team": "Atletico Madrid",
-        "nationality": "France",
-        "position": "Forward",
-        "goals": 8,
-        "assists": 7,
-        "matches": 22,
-        "minutesPlayed": 1850
-    },
-    {
-        "id": 9,
         "name": "Ayoze Pérez",
+        "photo": "https://img.a.transfermarkt.technology/portrait/header/134414-1678183111.jpg",
         "team": "Villarreal",
         "nationality": "Spain",
         "position": "Forward",
-        "goals": 8,
+        "goals": 11,
         "assists": 4,
-        "matches": 21,
-        "minutesPlayed": 1610
+        "matches": 21
     }
 ]
