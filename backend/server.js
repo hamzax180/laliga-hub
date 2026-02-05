@@ -161,7 +161,10 @@ const getSmartImage = (title, category = 'league') => {
 const fetchRSSNews = async () => {
     try {
         console.log('Fetching live news from Sky Sports RSS...');
-        const response = await axios.get('https://www.skysports.com/rss/12026', { timeout: 8000 });
+        const response = await axios.get('https://www.skysports.com/rss/12026', {
+            timeout: 5000,
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' }
+        });
         const xml = response.data;
 
         // Simple XML parsing

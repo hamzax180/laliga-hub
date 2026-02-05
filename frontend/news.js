@@ -47,7 +47,7 @@ async function renderPage() {
                     <img src="${featured.image}" alt="${featured.title}" class="featured-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1579952363873-27f3bde9be2e?auto=format&fit=crop&q=80&w=800';">
                 </div>
                 <div class="featured-content">
-                    <span class="news-category cat-${featured.category.toLowerCase()}">${featured.category}</span>
+                    <span class="news-category cat-${(featured.category || 'league').toLowerCase()}">${featured.category || 'League'}</span>
                     <h2 class="featured-title">${featured.title}</h2>
                     <p class="featured-summary">${featured.summary || featured.title}</p>
                     <div class="featured-meta">
@@ -77,10 +77,10 @@ async function renderPage() {
                     ${item.image.length > 3 ? `<img src="${item.image}" alt="${item.title}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1579952363873-27f3bde9be2e?auto=format&fit=crop&q=80&w=800';">` : '<span class="news-icon">📰</span>'}
                 </div>
                 <div class="grid-content">
-                    <span class="news-category cat-${item.category}">${item.category}</span>
+                    <span class="news-category cat-${(item.category || 'league').toLowerCase()}">${item.category || 'League'}</span>
                     <h3 class="grid-title">${item.title}</h3>
-                    <p class="grid-summary">${item.summary}</p>
-                    <span class="news-date">${formatDate(item.date)}</span>
+                    <p class="grid-summary">${item.summary || item.title}</p>
+                    <span class="news-date">${formatDate(item.date || new Date())}</span>
                 </div>
             </div>
         `).join('');
@@ -146,7 +146,7 @@ function renderFilters(categories) {
                             ${item.image.length > 3 ? `<img src="${item.image}" alt="${item.title}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1579952363873-27f3bde9be2e?auto=format&fit=crop&q=80&w=800';">` : '<span class="news-icon">📰</span>'}
                         </div>
                         <div class="grid-content">
-                            <span class="news-category cat-${item.category}">${item.category}</span>
+                            <span class="news-category cat-${(item.category || 'league').toLowerCase()}">${item.category || 'League'}</span>
                             <h3 class="grid-title">${item.title}</h3>
                             <p class="grid-summary">${item.summary}</p>
                             <span class="news-date">${formatDate(item.date)}</span>
@@ -197,12 +197,15 @@ function setupSubscription() {
 
 // Init
 async function init() {
-    await renderPage();
+    console.log('🚀 News page initializing...');
 
-    // Load categories
+    // Load parallel
+    renderPage().catch(err => console.error('Failed to render news:', err));
+
     fetch(`${API_BASE_URL}/news/categories`)
         .then(res => res.json())
-        .then(categories => renderFilters(categories));
+        .then(categories => renderFilters(categories))
+        .catch(err => console.warn('Failed to load categories:', err));
 
     setupSubscription();
 }
