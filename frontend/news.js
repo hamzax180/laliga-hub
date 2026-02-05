@@ -47,9 +47,9 @@ async function renderPage() {
                     <img src="${featured.image}" alt="${featured.title}" class="featured-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1579952363873-27f3bde9be2e?auto=format&fit=crop&q=80&w=800';">
                 </div>
                 <div class="featured-content">
-                    <span class="news-category cat-${featured.category}">${featured.category}</span>
+                    <span class="news-category cat-${featured.category.toLowerCase()}">${featured.category}</span>
                     <h2 class="featured-title">${featured.title}</h2>
-                    <p class="featured-summary">${featured.content}</p> <!--< Using full content/summary for featured -->
+                    <p class="featured-summary">${featured.summary || featured.title}</p>
                     <div class="featured-meta">
                         <span>${formatDate(featured.date)}</span>
                         <span>•</span>
@@ -59,7 +59,9 @@ async function renderPage() {
             </div>
         `;
     } else {
-        featuredContainer.innerHTML = '';
+        featuredContainer.innerHTML = '<p class="no-data">No news available at the moment.</p>';
+        document.getElementById('newsGrid').innerHTML = ''; // Clear grid if no featured
+        return;
     }
 
     // 2. Render Grid (Remaining Items)
