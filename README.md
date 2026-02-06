@@ -17,6 +17,20 @@ A modern, visually stunning website showcasing La Liga's top teams and top score
 - **🐳 Cloud Ready** - Docker containerized and Kubernetes deployed
 - **🚀 Vercel** - Live deployment with Serverless Functions
 
+## 📖 Documentation
+
+Detailed documentation on the hub's features and technical architecture:
+
+### [✨ Features](docs/features)
+- [🏟️ Stadium Mode](docs/features/stadium-mode.md)
+- [🔔 Notifications & Alerts](docs/features/notifications.md)
+- [📧 Smart Subscriptions](docs/features/subscriptions.md)
+
+### [⚙️ Technical](docs/technical)
+- [🔌 API Architecture](docs/technical/api-architecture.md)
+- [📤 Email Service (Brevo)](docs/technical/email-service.md)
+- [☸️ Kubernetes Setup](docs/technical/kubernetes-setup.md)
+
 ## 🏗️ Architecture
 
 ```mermaid
