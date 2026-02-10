@@ -2602,118 +2602,196 @@ body {
 
 .transfers-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 28px;
 }
 
 .transfer-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-xl);
-    padding: 24px;
+    overflow: hidden;
     transition: var(--transition-normal);
+    position: relative;
 }
 
 .transfer-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
     border-color: var(--border-glow);
 }
 
 .transfer-card.transfer-in {
-    border-left: 4px solid #30d158;
+    border-top: 3px solid #30d158;
 }
 
 .transfer-card.transfer-out {
-    border-left: 4px solid #ff453a;
+    border-top: 3px solid #ff453a;
 }
 
 .transfer-card.transfer-loan {
-    border-left: 4px solid #5856d6;
+    border-top: 3px solid #5856d6;
 }
 
 .transfer-card.transfer-extension {
-    border-left: 4px solid #ff9500;
+    border-top: 3px solid #ff9500;
 }
 
-.transfer-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-}
-
-.transfer-badge {
-    font-size: 0.85rem;
-    font-weight: 600;
+/* Type Ribbon */
+.transfer-type-ribbon {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
     padding: 4px 12px;
-    background: var(--bg-card-hover);
     border-radius: 20px;
+    z-index: 2;
 }
 
-.transfer-date {
+.transfer-card-body {
+    padding: 24px;
+}
+
+/* Player Section */
+.transfer-player-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.transfer-player-photo-wrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.transfer-player-photo {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    background: var(--bg-card-hover);
+}
+
+.transfer-nationality {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    font-size: 1.2rem;
+    background: var(--bg-card);
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--border-color);
+}
+
+.transfer-player-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.transfer-player-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 4px 0;
+    line-height: 1.2;
+}
+
+.transfer-position {
     font-size: 0.8rem;
     color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.transfer-player {
+/* Clubs Section */
+.transfer-clubs-section {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 20px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-md);
+    margin-bottom: 16px;
 }
 
-.transfer-flag {
-    font-size: 2rem;
-}
-
-.transfer-name {
-    font-size: 1.3rem;
-    font-weight: 700;
-}
-
-.transfer-clubs {
+.transfer-club {
+    flex: 1;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 20px;
-    padding: 16px;
-    background: var(--bg-card-hover);
-    border-radius: var(--radius-md);
+    gap: 10px;
+    min-width: 0;
 }
 
-.transfer-from,
-.transfer-to {
-    flex: 1;
+.transfer-club-crest {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    flex-shrink: 0;
 }
 
-.club-label {
-    display: block;
-    font-size: 0.75rem;
+.transfer-club-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.transfer-club-label {
+    font-size: 0.65rem;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 4px;
-}
-
-.club-name {
+    letter-spacing: 1px;
     font-weight: 600;
 }
 
-.transfer-arrow {
-    font-size: 1.5rem;
-    color: var(--primary);
+.transfer-club-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.transfer-fee-badge {
-    text-align: center;
-    font-size: 1.1rem;
+.transfer-direction-arrow {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+}
+
+/* Footer */
+.transfer-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.transfer-fee-tag {
+    font-size: 1rem;
     font-weight: 700;
     color: var(--accent);
-    padding: 12px;
-    background: rgba(255, 149, 0, 0.1);
-    border-radius: var(--radius-md);
+    padding: 6px 14px;
+    background: rgba(255, 149, 0, 0.12);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 149, 0, 0.2);
+}
+
+.transfer-date-tag {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
 }
 
 /* ============================================
@@ -2809,13 +2887,21 @@ body {
 }
 
 @media (max-width: 480px) {
-    .transfer-clubs {
+    .transfer-clubs-section {
         flex-direction: column;
         text-align: center;
     }
 
-    .transfer-arrow {
+    .transfer-club {
+        justify-content: center;
+    }
+
+    .transfer-direction-arrow {
         transform: rotate(90deg);
+    }
+
+    .transfer-player-name {
+        font-size: 1rem;
     }
 }
 

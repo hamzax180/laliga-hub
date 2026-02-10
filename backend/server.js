@@ -245,136 +245,32 @@ const fetchRSSNews = async () => {
 };
 
 /**
- * LIVE TRANSFERS FETCHER (Football España RSS)
- * Fetches La Liga transfer news from Football España and The Guardian
+ * CURATED TRANSFERS DATA
+ * Serves confirmed La Liga transfers with player photos and team crests.
+ * Player photos are resolved dynamically via TheSportsDB API.
  */
-const fetchRSSTransfers = async () => {
-    const sources = [
-        'https://www.football-espana.net/feed',
-        'https://www.theguardian.com/football/laligafootball/rss'
-    ];
-
-    const transferKeywords = [
-        'sign', 'deal', 'move', 'transfer', 'bid', 'loan', 'close',
-        'contract', 'agree', 'join', 'offer', 'confirm', 'swap',
-        'release', 'exit', 'talks', 'target', 'interested', 'pursue',
-        'want', 'eye', 'set to', 'negotiations', 'extension', 'renew',
-        'depart', 'leave', 'buy', 'sell', 'fee', 'clause', 'sale',
-        'swap deal', 'window', 'summer', 'winter', 'january', 'arrival'
-    ];
-
-    const laLigaTeams = [
-        'real madrid', 'barcelona', 'atletico madrid', 'athletic bilbao',
-        'real sociedad', 'villarreal', 'betis', 'sevilla', 'valencia',
-        'girona', 'celta vigo', 'mallorca', 'rayo vallecano', 'osasuna',
-        'getafe', 'alaves', 'las palmas', 'espanyol', 'leganes', 'valladolid'
-    ];
-
+const getTransfersWithPhotos = async () => {
     try {
-        let allTransfers = [];
-
-        for (const feedUrl of sources) {
-            try {
-                console.log(`Fetching transfers from: ${feedUrl}`);
-                const response = await axios.get(feedUrl, {
-                    timeout: 8000,
-                    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
-                });
-                const xml = response.data;
-                const items = xml.split('<item>').slice(1, 25);
-
-                const transfers = items.map((item, index) => {
-                    const titleMatch = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/s) || item.match(/<title>(.*?)<\/title>/s);
-                    const title = titleMatch ? titleMatch[1].trim() : '';
-                    if (!title) return null;
-
-                    const lowerTitle = title.toLowerCase();
-                    const descMatch = item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/s) || item.match(/<description>(.*?)<\/description>/s);
-                    let summary = descMatch ? descMatch[1]
-                        .replace(/<[^>]*>/g, '')
-                        .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')
-                        .replace(/&#8211;/g, '–').replace(/&#8216;/g, "'").replace(/&#8217;/g, "'")
-                        .replace(/&#8220;/g, '"').replace(/&#8221;/g, '"').replace(/&quot;/g, '"')
-                        .replace(/<[^>]*>/g, '')
-                        .trim() : '';
-                    const lowerSummary = summary.toLowerCase();
-                    const combined = lowerTitle + ' ' + lowerSummary;
-
-                    // Must have at least one transfer keyword in title or description
-                    const isTransfer = transferKeywords.some(kw => combined.includes(kw));
-                    if (!isTransfer) return null;
-
-                    const dateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
-                    const date = dateMatch ? new Date(dateMatch[1]).toISOString() : new Date().toISOString();
-
-                    // Smart extraction of transfer details from title
-                    let player = title;
-                    let fromTeam = 'See Details';
-                    let toTeam = 'See Details';
-                    let type = 'in';
-                    let fee = 'See Article';
-
-                    // Try to identify La Liga team mentioned
-                    const mentionedTeam = laLigaTeams.find(t => lowerTitle.includes(t));
-                    if (mentionedTeam) {
-                        toTeam = mentionedTeam.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-                    }
-
-                    // Determine transfer type from keywords
-                    if (lowerTitle.includes('loan')) {
-                        type = 'loan';
-                    } else if (lowerTitle.includes('extend') || lowerTitle.includes('extension') || lowerTitle.includes('renew')) {
-                        type = 'extension';
-                    } else if (lowerTitle.includes('leave') || lowerTitle.includes('exit') || lowerTitle.includes('depart') || lowerTitle.includes('sell')) {
-                        type = 'out';
-                    } else if (lowerTitle.includes('sign') || lowerTitle.includes('join') || lowerTitle.includes('agree') || lowerTitle.includes('confirm') || lowerTitle.includes('buy')) {
-                        type = 'in';
-                    }
-
-                    // Extract fee if mentioned
-                    const feeMatch = combined.match(/€(\d+[\.\d]*\s*[mM])/);
-                    if (feeMatch) fee = '€' + feeMatch[1].toUpperCase();
-                    else if (combined.includes('free transfer') || combined.includes('free agent')) fee = 'Free Transfer';
-
-                    // Truncate summary
-                    if (summary.length > 200) summary = summary.substring(0, 200) + '...';
-
-                    return {
-                        id: `trans-${Date.now()}-${index}`,
-                        player: player
-                            .replace(/&#8211;/g, '–').replace(/&#8216;/g, "'").replace(/&#8217;/g, "'")
-                            .split(' – ')[0].split(' - ')[0].trim(),
-                        fromTeam,
-                        toTeam,
-                        date,
-                        fee,
-                        type,
-                        image: '⚽',
-                        summary
-                    };
-                }).filter(t => t !== null);
-
-                allTransfers = allTransfers.concat(transfers);
-            } catch (feedErr) {
-                console.error(`Feed ${feedUrl} failed:`, feedErr.message);
-            }
-        }
-
-        if (allTransfers.length > 0) {
-            // Deduplicate by title similarity and sort by date
-            const seen = new Set();
-            const unique = allTransfers.filter(t => {
-                const key = t.player.toLowerCase().substring(0, 30);
-                if (seen.has(key)) return false;
-                seen.add(key);
-                return true;
-            });
-            return unique.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 15);
-        }
+        // Resolve player photos in parallel
+        const transfersWithPhotos = await Promise.all(
+            mockTransfers.map(async (transfer) => {
+                let playerPhoto = null;
+                try {
+                    playerPhoto = await getRealtimePlayerPhoto(transfer.player);
+                } catch (e) {
+                    // silently fail
+                }
+                return {
+                    ...transfer,
+                    playerPhoto: playerPhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(transfer.player)}&background=1a1a2e&color=ff2d55&size=200&bold=true`
+                };
+            })
+        );
+        return transfersWithPhotos.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     } catch (error) {
-        console.error('Transfers RSS Fetch Failed:', error.message);
+        console.error('Failed to resolve transfer photos:', error.message);
+        return mockTransfers;
     }
-    return mockTransfers;
 };
 
 /**
@@ -537,11 +433,10 @@ app.get('/api/transfers', async (req, res) => {
     try {
         let transfers = getCachedData('transfers');
         if (!transfers) {
-            transfers = await fetchRSSTransfers();
+            transfers = await getTransfersWithPhotos();
             setCachedData('transfers', transfers);
         }
 
-        // Ensure sorting is applied to whatever data we have (Live or Mock)
         const sorted = [...transfers].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         res.json(sorted);
     } catch (error) {
@@ -580,7 +475,7 @@ app.get('/api/dashboard', async (req, res) => {
             topScorers: scorersArr.slice(0, 3),
             nextFixtures: fixturesArr.slice(0, 3),
             latestNews: newsArr.slice(0, 3),
-            latestTransfers: (await fetchRSSTransfers()).slice(0, 3),
+            latestTransfers: (await getTransfersWithPhotos()).slice(0, 3),
             stats: { totalMatches: 220, totalGoals: 583, avgGoalsPerMatch: 2.65 }
         };
 
