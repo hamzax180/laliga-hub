@@ -259,8 +259,8 @@ const fetchRSSTransfers = async () => {
         'contract', 'agree', 'join', 'offer', 'confirm', 'swap',
         'release', 'exit', 'talks', 'target', 'interested', 'pursue',
         'want', 'eye', 'set to', 'negotiations', 'extension', 'renew',
-        'depart', 'leave', 'buy', 'sell', 'fee', 'clause', 'midfielder',
-        'striker', 'defender', 'forward', 'goalkeeper'
+        'depart', 'leave', 'buy', 'sell', 'fee', 'clause', 'sale',
+        'swap deal', 'window', 'summer', 'winter', 'january', 'arrival'
     ];
 
     const laLigaTeams = [
@@ -290,16 +290,19 @@ const fetchRSSTransfers = async () => {
 
                     const lowerTitle = title.toLowerCase();
                     const descMatch = item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/s) || item.match(/<description>(.*?)<\/description>/s);
-                    let summary = descMatch ? descMatch[1].replace(/<[^>]*>/g, '').trim() : '';
+                    let summary = descMatch ? descMatch[1]
+                        .replace(/<[^>]*>/g, '')
+                        .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')
+                        .replace(/&#8211;/g, '–').replace(/&#8216;/g, "'").replace(/&#8217;/g, "'")
+                        .replace(/&#8220;/g, '"').replace(/&#8221;/g, '"').replace(/&quot;/g, '"')
+                        .replace(/<[^>]*>/g, '')
+                        .trim() : '';
                     const lowerSummary = summary.toLowerCase();
                     const combined = lowerTitle + ' ' + lowerSummary;
 
-                    // Check if it's transfer-related (title or description)
+                    // Must have at least one transfer keyword in title or description
                     const isTransfer = transferKeywords.some(kw => combined.includes(kw));
-                    // Also include if it mentions La Liga teams in a transfer context
-                    const mentionsLaLiga = laLigaTeams.some(team => combined.includes(team));
-
-                    if (!isTransfer && !mentionsLaLiga) return null;
+                    if (!isTransfer) return null;
 
                     const dateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
                     const date = dateMatch ? new Date(dateMatch[1]).toISOString() : new Date().toISOString();
@@ -338,7 +341,9 @@ const fetchRSSTransfers = async () => {
 
                     return {
                         id: `trans-${Date.now()}-${index}`,
-                        player: player.split(' – ')[0].split(' - ')[0].trim(),
+                        player: player
+                            .replace(/&#8211;/g, '–').replace(/&#8216;/g, "'").replace(/&#8217;/g, "'")
+                            .split(' – ')[0].split(' - ')[0].trim(),
                         fromTeam,
                         toTeam,
                         date,
