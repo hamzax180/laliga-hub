@@ -372,16 +372,52 @@ const getTransfersWithPhotos = async () => {
                     const hasLaLiga = laLigaTeamNames.some(t => combined.includes(t));
                     if (!hasLaLiga) return null;
 
-                    // Extract player name from title
-                    let playerName = title
-                        .split(' – ')[0].split(' - ')[0]
-                        .replace(/[''"](.*?)[''"].*/, '$1')
-                        .replace(/^(report:|exclusive:|breaking:)\s*/i, '')
-                        .trim();
+                    // Extract player name from title using multiple strategies
+                    let playerName = '';
+                    const allTeamNames = Object.values(TEAM_CRESTS).map(t => t.name.toLowerCase());
 
-                    // Try to extract a clean player name (capitalized words before verbs)
-                    const nameMatch = title.match(/^([A-ZÁÉÍÓÚÑÜ][a-záéíóúñü]+(?:\s+[A-ZÁÉÍÓÚÑÜ][a-záéíóúñü]+){0,3})\s+(?:to|set|could|will|want|close|agree|sign|join|eye|reject|confirm|complete|near|in|has|had)/i);
-                    if (nameMatch) playerName = nameMatch[1];
+                    // Strategy 1: "Team star PLAYER NAME" or "Team forward/midfielder/etc PLAYER NAME"
+                    const starMatch = title.match(/(?:star|forward|midfielder|defender|goalkeeper|striker|winger|target|captain|ace|man)\s+([A-ZÁÉÍÓÚÑÜ][a-záéíóúñü]+(?:\s+[A-ZÁÉÍÓÚÑÜ][a-záéíóúñü]+){0,2})/i);
+                    if (starMatch) playerName = starMatch[1];
+
+                    // Strategy 2: "PLAYER NAME to/set to/close to/agrees/signs for Team"
+                    if (!playerName) {
+                        const verbMatch = title.match(/^([A-ZÁÉÍÓÚÑÜ][a-záéíóúñü]+(?:\s+[A-ZÁÉÍÓÚÑÜ][a-záéíóúñü]+){0,2})\s+(?:to|set|could|will|close|agree|sign|join|reject|confirm|complete|near|has|had|want|eyes|move|transfer|linked|tipped)\b/i);
+                        if (verbMatch) {
+                            const candidate = verbMatch[1].toLowerCase();
+                            // Make sure it's not a team name
+                            if (!allTeamNames.some(tn => candidate.includes(tn)) && !['european', 'la liga', 'mls', 'premier', 'serie', 'column', 'report', 'exclusive'].some(w => candidate.includes(w))) {
+                                playerName = verbMatch[1];
+                            }
+                        }
+                    }
+
+                    // Strategy 3: Look for quoted names "'He will go to Barcelona' – Coach says PLAYER NAME"
+                    if (!playerName) {
+                        const quotedNameMatch = combined.match(/(?:says|confirms|reveals)\s+([A-ZÁÉÍÓÚÑÜ][a-záéíóúñü]+(?:\s+[A-ZÁÉÍÓÚÑÜ][a-záéíóúñü]+){0,2})/i);
+                        if (quotedNameMatch) playerName = quotedNameMatch[1];
+                    }
+
+                    // Strategy 4: Look for "signing of PLAYER NAME" or "move for PLAYER NAME"
+                    if (!playerName) {
+                        const ofMatch = combined.match(/(?:signing of|move for|deal for|bid for|offer (?:to|for)|interested in|pursuit of)\s+([A-ZÁÉÍÓÚÑÜ][a-záéíóúñü]+(?:\s+[A-ZÁÉÍÓÚÑÜ][a-záéíóúñü]+){0,2})/i);
+                        if (ofMatch) playerName = ofMatch[1];
+                    }
+
+                    // Fallback: Use title truncated cleanly at 40 chars
+                    if (!playerName) {
+                        playerName = title.split(' – ')[0].split(' - ')[0].trim();
+                        if (playerName.length > 40) playerName = playerName.substring(0, 40) + '...';
+                    }
+
+                    // Clean up: remove team names from player name if it accidentally matched one
+                    for (const tn of allTeamNames) {
+                        if (playerName.toLowerCase() === tn) {
+                            playerName = title.split(' – ')[0].split(' - ')[0].trim();
+                            if (playerName.length > 40) playerName = playerName.substring(0, 40) + '...';
+                            break;
+                        }
+                    }
 
                     // Determine transfer type
                     let type = 'in';
@@ -410,7 +446,8 @@ const getTransfersWithPhotos = async () => {
 
                     return {
                         id: `rss-${Date.now()}-${index}`,
-                        player: playerName.length > 50 ? playerName.substring(0, 50) + '...' : playerName,
+                        player: playerName,
+                        headline: title.length > 60 ? title.substring(0, 60) + '...' : title,
                         fromTeam: fromTeam.name,
                         fromCrest: fromTeam.crest,
                         toTeam: toTeam.name,

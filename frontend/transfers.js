@@ -60,6 +60,7 @@ function renderTransfers(transfers) {
                         </div>
                         <div class="transfer-player-info">
                             <h3 class="transfer-player-name">${transfer.player}</h3>
+                            ${transfer.headline ? `<span class="transfer-headline">${transfer.headline}</span>` : ''}
                             <span class="transfer-position">${position}</span>
                         </div>
                     </div>
