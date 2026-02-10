@@ -266,6 +266,32 @@ const LA_LIGA_TEAMS = [
 const transferCache = { data: null, lastFetch: 0 };
 const TRANSFER_CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours
 
+// Parse API-Football dates which come as 'YYYY-MM-DD' or sometimes compact formats
+function parseTransferDate(dateStr) {
+    if (!dateStr) return null;
+    const s = String(dateStr).trim();
+    // Standard YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    // ISO datetime
+    if (s.includes('T')) return s.split('T')[0];
+    // Compact YYMMDD (6 digits)
+    if (/^\d{6}$/.test(s)) {
+        const yy = parseInt(s.substring(0, 2));
+        const mm = s.substring(2, 4);
+        const dd = s.substring(4, 6);
+        const year = yy > 50 ? 1900 + yy : 2000 + yy;
+        return `${year}-${mm}-${dd}`;
+    }
+    // Compact YYYYMMDD (8 digits)
+    if (/^\d{8}$/.test(s)) {
+        return `${s.substring(0, 4)}-${s.substring(4, 6)}-${s.substring(6, 8)}`;
+    }
+    // Fallback: try native parsing
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) return d.toISOString().split('T')[0];
+    return null;
+}
+
 const getTransfersWithPhotos = async () => {
     // Return cached data if fresh
     if (transferCache.data && (Date.now() - transferCache.lastFetch < TRANSFER_CACHE_DURATION)) {
@@ -299,7 +325,9 @@ const getTransfersWithPhotos = async () => {
 
                 // Only get recent transfers (2025+)
                 const recentTransfers = (playerData.transfers || []).filter(t => {
-                    const year = new Date(t.date).getFullYear();
+                    const parsed = parseTransferDate(t.date);
+                    if (!parsed) return false;
+                    const year = parseInt(parsed.substring(0, 4));
                     return year >= 2025;
                 });
 
@@ -329,7 +357,7 @@ const getTransfersWithPhotos = async () => {
                         toTeam: teamsIn.name || 'Unknown',
                         toCrest: teamsIn.logo || '',
                         fee: fee,
-                        date: transfer.date,
+                        date: parseTransferDate(transfer.date) || transfer.date,
                         type: type,
                         position: '',
                         nationality: '⚽'
