@@ -245,68 +245,126 @@ const fetchRSSNews = async () => {
 };
 
 /**
- * LIVE TRANSFERS FETCHER (Sky Sports Transfer Centre)
+ * LIVE TRANSFERS FETCHER (Football España RSS)
+ * Fetches La Liga transfer news from Football España and The Guardian
  */
 const fetchRSSTransfers = async () => {
+    const sources = [
+        'https://www.football-espana.net/feed',
+        'https://www.theguardian.com/football/laligafootball/rss'
+    ];
+
+    const transferKeywords = [
+        'sign', 'deal', 'move', 'transfer', 'bid', 'loan', 'close',
+        'contract', 'agree', 'join', 'offer', 'confirm', 'swap',
+        'release', 'exit', 'talks', 'target', 'interested', 'pursue',
+        'want', 'eye', 'set to', 'negotiations', 'extension', 'renew',
+        'depart', 'leave', 'buy', 'sell', 'fee', 'clause', 'midfielder',
+        'striker', 'defender', 'forward', 'goalkeeper'
+    ];
+
+    const laLigaTeams = [
+        'real madrid', 'barcelona', 'atletico madrid', 'athletic bilbao',
+        'real sociedad', 'villarreal', 'betis', 'sevilla', 'valencia',
+        'girona', 'celta vigo', 'mallorca', 'rayo vallecano', 'osasuna',
+        'getafe', 'alaves', 'las palmas', 'espanyol', 'leganes', 'valladolid'
+    ];
+
     try {
-        console.log('Fetching live transfers from Sky Sports...');
-        const response = await axios.get('https://www.skysports.com/rss/12026', {
-            timeout: 5000,
-            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)...' }
-        });
-        const xml = response.data;
-        const items = xml.split('<item>').slice(1, 15);
+        let allTransfers = [];
 
-        const transfers = items.map((item, index) => {
-            const titleMatch = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/s) || item.match(/<title>(.*?)<\/title>/s);
-            const title = titleMatch ? titleMatch[1].trim() : 'Transfer Update';
+        for (const feedUrl of sources) {
+            try {
+                console.log(`Fetching transfers from: ${feedUrl}`);
+                const response = await axios.get(feedUrl, {
+                    timeout: 8000,
+                    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+                });
+                const xml = response.data;
+                const items = xml.split('<item>').slice(1, 25);
 
-            // Skip non-transfer news if possible, but keep it broad
-            const lowerTitle = title.toLowerCase();
-            const isTransfer = lowerTitle.includes('sign') || lowerTitle.includes('deal') || lowerTitle.includes('move') || lowerTitle.includes('transfer') || lowerTitle.includes('bid') || lowerTitle.includes('loan') || lowerTitle.includes('close');
+                const transfers = items.map((item, index) => {
+                    const titleMatch = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/s) || item.match(/<title>(.*?)<\/title>/s);
+                    const title = titleMatch ? titleMatch[1].trim() : '';
+                    if (!title) return null;
 
-            if (!isTransfer) return null;
+                    const lowerTitle = title.toLowerCase();
+                    const descMatch = item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/s) || item.match(/<description>(.*?)<\/description>/s);
+                    let summary = descMatch ? descMatch[1].replace(/<[^>]*>/g, '').trim() : '';
+                    const lowerSummary = summary.toLowerCase();
+                    const combined = lowerTitle + ' ' + lowerSummary;
 
-            const descMatch = item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/s) || item.match(/<description>(.*?)<\/description>/s);
-            let summary = descMatch ? descMatch[1].replace(/<[^>]*>/g, '').trim() : '';
+                    // Check if it's transfer-related (title or description)
+                    const isTransfer = transferKeywords.some(kw => combined.includes(kw));
+                    // Also include if it mentions La Liga teams in a transfer context
+                    const mentionsLaLiga = laLigaTeams.some(team => combined.includes(team));
 
-            const dateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
-            const date = dateMatch ? new Date(dateMatch[1]).toISOString() : new Date().toISOString();
+                    if (!isTransfer && !mentionsLaLiga) return null;
 
-            // Attempt to extract teams/player from title (Simplified)
-            // Example: "Barcelona sign Olmo" -> Player: Olmo, To: Barcelona
-            let player = title;
-            let fromTeam = 'Rumor';
-            let toTeam = 'Check Details';
-            let type = 'in';
+                    const dateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
+                    const date = dateMatch ? new Date(dateMatch[1]).toISOString() : new Date().toISOString();
 
-            if (lowerTitle.includes('sign')) {
-                const parts = title.split(/sign/i);
-                toTeam = parts[0].trim();
-                player = parts[1].trim();
-                type = 'in';
-            } else if (lowerTitle.includes('move')) {
-                type = 'out';
-            } else if (lowerTitle.includes('loan')) {
-                type = 'loan';
+                    // Smart extraction of transfer details from title
+                    let player = title;
+                    let fromTeam = 'See Details';
+                    let toTeam = 'See Details';
+                    let type = 'in';
+                    let fee = 'See Article';
+
+                    // Try to identify La Liga team mentioned
+                    const mentionedTeam = laLigaTeams.find(t => lowerTitle.includes(t));
+                    if (mentionedTeam) {
+                        toTeam = mentionedTeam.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                    }
+
+                    // Determine transfer type from keywords
+                    if (lowerTitle.includes('loan')) {
+                        type = 'loan';
+                    } else if (lowerTitle.includes('extend') || lowerTitle.includes('extension') || lowerTitle.includes('renew')) {
+                        type = 'extension';
+                    } else if (lowerTitle.includes('leave') || lowerTitle.includes('exit') || lowerTitle.includes('depart') || lowerTitle.includes('sell')) {
+                        type = 'out';
+                    } else if (lowerTitle.includes('sign') || lowerTitle.includes('join') || lowerTitle.includes('agree') || lowerTitle.includes('confirm') || lowerTitle.includes('buy')) {
+                        type = 'in';
+                    }
+
+                    // Extract fee if mentioned
+                    const feeMatch = combined.match(/€(\d+[\.\d]*\s*[mM])/);
+                    if (feeMatch) fee = '€' + feeMatch[1].toUpperCase();
+                    else if (combined.includes('free transfer') || combined.includes('free agent')) fee = 'Free Transfer';
+
+                    // Truncate summary
+                    if (summary.length > 200) summary = summary.substring(0, 200) + '...';
+
+                    return {
+                        id: `trans-${Date.now()}-${index}`,
+                        player: player.split(' – ')[0].split(' - ')[0].trim(),
+                        fromTeam,
+                        toTeam,
+                        date,
+                        fee,
+                        type,
+                        image: '⚽',
+                        summary
+                    };
+                }).filter(t => t !== null);
+
+                allTransfers = allTransfers.concat(transfers);
+            } catch (feedErr) {
+                console.error(`Feed ${feedUrl} failed:`, feedErr.message);
             }
+        }
 
-            return {
-                id: `trans-${index + 1}`,
-                player: player.split(' - ')[0], // Clean up
-                fromTeam: fromTeam,
-                toTeam: toTeam,
-                date: date,
-                fee: 'Undisclosed',
-                type: type,
-                image: '⚽',
-                summary: summary
-            };
-        }).filter(t => t !== null);
-
-        if (transfers.length > 0) {
-            // Sort by actual date and time (precision)
-            return transfers.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        if (allTransfers.length > 0) {
+            // Deduplicate by title similarity and sort by date
+            const seen = new Set();
+            const unique = allTransfers.filter(t => {
+                const key = t.player.toLowerCase().substring(0, 30);
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+            return unique.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 15);
         }
     } catch (error) {
         console.error('Transfers RSS Fetch Failed:', error.message);
