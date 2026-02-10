@@ -245,31 +245,231 @@ const fetchRSSNews = async () => {
 };
 
 /**
- * CURATED TRANSFERS DATA
- * Serves confirmed La Liga transfers with player photos and team crests.
- * Player photos are resolved dynamically via TheSportsDB API.
+ * LIVE TRANSFERS FETCHER
+ * Fetches La Liga transfer news from RSS, extracts player names,
+ * resolves player photos via TheSportsDB, and maps team crests.
+ * Falls back to curated transfers.json if RSS fails.
  */
+const TEAM_CRESTS = {
+    'real madrid': { name: 'Real Madrid', crest: 'https://crests.football-data.org/86.svg' },
+    'barcelona': { name: 'Barcelona', crest: 'https://crests.football-data.org/81.svg' },
+    'atletico madrid': { name: 'Atletico Madrid', crest: 'https://crests.football-data.org/78.svg' },
+    'atletico': { name: 'Atletico Madrid', crest: 'https://crests.football-data.org/78.svg' },
+    'athletic bilbao': { name: 'Athletic Bilbao', crest: 'https://crests.football-data.org/77.svg' },
+    'athletic club': { name: 'Athletic Bilbao', crest: 'https://crests.football-data.org/77.svg' },
+    'real sociedad': { name: 'Real Sociedad', crest: 'https://crests.football-data.org/90.svg' },
+    'villarreal': { name: 'Villarreal', crest: 'https://crests.football-data.org/94.svg' },
+    'real betis': { name: 'Real Betis', crest: 'https://crests.football-data.org/90.svg' },
+    'betis': { name: 'Real Betis', crest: 'https://crests.football-data.org/90.svg' },
+    'sevilla': { name: 'Sevilla', crest: 'https://crests.football-data.org/559.svg' },
+    'valencia': { name: 'Valencia', crest: 'https://crests.football-data.org/95.svg' },
+    'girona': { name: 'Girona', crest: 'https://crests.football-data.org/298.svg' },
+    'celta vigo': { name: 'Celta Vigo', crest: 'https://crests.football-data.org/558.svg' },
+    'celta': { name: 'Celta Vigo', crest: 'https://crests.football-data.org/558.svg' },
+    'mallorca': { name: 'Mallorca', crest: 'https://crests.football-data.org/89.svg' },
+    'rayo vallecano': { name: 'Rayo Vallecano', crest: 'https://crests.football-data.org/87.svg' },
+    'rayo': { name: 'Rayo Vallecano', crest: 'https://crests.football-data.org/87.svg' },
+    'osasuna': { name: 'Osasuna', crest: 'https://crests.football-data.org/79.svg' },
+    'getafe': { name: 'Getafe', crest: 'https://crests.football-data.org/82.svg' },
+    'alaves': { name: 'Alaves', crest: 'https://crests.football-data.org/263.svg' },
+    'las palmas': { name: 'Las Palmas', crest: 'https://crests.football-data.org/275.svg' },
+    'espanyol': { name: 'Espanyol', crest: 'https://crests.football-data.org/80.svg' },
+    'leganes': { name: 'Leganes', crest: 'https://crests.football-data.org/745.svg' },
+    'valladolid': { name: 'Valladolid', crest: 'https://crests.football-data.org/250.svg' },
+    // Common non-La Liga clubs
+    'chelsea': { name: 'Chelsea', crest: 'https://crests.football-data.org/61.svg' },
+    'manchester united': { name: 'Manchester United', crest: 'https://crests.football-data.org/66.svg' },
+    'manchester city': { name: 'Manchester City', crest: 'https://crests.football-data.org/65.svg' },
+    'liverpool': { name: 'Liverpool', crest: 'https://crests.football-data.org/64.svg' },
+    'arsenal': { name: 'Arsenal', crest: 'https://crests.football-data.org/57.svg' },
+    'tottenham': { name: 'Tottenham', crest: 'https://crests.football-data.org/73.svg' },
+    'psg': { name: 'Paris Saint-Germain', crest: 'https://crests.football-data.org/524.svg' },
+    'paris saint-germain': { name: 'Paris Saint-Germain', crest: 'https://crests.football-data.org/524.svg' },
+    'bayern munich': { name: 'Bayern Munich', crest: 'https://crests.football-data.org/5.svg' },
+    'bayern': { name: 'Bayern Munich', crest: 'https://crests.football-data.org/5.svg' },
+    'juventus': { name: 'Juventus', crest: 'https://crests.football-data.org/109.svg' },
+    'napoli': { name: 'Napoli', crest: 'https://crests.football-data.org/113.svg' },
+    'inter milan': { name: 'Inter Milan', crest: 'https://crests.football-data.org/108.svg' },
+    'ac milan': { name: 'AC Milan', crest: 'https://crests.football-data.org/98.svg' },
+    'milan': { name: 'AC Milan', crest: 'https://crests.football-data.org/98.svg' },
+    'borussia dortmund': { name: 'Borussia Dortmund', crest: 'https://crests.football-data.org/4.svg' },
+    'dortmund': { name: 'Borussia Dortmund', crest: 'https://crests.football-data.org/4.svg' },
+    'atalanta': { name: 'Atalanta', crest: 'https://crests.football-data.org/102.svg' },
+    'aston villa': { name: 'Aston Villa', crest: 'https://crests.football-data.org/58.svg' },
+    'rb leipzig': { name: 'RB Leipzig', crest: 'https://crests.football-data.org/721.svg' },
+    'leipzig': { name: 'RB Leipzig', crest: 'https://crests.football-data.org/721.svg' },
+    'ajax': { name: 'Ajax', crest: 'https://crests.football-data.org/678.svg' },
+    'benfica': { name: 'Benfica', crest: 'https://crests.football-data.org/1903.svg' },
+    'porto': { name: 'Porto', crest: 'https://crests.football-data.org/503.svg' }
+};
+
 const getTransfersWithPhotos = async () => {
+    const sources = [
+        'https://www.football-espana.net/feed',
+        'https://www.theguardian.com/football/laligafootball/rss'
+    ];
+
+    const transferKeywords = [
+        'sign', 'deal', 'move', 'transfer', 'bid', 'loan', 'close',
+        'contract', 'agree', 'join', 'offer', 'confirm', 'swap',
+        'release', 'exit', 'talks', 'target', 'interested', 'pursue',
+        'want', 'eye', 'set to', 'negotiations', 'extension', 'renew',
+        'depart', 'leave', 'buy', 'sell', 'fee', 'clause', 'sale',
+        'window', 'summer', 'winter', 'january', 'arrival', 'departure'
+    ];
+
+    const laLigaTeamNames = Object.keys(TEAM_CRESTS).filter(k =>
+        ['real madrid', 'barcelona', 'atletico madrid', 'atletico', 'athletic bilbao', 'athletic club',
+            'real sociedad', 'villarreal', 'real betis', 'betis', 'sevilla', 'valencia', 'girona',
+            'celta vigo', 'celta', 'mallorca', 'rayo vallecano', 'rayo', 'osasuna', 'getafe',
+            'alaves', 'las palmas', 'espanyol', 'leganes', 'valladolid'].includes(k)
+    );
+
     try {
+        let allTransfers = [];
+
+        for (const feedUrl of sources) {
+            try {
+                const response = await axios.get(feedUrl, {
+                    timeout: 8000,
+                    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+                });
+                const xml = response.data;
+                const items = xml.split('<item>').slice(1, 25);
+
+                const transfers = items.map((item, index) => {
+                    const titleMatch = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/s) || item.match(/<title>(.*?)<\/title>/s);
+                    const title = titleMatch ? titleMatch[1]
+                        .replace(/&#8211;/g, '–').replace(/&#8216;/g, "'").replace(/&#8217;/g, "'")
+                        .replace(/&#8220;/g, '"').replace(/&#8221;/g, '"').replace(/&amp;/g, '&')
+                        .trim() : '';
+                    if (!title) return null;
+
+                    const lowerTitle = title.toLowerCase();
+                    const descMatch = item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/s) || item.match(/<description>(.*?)<\/description>/s);
+                    const rawDesc = descMatch ? descMatch[1].replace(/<[^>]*>/g, '').replace(/&[^;]+;/g, ' ').trim() : '';
+                    const combined = (lowerTitle + ' ' + rawDesc.toLowerCase());
+
+                    // Must contain a transfer keyword
+                    const isTransfer = transferKeywords.some(kw => combined.includes(kw));
+                    if (!isTransfer) return null;
+
+                    const dateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
+                    const date = dateMatch ? new Date(dateMatch[1]).toISOString() : new Date().toISOString();
+
+                    // Identify teams mentioned
+                    const mentionedTeams = [];
+                    for (const teamKey of Object.keys(TEAM_CRESTS)) {
+                        if (combined.includes(teamKey)) {
+                            const info = TEAM_CRESTS[teamKey];
+                            if (!mentionedTeams.find(t => t.name === info.name)) {
+                                mentionedTeams.push(info);
+                            }
+                        }
+                    }
+
+                    // Must mention at least one La Liga team
+                    const hasLaLiga = laLigaTeamNames.some(t => combined.includes(t));
+                    if (!hasLaLiga) return null;
+
+                    // Extract player name from title
+                    let playerName = title
+                        .split(' – ')[0].split(' - ')[0]
+                        .replace(/[''"](.*?)[''"].*/, '$1')
+                        .replace(/^(report:|exclusive:|breaking:)\s*/i, '')
+                        .trim();
+
+                    // Try to extract a clean player name (capitalized words before verbs)
+                    const nameMatch = title.match(/^([A-ZÁÉÍÓÚÑÜ][a-záéíóúñü]+(?:\s+[A-ZÁÉÍÓÚÑÜ][a-záéíóúñü]+){0,3})\s+(?:to|set|could|will|want|close|agree|sign|join|eye|reject|confirm|complete|near|in|has|had)/i);
+                    if (nameMatch) playerName = nameMatch[1];
+
+                    // Determine transfer type
+                    let type = 'in';
+                    if (lowerTitle.includes('loan')) type = 'loan';
+                    else if (lowerTitle.includes('extend') || lowerTitle.includes('extension') || lowerTitle.includes('renew')) type = 'extension';
+                    else if (lowerTitle.includes('leave') || lowerTitle.includes('exit') || lowerTitle.includes('depart') || lowerTitle.includes('sell') || lowerTitle.includes('sale')) type = 'out';
+
+                    // Extract fee
+                    let fee = 'Undisclosed';
+                    const feeMatch = combined.match(/€(\d+[\.\d]*\s*[mM])/);
+                    if (feeMatch) fee = '€' + feeMatch[1].toUpperCase();
+                    else if (combined.includes('free transfer') || combined.includes('free agent')) fee = 'Free Transfer';
+                    else if (type === 'loan') fee = 'Loan';
+                    else if (type === 'extension') fee = 'Contract Extension';
+
+                    // Assign from/to teams
+                    let fromTeam = { name: 'TBD', crest: '' };
+                    let toTeam = { name: 'TBD', crest: '' };
+                    if (mentionedTeams.length >= 2) {
+                        if (type === 'out') { fromTeam = mentionedTeams[0]; toTeam = mentionedTeams[1]; }
+                        else { fromTeam = mentionedTeams[1]; toTeam = mentionedTeams[0]; }
+                    } else if (mentionedTeams.length === 1) {
+                        if (type === 'out') fromTeam = mentionedTeams[0];
+                        else toTeam = mentionedTeams[0];
+                    }
+
+                    return {
+                        id: `rss-${Date.now()}-${index}`,
+                        player: playerName.length > 50 ? playerName.substring(0, 50) + '...' : playerName,
+                        fromTeam: fromTeam.name,
+                        fromCrest: fromTeam.crest,
+                        toTeam: toTeam.name,
+                        toCrest: toTeam.crest,
+                        fee,
+                        date,
+                        type,
+                        position: '',
+                        nationality: '⚽'
+                    };
+                }).filter(t => t !== null);
+
+                allTransfers = allTransfers.concat(transfers);
+            } catch (feedErr) {
+                console.error(`Feed failed: ${feedErr.message}`);
+            }
+        }
+
+        // Deduplicate
+        const seen = new Set();
+        allTransfers = allTransfers.filter(t => {
+            const key = t.player.toLowerCase().substring(0, 30);
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+
+        // Sort by date and limit
+        allTransfers = allTransfers.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 15);
+
+        if (allTransfers.length === 0) {
+            // Fall back to curated data if RSS yields nothing
+            allTransfers = mockTransfers;
+        }
+
         // Resolve player photos in parallel
-        const transfersWithPhotos = await Promise.all(
-            mockTransfers.map(async (transfer) => {
-                let playerPhoto = null;
-                try {
-                    playerPhoto = await getRealtimePlayerPhoto(transfer.player);
-                } catch (e) {
-                    // silently fail
-                }
+        const withPhotos = await Promise.all(
+            allTransfers.map(async (transfer) => {
+                let photo = null;
+                try { photo = await getRealtimePlayerPhoto(transfer.player); } catch (e) { }
                 return {
                     ...transfer,
-                    playerPhoto: playerPhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(transfer.player)}&background=1a1a2e&color=ff2d55&size=200&bold=true`
+                    playerPhoto: photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(transfer.player)}&background=1a1a2e&color=ff2d55&size=200&bold=true`
                 };
             })
         );
-        return transfersWithPhotos.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+        return withPhotos;
     } catch (error) {
-        console.error('Failed to resolve transfer photos:', error.message);
-        return mockTransfers;
+        console.error('Live transfers fetch failed:', error.message);
+        // Fall back to curated data with photo resolution
+        const withPhotos = await Promise.all(
+            mockTransfers.map(async (transfer) => {
+                let photo = null;
+                try { photo = await getRealtimePlayerPhoto(transfer.player); } catch (e) { }
+                return { ...transfer, playerPhoto: photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(transfer.player)}&background=1a1a2e&color=ff2d55&size=200&bold=true` };
+            })
+        );
+        return withPhotos;
     }
 };
 
