@@ -369,7 +369,7 @@ const getTransfersWithPhotos = async () => {
         // Deduplicate by player + date
         const seen = new Set();
         allTransfers = allTransfers.filter(t => {
-            const key = `${t.player}-${t.date}`.toLowerCase();
+            const key = `${t.player}-${t.toTeam}`.toLowerCase();
             if (seen.has(key)) return false;
             seen.add(key);
             return true;
