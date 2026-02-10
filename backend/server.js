@@ -275,64 +275,68 @@ const getTransfersWithPhotos = async () => {
     try {
         let allTransfers = [];
 
-        // Fetch transfers for each team (8 API calls, cached for 12h = ~16 calls/day)
-        for (const team of LA_LIGA_TEAMS) {
-            try {
-                const response = await axios.get('https://v3.football.api-sports.io/transfers', {
+        // Fetch all teams in parallel (fits within Vercel 10s timeout)
+        const teamResults = await Promise.allSettled(
+            LA_LIGA_TEAMS.map(team =>
+                axios.get('https://v3.football.api-sports.io/transfers', {
                     params: { team: team.id },
                     headers: { 'x-apisports-key': TRANSFERS_API_KEY },
-                    timeout: 10000
+                    timeout: 5000
+                })
+            )
+        );
+
+        teamResults.forEach((result, idx) => {
+            if (result.status !== 'fulfilled') {
+                console.error(`Transfer fetch failed for ${LA_LIGA_TEAMS[idx].name}`);
+                return;
+            }
+            const response = result.value;
+            if (!response.data || !response.data.response) return;
+
+            response.data.response.forEach(playerData => {
+                const playerName = playerData.player ? playerData.player.name : 'Unknown';
+
+                // Only get recent transfers (2025+)
+                const recentTransfers = (playerData.transfers || []).filter(t => {
+                    const year = new Date(t.date).getFullYear();
+                    return year >= 2025;
                 });
 
-                if (response.data && response.data.response) {
-                    response.data.response.forEach(playerData => {
-                        const playerName = playerData.player ? playerData.player.name : 'Unknown';
+                recentTransfers.forEach(transfer => {
+                    const teamsIn = transfer.teams && transfer.teams.in ? transfer.teams.in : {};
+                    const teamsOut = transfer.teams && transfer.teams.out ? transfer.teams.out : {};
 
-                        // Only get recent transfers (2025+)
-                        const recentTransfers = (playerData.transfers || []).filter(t => {
-                            const year = new Date(t.date).getFullYear();
-                            return year >= 2025;
-                        });
+                    // Determine transfer direction
+                    let type = 'in';
+                    const isIncoming = LA_LIGA_TEAMS.some(lt => lt.name.toLowerCase() === (teamsIn.name || '').toLowerCase());
+                    const isOutgoing = LA_LIGA_TEAMS.some(lt => lt.name.toLowerCase() === (teamsOut.name || '').toLowerCase());
 
-                        recentTransfers.forEach(transfer => {
-                            const teamsIn = transfer.teams && transfer.teams.in ? transfer.teams.in : {};
-                            const teamsOut = transfer.teams && transfer.teams.out ? transfer.teams.out : {};
+                    if (transfer.type === 'Loan' || transfer.type === 'Return from loan') type = 'loan';
+                    else if (isOutgoing && !isIncoming) type = 'out';
+                    else if (isIncoming) type = 'in';
 
-                            // Determine if this is a signing or departure for the La Liga team
-                            let type = 'in';
-                            const isIncoming = LA_LIGA_TEAMS.some(lt => lt.name.toLowerCase() === (teamsIn.name || '').toLowerCase());
-                            const isOutgoing = LA_LIGA_TEAMS.some(lt => lt.name.toLowerCase() === (teamsOut.name || '').toLowerCase());
+                    // Determine fee display
+                    let fee = transfer.type || 'Transfer';
+                    if (fee === 'N/A') fee = 'Undisclosed';
+                    if (fee === 'Free agent' || fee === 'Free') fee = 'Free Transfer';
 
-                            if (transfer.type === 'Loan') type = 'loan';
-                            else if (transfer.type === 'Return from loan') type = 'loan';
-                            else if (isOutgoing && !isIncoming) type = 'out';
-                            else if (isIncoming) type = 'in';
-
-                            // Determine fee display
-                            let fee = transfer.type || 'Transfer';
-                            if (fee === 'N/A') fee = 'Undisclosed';
-                            if (fee === 'Free agent' || fee === 'Free') fee = 'Free Transfer';
-
-                            allTransfers.push({
-                                id: `api-${playerData.player ? playerData.player.id : Date.now()}-${transfer.date}`,
-                                player: playerName,
-                                fromTeam: teamsOut.name || 'Unknown',
-                                fromCrest: teamsOut.logo || '',
-                                toTeam: teamsIn.name || 'Unknown',
-                                toCrest: teamsIn.logo || '',
-                                fee: fee,
-                                date: transfer.date,
-                                type: type,
-                                position: '',
-                                nationality: '⚽'
-                            });
-                        });
+                    allTransfers.push({
+                        id: `api-${playerData.player ? playerData.player.id : Date.now()}-${transfer.date}`,
+                        player: playerName,
+                        fromTeam: teamsOut.name || 'Unknown',
+                        fromCrest: teamsOut.logo || '',
+                        toTeam: teamsIn.name || 'Unknown',
+                        toCrest: teamsIn.logo || '',
+                        fee: fee,
+                        date: transfer.date,
+                        type: type,
+                        position: '',
+                        nationality: '⚽'
                     });
-                }
-            } catch (teamErr) {
-                console.error(`Transfer fetch failed for ${team.name}: ${teamErr.message}`);
-            }
-        }
+                });
+            });
+        });
 
         // Deduplicate by player + date
         const seen = new Set();
