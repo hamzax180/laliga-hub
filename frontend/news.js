@@ -226,7 +226,10 @@ function setupSubscription() {
             const data = await response.json();
 
             if (data.success) {
-                showNotification('Welcome to the Club! Check your inbox. ✅', 'success');
+                const emailMsg = data.emailSent
+                    ? 'Welcome to the Club! Check your inbox. ✅'
+                    : 'Subscribed! Welcome aboard ⚽';
+                showNotification(emailMsg, 'success');
                 sendSystemNotification("Welcome to the Hub! ⚽", {
                     body: "You've successfully subscribed to La Liga matchday alerts. ¡Vamos!",
                     tag: 'welcome-subscription'

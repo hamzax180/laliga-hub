@@ -530,18 +530,20 @@ app.post('/api/subscribe', async (req, res) => {
     }
 
     try {
-        // Find today's matches to make the response more "Live"
+        // Find today's matches (Barcelona timezone)
         let todayMatches = 0;
-        const now = new Date().toISOString().split('T')[0];
+        const nowBarcelona = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
 
         const cachedFixtures = getCachedData('fixtures');
         if (cachedFixtures) {
-            todayMatches = cachedFixtures.filter(f => f.date === now).length;
+            todayMatches = cachedFixtures.filter(f => f.date === nowBarcelona).length;
         }
 
-        // Send Welcome Email using Brevo API (More reliable with API Key)
+        let emailSent = false;
+
+        // Send Welcome Email using Brevo API
         if (process.env.EMAIL_PASS && process.env.EMAIL_USER) {
-            console.log('📤 Sending email via Brevo API...');
+            console.log(`📤 Sending welcome email to ${email} via Brevo API...`);
 
             const emailData = {
                 sender: { name: "La Liga Hub", email: process.env.EMAIL_USER.trim() },
@@ -572,32 +574,34 @@ app.post('/api/subscribe', async (req, res) => {
                 `
             };
 
-            axios.post('https://api.brevo.com/v3/smtp/email', emailData, {
-                headers: {
-                    'api-key': process.env.EMAIL_PASS.trim(),
-                    'Content-Type': 'application/json',
-                    'accept': 'application/json'
-                }
-            })
-                .then(response => {
-                    console.log('✅ Brevo API Success:', response.data);
-                })
-                .catch(error => {
-                    console.error('❌ Brevo API Error:', error.response ? error.response.data : error.message);
+            try {
+                const emailResponse = await axios.post('https://api.brevo.com/v3/smtp/email', emailData, {
+                    headers: {
+                        'api-key': process.env.EMAIL_PASS.trim(),
+                        'Content-Type': 'application/json',
+                        'accept': 'application/json'
+                    }
                 });
+                console.log('✅ Brevo API Success:', emailResponse.data);
+                emailSent = true;
+            } catch (emailError) {
+                console.error('❌ Brevo API Error:', emailError.response ? JSON.stringify(emailError.response.data) : emailError.message);
+                emailSent = false;
+            }
 
         } else {
-            console.warn('⚠️ Skipping email: Missing credentials');
+            console.warn('⚠️ Skipping email: EMAIL_USER or EMAIL_PASS not configured');
         }
 
-        // Simulating success
         res.json({
             success: true,
-            message: `Subscribed!`,
+            message: emailSent ? 'Subscribed! Welcome email sent.' : 'Subscribed!',
+            emailSent,
             matchCount: todayMatches
         });
     } catch (error) {
-        res.json({ success: true, message: 'Successfully subscribed!' });
+        console.error('❌ Subscribe endpoint error:', error.message);
+        res.status(500).json({ success: false, error: 'Subscription failed. Please try again.' });
     }
 });
 
@@ -606,13 +610,16 @@ app.post('/api/subscribe', async (req, res) => {
  * Specific endpoint for the subscription service
  */
 app.get('/api/matches/today', async (req, res) => {
-    const now = new Date().toISOString().split('T')[0];
+    // Use Barcelona timezone for "today" to match user expectations
+    const nowBarcelona = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
+    console.log(`📅 Checking matches for today (Barcelona): ${nowBarcelona}`);
     let fixtures = mockFixtures;
 
     const cached = getCachedData('fixtures');
     if (cached) fixtures = cached;
 
-    const today = fixtures.filter(f => f.date === now);
+    const today = fixtures.filter(f => f.date === nowBarcelona);
+    console.log(`⚽ Found ${today.length} matches for today`);
     res.json(today);
 });
 
