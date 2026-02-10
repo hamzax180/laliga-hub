@@ -547,6 +547,9 @@ app.get('/api/news/articles/:id', async (req, res) => {
 });
 
 app.get('/api/transfers', async (req, res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('CDN-Cache-Control', 'no-store');
+    res.setHeader('Vercel-CDN-Cache-Control', 'no-store');
     try {
         let transfers = getCachedData('transfers');
         if (!transfers) {
