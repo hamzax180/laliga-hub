@@ -1339,6 +1339,7 @@ body {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     transition: var(--transition-normal);
+    overflow: hidden;
 }
 
 .match-card:hover {
@@ -1454,6 +1455,8 @@ body {
 .footer-links {
     display: flex;
     gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .footer-links a {
@@ -1667,6 +1670,77 @@ body {
         right: 16px;
         padding: 12px;
         transform: scale(0.9);
+    }
+
+    /* Fix match cards for mobile */
+    .match-card {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 16px;
+        text-align: center;
+    }
+
+    .match-team.home,
+    .match-team.away {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .match-team-name {
+        font-size: 0.9rem;
+    }
+
+    .match-team-logo {
+        width: 36px;
+        height: 36px;
+    }
+
+    .match-info {
+        min-width: auto;
+    }
+
+    .calendar-day-header {
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .calendar-matches {
+        padding: 12px;
+        gap: 10px;
+    }
+
+    /* Fix footer links wrapping */
+    .footer-links {
+        gap: 16px;
+        justify-content: center;
+    }
+
+    .footer-links a {
+        font-size: 0.85rem;
+    }
+
+    /* Fix newsletter form white pill */
+    .newsletter-form {
+        flex-direction: column;
+        border-radius: var(--radius-lg);
+        padding: 8px;
+    }
+
+    .newsletter-form input {
+        padding: 14px 20px;
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    .newsletter-form button {
+        padding: 14px 30px;
+        font-size: 0.95rem;
+        border-radius: var(--radius-md);
+        width: 100%;
+    }
+
+    .newsletter-card {
+        padding: 40px 20px;
     }
 }
 
