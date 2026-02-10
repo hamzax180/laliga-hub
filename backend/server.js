@@ -279,7 +279,7 @@ function parseTransferDate(dateStr) {
         const yy = parseInt(s.substring(0, 2));
         const mm = s.substring(2, 4);
         const dd = s.substring(4, 6);
-        const year = yy > 50 ? 1900 + yy : 2000 + yy;
+        const year = yy > 26 ? 1900 + yy : 2000 + yy;
         return `${year}-${mm}-${dd}`;
     }
     // Compact YYYYMMDD (8 digits)
